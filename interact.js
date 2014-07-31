@@ -14,6 +14,7 @@ var computerAttacks = [[0,0,0]]; //each element of the array is an array of thre
 var cellPossibilities = []; // an array of 65 where each element contains an int that says how many ships could be located there
 var playerVictory = 0; //1 if player wins
 var computerVictory = 0; //1 if computer wins
+var futureComputerAttacks = []; //used if final locations of ships are known, but there aren't enough attacks for them
 
 function randomIntFromInterval(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -847,7 +848,7 @@ function getMaxPossibility() {
             max = cellPossibilities[i];
             ret = i;
         }
-        if (ret == 0 && cellPossibilities[i] > 0) {
+        if (ret == 0 && playerGrid[i].attackTurn == 0 && cellPossibilities[i] >= 0) {
             ret = i;
         }
     }
@@ -906,74 +907,90 @@ function generateComputerAttack() {
             attack3 = randomIntFromInterval(50, 55);
         }
     } else {
-        for (key in shipDatabase) { //if there's only one ship location left
-            if (shipDatabase[key].length == 1) {
-                console.log("The last possible " + key + " is located at " + shipDatabase[key][0]);
-                for (var j = 0; j < shipDatabase[key][0].length; j++) {
-                    computerVision[shipDatabase[key][0][j]] = key.toString();
-                }
-                console.log("cell possibilities: " + cellPossibilities);
-                if (attack1 == 0 || attack2 == 0 || attack3 == 0) {
-                    for (var i = 0; i < shipDatabase[key][0].length; i++) {
-                        if (playerGrid[shipDatabase[key][0][i]].attackTurn == 0) {
-                            if (attack1 == 0) {
-                                attack1 = shipDatabase[key][0][i];
-                            } else if (attack2 == 0) {
-                                attack2 = shipDatabase[key][0][i];
-                            } else if (attack3 == 0) {
-                                attack3 == shipDatabase[key][0][i];
-                            } else {
-                                break;
+        if (!(futureComputerAttacks.length == 0)) { //if there are future attacks from the last turns
+            if (futureComputerAttacks.length >= 3) {
+                attack1 = futureComputerAttacks.pop();
+                attack2 = futureComputerAttacks.pop();
+                attack3 = futureComputerAttacks.pop();
+            } else if (futureComputerAttacks.length == 2) {
+                attack1 = futureComputerAttacks.pop();
+                attack2 = futureComputerAttacks.pop();
+            } else {
+                attack1 = futureComputerAttacks.pop();
+            }
+        }//if there are no future attacks from the last turns
+            for (key in shipDatabase) { //if there's only one ship location left
+                if (shipDatabase[key].length == 1) {
+                    console.log("The last possible " + key + " is located at " + shipDatabase[key][0]);
+                    for (var j = 0; j < shipDatabase[key][0].length; j++) {
+                        computerVision[shipDatabase[key][0][j]] = key.toString();
+                    }
+                    console.log("cell possibilities: " + cellPossibilities);
+                    if (attack1 == 0 || attack2 == 0 || attack3 == 0) {
+                        for (var i = 0; i < shipDatabase[key][0].length; i++) {
+                            if (playerGrid[shipDatabase[key][0][i]].attackTurn == 0) {
+                                if (attack1 == 0) {
+                                    attack1 = shipDatabase[key][0][i];
+                                } else if (attack2 == 0) {
+                                    attack2 = shipDatabase[key][0][i];
+                                } else if (attack3 == 0) {
+                                    attack3 == shipDatabase[key][0][i];
+                                } else {
+                                    break;
+                                }
                             }
                         }
+                    } else {
+                        for (var i = 0; i < shipDatabase[key][0].length; i++) {
+                            if (playerGrid[shipDatabase[key][0][i]].attackTurn == 0) {
+                                futureComputerAttacks.push(shipDatabase[key][0][i]);
+                            }
+                        }
+                        break;
                     }
-                } else {
-                    break;
                 }
             }
+            if (attack1 == 0) {
+                attack1 = getMaxPossibility();
+            }
+            cellPossibilities[attack1] = -1;
+            if (attack2 == 0) {
+                attack2 = getMaxPossibility();
+            }
+            cellPossibilities[attack2] = -1;
+            if (attack3 == 0) {
+                attack3 = getMaxPossibility();
+            }
+            cellPossibilities[attack3] = -1;
         }
-        if (attack1 == 0) {
-            attack1 = getMaxPossibility();
+        var arr = [attack1, attack2, attack3];
+        for (var i = 0; i < arr.length; i++) {
+            cellPossibilities[arr[i]] = -1;
+            playerGrid[arr[i]].attackTurn = turn;
         }
-        cellPossibilities[attack1] = -1;
-        if (attack2 == 0) {
-            attack2 = getMaxPossibility();
-        }
-        cellPossibilities[attack2] = -1;
-        if (attack3 == 0) {
-            attack3 = getMaxPossibility();
-        }
-        cellPossibilities[attack3] = -1;
-        
+        computerAttacks.push(arr);
+        //var attack1 = 0;
+        //while (attack1 == 0 || playerGrid[attack1].attackTurn != 0) {
+        //    attack1 = randomIntFromInterval(1, 64);
+        //}
+        var id = "p".concat(attack1.toString());
+        //playerGrid[attack1].attackTurn = turn;
+        document.getElementById(id).innerHTML = turn.toString();
+        //var attack2 = 0;
+        //while (attack2 == 0 || playerGrid[attack2].attackTurn != 0) {
+        //attack2 = randomIntFromInterval(1, 64);
+        //}
+        //playerGrid[attack2].attackTurn = turn;
+        id = "p".concat(attack2.toString());
+        document.getElementById(id).innerHTML = turn.toString();
+        //attack3 == 0;
+        //while (attack3 == 0 || playerGrid[attack3].attackTurn != 0) {
+        //    var attack3 = randomIntFromInterval(1, 64);
+        //}
+        //playerGrid[attack3].attackTurn = turn;
+        id = "p".concat(attack3.toString());
+        document.getElementById(id).innerHTML = turn.toString();
     }
-    var arr = [attack1, attack2, attack3];
-    for (var i = 0; i < arr.length; i++) {
-        cellPossibilities[arr[i]] = -1;
-        playerGrid[arr[i]].attackTurn = turn;
-    }
-    computerAttacks.push(arr);
-    //var attack1 = 0;
-    //while (attack1 == 0 || playerGrid[attack1].attackTurn != 0) {
-    //    attack1 = randomIntFromInterval(1, 64);
-    //}
-    var id = "p".concat(attack1.toString());
-    //playerGrid[attack1].attackTurn = turn;
-    document.getElementById(id).innerHTML = turn.toString();
-    //var attack2 = 0;
-    //while (attack2 == 0 || playerGrid[attack2].attackTurn != 0) {
-    //attack2 = randomIntFromInterval(1, 64);
-    //}
-    //playerGrid[attack2].attackTurn = turn;
-    id = "p".concat(attack2.toString());
-    document.getElementById(id).innerHTML = turn.toString();
-    //attack3 == 0;
-    //while (attack3 == 0 || playerGrid[attack3].attackTurn != 0) {
-    //    var attack3 = randomIntFromInterval(1, 64);
-    //}
-    //playerGrid[attack3].attackTurn = turn;
-    id = "p".concat(attack3.toString());
-    document.getElementById(id).innerHTML = turn.toString();
-}
 
 function possibilitiesUpdate(cells, direction) {
     //direction = 1 means add cells; direction = 0 means remove cells

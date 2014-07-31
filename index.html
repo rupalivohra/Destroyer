@@ -5,114 +5,13 @@
     <title>Destroyer</title>
 </head>
 <body oncontextmenu="return false;">
+    <!--[if IE]>
+    <h1>Please use Chrome</h1>
+    <![endif]-->
     <div id="header">
         <h1>Destroyer</h1>
     </div>
-    <div id="tables">
-        <div id="player">
-            <table>
-                <caption>Player</caption>
-                <tr>
-                    <th></th>
-                    <th>A</th>
-                    <th>B</th>
-                    <th>C</th>
-                    <th>D</th>
-                    <th>E</th>
-                    <th>F</th>
-                    <th>G</th>
-                    <th>H</th>
-                </tr>
-                <tr>
-                    <th>1</th>
-                    <td id="p1"></td>
-                    <td id="p2"></td>
-                    <td id="p3"></td>
-                    <td id="p4"></td>
-                    <td id="p5"></td>
-                    <td id="p6"></td>
-                    <td id="p7"></td>
-                    <td id="p8"></td>
-                </tr>
-                <tr>
-                    <th>2</th>
-                    <td id="p9"></td>
-                    <td id="p10"></td>
-                    <td id="p11" onclick="testFunc()"></td>
-                    <td id="p12" onclick="testFunc()"></td>
-                    <td id="p13" onclick="testFunc()"></td>
-                    <td id="p14" onclick="testFunc()"></td>
-                    <td id="p15" onclick="testFunc()"></td>
-                    <td id="p16" onclick="testFunc()"></td>
-                </tr>
-                <tr>
-                    <th>3</th>
-                    <td id="p17" onclick="testFunc()"></td>
-                    <td id="p18" onclick="testFunc()"></td>
-                    <td id="p19" onclick="testFunc()"></td>
-                    <td id="p20" onclick="testFunc()"></td>
-                    <td id="p21" onclick="testFunc()"></td>
-                    <td id="p22" onclick="testFunc()"></td>
-                    <td id="p23" onclick="testFunc()"></td>
-                    <td id="p24" onclick="testFunc()"></td>
-                </tr>
-                <tr>
-                    <th>4</th>
-                    <td id="p25" onclick="testFunc()"></td>
-                    <td id="p26" onclick="testFunc()"></td>
-                    <td id="p27" onclick="testFunc()"></td>
-                    <td id="p28" onclick="testFunc()"></td>
-                    <td id="p29" onclick="testFunc()"></td>
-                    <td id="p30" onclick="testFunc()"></td>
-                    <td id="p31" onclick="testFunc()"></td>
-                    <td id="p32" onclick="testFunc()"></td>
-                </tr>
-                <tr>
-                    <th>5</th>
-                    <td id="p33" onclick="testFunc()"></td>
-                    <td id="p34" onclick="testFunc()"></td>
-                    <td id="p35" onclick="testFunc()"></td>
-                    <td id="p36" onclick="testFunc()"></td>
-                    <td id="p37" onclick="testFunc()"></td>
-                    <td id="p38" onclick="testFunc()"></td>
-                    <td id="p39" onclick="testFunc()"></td>
-                    <td id="p40" onclick="testFunc()"></td>
-                </tr>
-                <tr>
-                    <th>6</th>
-                    <td id="p41" onclick="testFunc()"></td>
-                    <td id="p42" onclick="testFunc()"></td>
-                    <td id="p43" onclick="testFunc()"></td>
-                    <td id="p44" onclick="testFunc()"></td>
-                    <td id="p45" onclick="testFunc()"></td>
-                    <td id="p46" onclick="testFunc()"></td>
-                    <td id="p47" onclick="testFunc()"></td>
-                    <td id="p48" onclick="testFunc()"></td>
-                </tr>
-                <tr>
-                    <th>7</th>
-                    <td id="p49" onclick="testFunc()"></td>
-                    <td id="p50" onclick="testFunc()"></td>
-                    <td id="p51" onclick="testFunc()"></td>
-                    <td id="p52" onclick="testFunc()"></td>
-                    <td id="p53" onclick="testFunc()"></td>
-                    <td id="p54" onclick="testFunc()"></td>
-                    <td id="p55" onclick="testFunc()"></td>
-                    <td id="p56" onclick="testFunc()"></td>
-                </tr>
-                <tr>
-                    <th>8</th>
-                    <td id="p57" onclick="testFunc()"></td>
-                    <td id="p58" onclick="testFunc()"></td>
-                    <td id="p59" onclick="testFunc()"></td>
-                    <td id="p60" onclick="testFunc()"></td>
-                    <td id="p61" onclick="testFunc()"></td>
-                    <td id="p62" onclick="testFunc()"></td>
-                    <td id="p63" onclick="testFunc()"></td>
-                    <td id="p64" onclick="testFunc()"></td>
-                </tr>
-            </table>
-        </div>
+    <div id="tables" style="float:left">
         <div id="opponent">
             <table>
                 <caption>Computer</caption>
@@ -217,11 +116,131 @@
                 </tr>
             </table>
         </div>
-        <button type="button" id="attack" onclick="finalizeAttack();" style="align-content:flex-start; clear:both;">
+        <button type="button" id="attack" onclick="finalizeAttack();" style="clear:both; justify-content:center; text-align:center; padding-left:12em;padding-right:12em;box-sizing:initial">
             Finalize attack
         </button>
+        <div id="player">
+            <table>
+                <caption style="padding-top:1em;">Player</caption>
+                <tr>
+                    <th></th>
+                    <th>A</th>
+                    <th>B</th>
+                    <th>C</th>
+                    <th>D</th>
+                    <th>E</th>
+                    <th>F</th>
+                    <th>G</th>
+                    <th>H</th>
+                </tr>
+                <tr>
+                    <th>1</th>
+                    <td id="p1"></td>
+                    <td id="p2"></td>
+                    <td id="p3"></td>
+                    <td id="p4"></td>
+                    <td id="p5"></td>
+                    <td id="p6"></td>
+                    <td id="p7"></td>
+                    <td id="p8"></td>
+                </tr>
+                <tr>
+                    <th>2</th>
+                    <td id="p9"></td>
+                    <td id="p10"></td>
+                    <td id="p11"></td>
+                    <td id="p12"></td>
+                    <td id="p13"></td>
+                    <td id="p14"></td>
+                    <td id="p15"></td>
+                    <td id="p16"></td>
+                </tr>
+                <tr>
+                    <th>3</th>
+                    <td id="p17"></td>
+                    <td id="p18"></td>
+                    <td id="p19"></td>
+                    <td id="p20"></td>
+                    <td id="p21"></td>
+                    <td id="p22"></td>
+                    <td id="p23"></td>
+                    <td id="p24"></td>
+                </tr>
+                <tr>
+                    <th>4</th>
+                    <td id="p25"></td>
+                    <td id="p26"></td>
+                    <td id="p27"></td>
+                    <td id="p28"></td>
+                    <td id="p29"></td>
+                    <td id="p30"></td>
+                    <td id="p31"></td>
+                    <td id="p32"></td>
+                </tr>
+                <tr>
+                    <th>5</th>
+                    <td id="p33"></td>
+                    <td id="p34"></td>
+                    <td id="p35"></td>
+                    <td id="p36"></td>
+                    <td id="p37"></td>
+                    <td id="p38"></td>
+                    <td id="p39"></td>
+                    <td id="p40"></td>
+                </tr>
+                <tr>
+                    <th>6</th>
+                    <td id="p41"></td>
+                    <td id="p42"></td>
+                    <td id="p43"></td>
+                    <td id="p44"></td>
+                    <td id="p45"></td>
+                    <td id="p46"></td>
+                    <td id="p47"></td>
+                    <td id="p48"></td>
+                </tr>
+                <tr>
+                    <th>7</th>
+                    <td id="p49"></td>
+                    <td id="p50"></td>
+                    <td id="p51"></td>
+                    <td id="p52"></td>
+                    <td id="p53"></td>
+                    <td id="p54"></td>
+                    <td id="p55"></td>
+                    <td id="p56"></td>
+                </tr>
+                <tr>
+                    <th>8</th>
+                    <td id="p57"></td>
+                    <td id="p58"></td>
+                    <td id="p59"></td>
+                    <td id="p60"></td>
+                    <td id="p61"></td>
+                    <td id="p62"></td>
+                    <td id="p63"></td>
+                    <td id="p64"></td>
+                </tr>
+            </table>
+        </div>
     </div>
-    <div>
+    <div style="float:left">
+        <!--<section>-->
+        <div>
+            <h3>Instructions</h3>
+            <p id="instructions">1) Place your ships.<br />2) Click on Computer's screen where you want to attack (3 attacks/turn). <br />Click "Finalize attack" to submit your attacks.<br />3) Evaluate your report and make new attacks.</p>
+        </div>
+        <div>
+            <h4>How many ships you have left:</h4>
+            <p id="selfShips"></p>
+        </div>
+        <div>
+            <h4>How many ships you need to attack:</h4>
+            <p id="oppShips"></p>
+        </div>
+        <!--</section>-->
+    </div>
+    <div style="float:left">
         <table style="padding-left:3em; border:2px solid black;" id="report">
             <caption>Report</caption>
             <colgroup>
@@ -242,22 +261,7 @@
             </tr>
         </table>
     </div>
-    <div>
-        <!--<section>-->
-        <div>
-            <h3>Instructions</h3>
-            <p id="instructions">1) Place your ships.<br />2) Click on Computer's screen where you want to attack (3 attacks/turn). Click "Finalize attack" to submit your attacks.<br />3) Evaluate your report and make new attacks.</p>
-        </div>
-        <div>
-            <h4>How many ships you have left:</h4>
-            <p id="selfShips"></p>
-        </div>
-        <div>
-            <h4>How many ships you need to attack:</h4>
-            <p id="oppShips"></p>
-        </div>
-        <!--</section>-->
-    </div>
+
 
     <!--<a href="interface.html#cell1" onclick:"testfunc()"></a>-->
 </body>

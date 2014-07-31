@@ -2,10 +2,10 @@
     
 }
 table {
-    padding-left:1em;
-    padding-right:6em;
+    padding-left:2em;
+    padding-right:2em;
     padding-bottom:1em;
-    float:left;
+    /*float:left;*/
     /*clear:left;*/ /*Causes the opponent grid to appear below the player one.*/
 }
 caption {
@@ -34,21 +34,22 @@ h2 {
 }
 h3 {
     float:left;
-    clear:left;
-    padding-left:2em;
+    padding-left:1em;
+    padding-right:2em;
     text-align:left;
     font-size:large;
 }
 h4 {
     float:left;
     caption-side;
-    clear:left;
-    padding-left:2em;
+    padding-left:1em;
+    padding-right:2em;
     text-align:left;
     font-size:medium;
 }
 p {
     float:left;
     clear:left;
-    padding-left:2em;
+    padding-left:1em;
+    padding-right:2em;
 }
