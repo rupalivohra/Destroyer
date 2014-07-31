@@ -1,0 +1,264 @@
+﻿<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="interact.js" type="text/javascript"></script>
+    <title>Destroyer</title>
+</head>
+<body oncontextmenu="return false;">
+    <div id="header">
+        <h1>Destroyer</h1>
+    </div>
+    <div id="tables">
+        <div id="player">
+            <table>
+                <caption>Player</caption>
+                <tr>
+                    <th></th>
+                    <th>A</th>
+                    <th>B</th>
+                    <th>C</th>
+                    <th>D</th>
+                    <th>E</th>
+                    <th>F</th>
+                    <th>G</th>
+                    <th>H</th>
+                </tr>
+                <tr>
+                    <th>1</th>
+                    <td id="p1"></td>
+                    <td id="p2"></td>
+                    <td id="p3"></td>
+                    <td id="p4"></td>
+                    <td id="p5"></td>
+                    <td id="p6"></td>
+                    <td id="p7"></td>
+                    <td id="p8"></td>
+                </tr>
+                <tr>
+                    <th>2</th>
+                    <td id="p9"></td>
+                    <td id="p10"></td>
+                    <td id="p11" onclick="testFunc()"></td>
+                    <td id="p12" onclick="testFunc()"></td>
+                    <td id="p13" onclick="testFunc()"></td>
+                    <td id="p14" onclick="testFunc()"></td>
+                    <td id="p15" onclick="testFunc()"></td>
+                    <td id="p16" onclick="testFunc()"></td>
+                </tr>
+                <tr>
+                    <th>3</th>
+                    <td id="p17" onclick="testFunc()"></td>
+                    <td id="p18" onclick="testFunc()"></td>
+                    <td id="p19" onclick="testFunc()"></td>
+                    <td id="p20" onclick="testFunc()"></td>
+                    <td id="p21" onclick="testFunc()"></td>
+                    <td id="p22" onclick="testFunc()"></td>
+                    <td id="p23" onclick="testFunc()"></td>
+                    <td id="p24" onclick="testFunc()"></td>
+                </tr>
+                <tr>
+                    <th>4</th>
+                    <td id="p25" onclick="testFunc()"></td>
+                    <td id="p26" onclick="testFunc()"></td>
+                    <td id="p27" onclick="testFunc()"></td>
+                    <td id="p28" onclick="testFunc()"></td>
+                    <td id="p29" onclick="testFunc()"></td>
+                    <td id="p30" onclick="testFunc()"></td>
+                    <td id="p31" onclick="testFunc()"></td>
+                    <td id="p32" onclick="testFunc()"></td>
+                </tr>
+                <tr>
+                    <th>5</th>
+                    <td id="p33" onclick="testFunc()"></td>
+                    <td id="p34" onclick="testFunc()"></td>
+                    <td id="p35" onclick="testFunc()"></td>
+                    <td id="p36" onclick="testFunc()"></td>
+                    <td id="p37" onclick="testFunc()"></td>
+                    <td id="p38" onclick="testFunc()"></td>
+                    <td id="p39" onclick="testFunc()"></td>
+                    <td id="p40" onclick="testFunc()"></td>
+                </tr>
+                <tr>
+                    <th>6</th>
+                    <td id="p41" onclick="testFunc()"></td>
+                    <td id="p42" onclick="testFunc()"></td>
+                    <td id="p43" onclick="testFunc()"></td>
+                    <td id="p44" onclick="testFunc()"></td>
+                    <td id="p45" onclick="testFunc()"></td>
+                    <td id="p46" onclick="testFunc()"></td>
+                    <td id="p47" onclick="testFunc()"></td>
+                    <td id="p48" onclick="testFunc()"></td>
+                </tr>
+                <tr>
+                    <th>7</th>
+                    <td id="p49" onclick="testFunc()"></td>
+                    <td id="p50" onclick="testFunc()"></td>
+                    <td id="p51" onclick="testFunc()"></td>
+                    <td id="p52" onclick="testFunc()"></td>
+                    <td id="p53" onclick="testFunc()"></td>
+                    <td id="p54" onclick="testFunc()"></td>
+                    <td id="p55" onclick="testFunc()"></td>
+                    <td id="p56" onclick="testFunc()"></td>
+                </tr>
+                <tr>
+                    <th>8</th>
+                    <td id="p57" onclick="testFunc()"></td>
+                    <td id="p58" onclick="testFunc()"></td>
+                    <td id="p59" onclick="testFunc()"></td>
+                    <td id="p60" onclick="testFunc()"></td>
+                    <td id="p61" onclick="testFunc()"></td>
+                    <td id="p62" onclick="testFunc()"></td>
+                    <td id="p63" onclick="testFunc()"></td>
+                    <td id="p64" onclick="testFunc()"></td>
+                </tr>
+            </table>
+        </div>
+        <div id="opponent">
+            <table>
+                <caption>Computer</caption>
+                <tr>
+                    <th></th>
+                    <th>A</th>
+                    <th>B</th>
+                    <th>C</th>
+                    <th>D</th>
+                    <th>E</th>
+                    <th>F</th>
+                    <th>G</th>
+                    <th>H</th>
+                </tr>
+                <tr>
+                    <th>1</th>
+                    <td id="o1" onclick="selectAttackLocation('o1', event);" oncontextmenu="deselectAttack('o1');"></td>
+                    <td id="o2" onclick="selectAttackLocation('o2', event);" oncontextmenu="deselectAttack('o2');"></td>
+                    <td id="o3" onclick="selectAttackLocation('o3', event);" oncontextmenu="deselectAttack('o3');"></td>
+                    <td id="o4" onclick="selectAttackLocation('o4', event);" oncontextmenu="deselectAttack('o4');"></td>
+                    <td id="o5" onclick="selectAttackLocation('o5', event);" oncontextmenu="deselectAttack('o5');"></td>
+                    <td id="o6" onclick="selectAttackLocation('o6', event);" oncontextmenu="deselectAttack('o6');"></td>
+                    <td id="o7" onclick="selectAttackLocation('o7', event);" oncontextmenu="deselectAttack('o7');"></td>
+                    <td id="o8" onclick="selectAttackLocation('o8', event);" oncontextmenu="deselectAttack('o8');"></td>
+                </tr>
+                <tr>
+                    <th>2</th>
+                    <td id="o9" onclick="selectAttackLocation('o9', event);" oncontextmenu="deselectAttack('o9');"></td>
+                    <td id="o10" onclick="selectAttackLocation('o10', event);" oncontextmenu="deselectAttack('o10');"></td>
+                    <td id="o11" onclick="selectAttackLocation('o11', event);" oncontextmenu="deselectAttack('o11');"></td>
+                    <td id="o12" onclick="selectAttackLocation('o12', event);" oncontextmenu="deselectAttack('o12');"></td>
+                    <td id="o13" onclick="selectAttackLocation('o13', event);" oncontextmenu="deselectAttack('o13');"></td>
+                    <td id="o14" onclick="selectAttackLocation('o14', event);" oncontextmenu="deselectAttack('o14');"></td>
+                    <td id="o15" onclick="selectAttackLocation('o15', event);" oncontextmenu="deselectAttack('o15');"></td>
+                    <td id="o16" onclick="selectAttackLocation('o16', event);" oncontextmenu="deselectAttack('o16');"></td>
+                </tr>
+                <tr>
+                    <th>3</th>
+                    <td id="o17" onclick="selectAttackLocation('o17', event);" oncontextmenu="deselectAttack('o17');"></td>
+                    <td id="o18" onclick="selectAttackLocation('o18', event);" oncontextmenu="deselectAttack('o18');"></td>
+                    <td id="o19" onclick="selectAttackLocation('o19', event);" oncontextmenu="deselectAttack('o19');"></td>
+                    <td id="o20" onclick="selectAttackLocation('o20', event);" oncontextmenu="deselectAttack('o20');"></td>
+                    <td id="o21" onclick="selectAttackLocation('o21', event);" oncontextmenu="deselectAttack('o21');"></td>
+                    <td id="o22" onclick="selectAttackLocation('o22', event);" oncontextmenu="deselectAttack('o22');"></td>
+                    <td id="o23" onclick="selectAttackLocation('o23', event);" oncontextmenu="deselectAttack('o23');"></td>
+                    <td id="o24" onclick="selectAttackLocation('o24', event);" oncontextmenu="deselectAttack('o24');"></td>
+                </tr>
+                <tr>
+                    <th>4</th>
+                    <td id="o25" onclick="selectAttackLocation('o25', event);" oncontextmenu="deselectAttack('o25');"></td>
+                    <td id="o26" onclick="selectAttackLocation('o26', event);" oncontextmenu="deselectAttack('o26');"></td>
+                    <td id="o27" onclick="selectAttackLocation('o27', event);" oncontextmenu="deselectAttack('o27');"></td>
+                    <td id="o28" onclick="selectAttackLocation('o28', event);" oncontextmenu="deselectAttack('o28');"></td>
+                    <td id="o29" onclick="selectAttackLocation('o29', event);" oncontextmenu="deselectAttack('o29');"></td>
+                    <td id="o30" onclick="selectAttackLocation('o30', event);" oncontextmenu="deselectAttack('o30');"></td>
+                    <td id="o31" onclick="selectAttackLocation('o31', event);" oncontextmenu="deselectAttack('o31');"></td>
+                    <td id="o32" onclick="selectAttackLocation('o32', event);" oncontextmenu="deselectAttack('o32');"></td>
+                </tr>
+                <tr>
+                    <th>5</th>
+                    <td id="o33" onclick="selectAttackLocation('o33', event);" oncontextmenu="deselectAttack('o33');"></td>
+                    <td id="o34" onclick="selectAttackLocation('o34', event);" oncontextmenu="deselectAttack('o34');"></td>
+                    <td id="o35" onclick="selectAttackLocation('o35', event);" oncontextmenu="deselectAttack('o35');"></td>
+                    <td id="o36" onclick="selectAttackLocation('o36', event);" oncontextmenu="deselectAttack('o36');"></td>
+                    <td id="o37" onclick="selectAttackLocation('o37', event);" oncontextmenu="deselectAttack('o37');"></td>
+                    <td id="o38" onclick="selectAttackLocation('o38', event);" oncontextmenu="deselectAttack('o38');"></td>
+                    <td id="o39" onclick="selectAttackLocation('o39', event);" oncontextmenu="deselectAttack('o39');"></td>
+                    <td id="o40" onclick="selectAttackLocation('o40', event);" oncontextmenu="deselectAttack('o40');"></td>
+                </tr>
+                <tr>
+                    <th>6</th>
+                    <td id="o41" onclick="selectAttackLocation('o41', event);" oncontextmenu="deselectAttack('o41');"></td>
+                    <td id="o42" onclick="selectAttackLocation('o42', event);" oncontextmenu="deselectAttack('o42');"></td>
+                    <td id="o43" onclick="selectAttackLocation('o43', event);" oncontextmenu="deselectAttack('o43');"></td>
+                    <td id="o44" onclick="selectAttackLocation('o44', event);" oncontextmenu="deselectAttack('o44');"></td>
+                    <td id="o45" onclick="selectAttackLocation('o45', event);" oncontextmenu="deselectAttack('o45');"></td>
+                    <td id="o46" onclick="selectAttackLocation('o46', event);" oncontextmenu="deselectAttack('o46');"></td>
+                    <td id="o47" onclick="selectAttackLocation('o47', event);" oncontextmenu="deselectAttack('o47');"></td>
+                    <td id="o48" onclick="selectAttackLocation('o48', event);" oncontextmenu="deselectAttack('o48');"></td>
+                </tr>
+                <tr>
+                    <th>7</th>
+                    <td id="o49" onclick="selectAttackLocation('o49', event);" oncontextmenu="deselectAttack('o49');"></td>
+                    <td id="o50" onclick="selectAttackLocation('o50', event);" oncontextmenu="deselectAttack('o50');"></td>
+                    <td id="o51" onclick="selectAttackLocation('o51', event);" oncontextmenu="deselectAttack('o51');"></td>
+                    <td id="o52" onclick="selectAttackLocation('o52', event);" oncontextmenu="deselectAttack('o52');"></td>
+                    <td id="o53" onclick="selectAttackLocation('o53', event);" oncontextmenu="deselectAttack('o53');"></td>
+                    <td id="o54" onclick="selectAttackLocation('o54', event);" oncontextmenu="deselectAttack('o54');"></td>
+                    <td id="o55" onclick="selectAttackLocation('o55', event);" oncontextmenu="deselectAttack('o55');"></td>
+                    <td id="o56" onclick="selectAttackLocation('o56', event);" oncontextmenu="deselectAttack('o56');"></td>
+                </tr>
+                <tr>
+                    <th>8</th>
+                    <td id="o57" onclick="selectAttackLocation('o57', event);" oncontextmenu="deselectAttack('o57');"></td>
+                    <td id="o58" onclick="selectAttackLocation('o58', event);" oncontextmenu="deselectAttack('o58');"></td>
+                    <td id="o59" onclick="selectAttackLocation('o59', event);" oncontextmenu="deselectAttack('o59');"></td>
+                    <td id="o60" onclick="selectAttackLocation('o60', event);" oncontextmenu="deselectAttack('o60');"></td>
+                    <td id="o61" onclick="selectAttackLocation('o61', event);" oncontextmenu="deselectAttack('o61');"></td>
+                    <td id="o62" onclick="selectAttackLocation('o62', event);" oncontextmenu="deselectAttack('o62');"></td>
+                    <td id="o63" onclick="selectAttackLocation('o63', event);" oncontextmenu="deselectAttack('o63');"></td>
+                    <td id="o64" onclick="selectAttackLocation('o64', event);" oncontextmenu="deselectAttack('o64');"></td>
+                </tr>
+            </table>
+        </div>
+        <button type="button" id="attack" onclick="finalizeAttack();" style="align-content:flex-start; clear:both;">
+            Finalize attack
+        </button>
+    </div>
+    <div>
+        <table style="padding-left:3em; border:2px solid black;" id="report">
+            <caption>Report</caption>
+            <colgroup>
+                <col id="turn" span="1" />
+                <col id="dest" span="1" style="background-color:aliceblue" />
+                <col id="tank" span="1" style="background-color:aliceblue" />
+                <col id="cruise" span="1" style="background-color:aliceblue" />
+                <col id="bat" span="1" style="background-color:aliceblue" />
+                <col id="sub" span="1" style="background-color:aliceblue" />
+            </colgroup>
+            <tr>
+                <th></th>
+                <th style="background-color:white">Destroyer</th>
+                <th style="background-color:white">Tanker</th>
+                <th style="background-color:white">Cruiser</th>
+                <th style="background-color:white">Battleship</th>
+                <th style="background-color:white">Submarine</th>
+            </tr>
+        </table>
+    </div>
+    <div>
+        <!--<section>-->
+        <div>
+            <h3>Instructions</h3>
+            <p id="instructions">1) Place your ships.<br />2) Click on Computer's screen where you want to attack (3 attacks/turn). Click "Finalize attack" to submit your attacks.<br />3) Evaluate your report and make new attacks.</p>
+        </div>
+        <div>
+            <h4>How many ships you have left:</h4>
+            <p id="selfShips"></p>
+        </div>
+        <div>
+            <h4>How many ships you need to attack:</h4>
+            <p id="oppShips"></p>
+        </div>
+        <!--</section>-->
+    </div>
+
+    <!--<a href="interface.html#cell1" onclick:"testfunc()"></a>-->
+</body>
+</html>

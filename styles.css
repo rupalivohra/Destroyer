@@ -1,0 +1,54 @@
+﻿body {
+    
+}
+table {
+    padding-left:1em;
+    padding-right:6em;
+    padding-bottom:1em;
+    float:left;
+    /*clear:left;*/ /*Causes the opponent grid to appear below the player one.*/
+}
+caption {
+    text-align:center;
+    font-size:large;
+}
+td, th {
+  width: 2em;
+  height: 2em;
+  text-align: center;
+  border: 1px solid
+}
+th {
+  border-color: white;
+}
+td {
+  border-color: black;
+}
+h1 {
+    text-align:center;
+    font-size:xx-large;
+}
+h2 {
+    text-align:center;
+    font-size:large;
+}
+h3 {
+    float:left;
+    clear:left;
+    padding-left:2em;
+    text-align:left;
+    font-size:large;
+}
+h4 {
+    float:left;
+    caption-side;
+    clear:left;
+    padding-left:2em;
+    text-align:left;
+    font-size:medium;
+}
+p {
+    float:left;
+    clear:left;
+    padding-left:2em;
+}
