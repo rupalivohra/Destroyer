@@ -474,13 +474,15 @@ function selectAttackLocation(id,event) {
 function deselectAttack(id) {
     var split = id.split("o");
     var cellNum = parseInt(split[1]);
-    var index = playerAttack.indexOf(cellNum);
-    playerAttack.splice(index, 1);
-    var cell = document.getElementById(id);
-    if (cell.style.color == "red") {
-        cell.innerHTML = "";
-    } else {
-        return true;
+    if (contains(playerAttack, cellNum)) {
+        var index = playerAttack.indexOf(cellNum);
+        playerAttack.splice(index, 1);
+        var cell = document.getElementById(id);
+        if (cell.style.color == "red") {
+            cell.innerHTML = "";
+        //} else {
+        //    return true;
+        }
     }
 }
 function finalizeAttack() {
