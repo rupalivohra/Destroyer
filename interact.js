@@ -1,4 +1,4 @@
-﻿var stage; //used to keep track of game progress for instructional purposes.
+﻿var stage = 2; //used to keep track of game progress for instructional purposes.
 var playerGrid = []; //array of cell objects. Each object contains two fields: ship, attackTurn
 //ship = "D","T", "B", "C", "S", or null
 //attackTurn = the turn in which the cell was attacked (can be 0+)
@@ -16,6 +16,7 @@ var playerVictory = 0; //1 if player wins
 var computerVictory = 0; //1 if computer wins
 var futureComputerAttacks = []; //used if final locations of ships are known, but there aren't enough attacks for them
 
+
 function randomIntFromInterval(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
@@ -28,6 +29,56 @@ function contains(a, obj) {
         }
     }
     return false;
+}
+
+
+window.onload = function () {
+    getInstructions();
+    for (var i = 0 ; i < 65; i++) {
+        playerGrid.push({
+            ship: null,
+            attackTurn: 0
+        });
+        computerGrid.push({
+            ship: null,
+            attackTurn: 0
+        });
+        cellPossibilities[i] = 0;
+        computerVision[i] = "";
+    }
+    populateDatabase();
+    document.getElementById("selfShips").innerHTML = getShipsLeft(0);
+    document.getElementById("oppShips").innerHTML = getShipsLeft(1);
+    placeDestroyers("p");
+    placeTankers("p");
+    placeBC("B", "p");
+    placeBC("C", "p");
+    placeSub("p");
+    placeDestroyers("o");
+    placeTankers("o");
+    placeBC("B", "o");
+    placeBC("C", "o");
+    placeSub("o");
+    //getInstructions();
+}
+
+function getInstructions() {
+    //stage 1 = place ships
+    //stage 2 = make attack
+    if (stage == 2) {
+        if (turn == 1) {
+            document.getElementById("instructions").innerHTML = "Make three attacks on your opponent by clicking on three squares on your opponents grid where you would like to attack."
+        } else {
+            document.getElementById("instructions").innerHTML = "Evaluate your report and make three more attacks on your opponent. Keep in mind that ships can be placed diagonally. <br />Damaging a ship means that at least one of your attacks was within one unit of the enemy's ship.<br />If you hit a ship with an attack, the report will not indicate whether you also damaged a ship with that attack."
+        }
+    }
+    //stage 3 = receive report
+    if (stage == 3) {
+        document.getElementById("instructions").innerHTML = "Your report indicates how many ships you hit and how many you damaged. You can not hit and damage any ship with one attack."
+    }
+    //stage 4 = opponent makes attacks
+    //stage 5 = opponent gets report
+    //back to stage 2
 }
 
 function populateDatabase() {
@@ -414,18 +465,6 @@ function placeSub(prefix) {
 
 }
 
-//function getInstructions() {
-    //stage 1 = place ships
-    //stage 2 = make attack
-//    if (stage == 2) {
-//        document.getElementById("instructions").innerHTML = "Make three attacks on your opponent by clicking on three squares on your opponents grid where you would like to attack."
-//    }
-    //stage 3 = receive report
-    //stage 4 = opponent makes attacks
-    //stage 5 = opponent gets report
-    //back to stage 2
-//}
-
 var whichButton = function (e) {
     // Handle different event models
     var e = e || window.event;
@@ -485,6 +524,7 @@ function deselectAttack(id) {
         }
     }
 }
+
 function finalizeAttack() {
     if (playerAttack.length > 3) {
         alert("You may only select three attack locations per turn. You have currently selected " + playerAttack.length + " attacks, located at " + cellTranslator(playerAttack) + ". Right click to deselect attack locations.")
@@ -502,13 +542,17 @@ function finalizeAttack() {
             cell.innerHTML = turn.toString();
         }
         stage = 3;
+        getInstructions();
         generateReportForPlayer();
         stage = 4;
+        getInstructions();
         generateComputerAttack();
         stage = 5;
+        getInstructions();
         generateReportForComputer();
         turn++;
         stage = 2;
+        getInstructions();
         if (playerVictory == 0 && computerVictory == 0) {
             document.getElementById("attack").disabled = false;
         } else if (playerVictory == 1) {
@@ -822,11 +866,11 @@ function processDamage(shipName, report, potDam) {
             }
         }
     } else {*/
-        var counter;
+        var counter; //keeps track of how many damages an attack should have
         for (var j = 0; j < ship.length; j++) { //for every ship possibility
             counter = 0;
             for (var i = 0; i < potDam.length; i++) { //for each potential damage location
-                if (contains(ship[j], potDam[i])) { //if the ship possibility contains a potential damage location
+                if (contains(ship[j], potDam[i]) && playerGrid[potDam[i]].attackTurn == 0) { //if the ship possibility contains a potential damage location
                     counter++; //increase the counter
                 }
             }
@@ -872,10 +916,10 @@ function estimateDestroyer() {
     var attacksThatHit = []; //array of turns in which a destroyer was hit
     for (var i = 1; i < computerReport.length-1; i++) {
         if (computerReport[i].dest[0] > 0) {
-            attacksThatHit.push(i);
+            attacksThatHit.push(i); //populate attacksThatHit
         }
     }
-    for (var j = 0; j < shipDatabase.dest.length; j++) {
+    for (var j = 0; j < shipDatabase.dest.length; j++) { //if there isn't an attack from each attack turn in each ship left in the database, remove that ship
         for (var i = 0; i < attacksThatHit.length; i++) {
             var arr = computerAttacks[attacksThatHit[i]];
             if (!(contains(shipDatabase.dest[j], arr[0]) || contains(shipDatabase.dest[j], arr[1]) || contains(shipDatabase.dest[j], arr[2]))) {
@@ -887,9 +931,31 @@ function estimateDestroyer() {
             }
         }
     }
-    //for (var i = 0; i < attacksThatHit.length; i++) {
 
-    //}
+    //based on number of destroyers hit so far, figure out which attacks in the corresponding turns were next to each other
+    //make sure you check the computerVision array for cells that are known to be certain ships
+    for (var i = 0; i < attacksThatHit.length; i++) {
+        //handle two or three hits from the same attack turn
+        if (computerReport[attacksThatHit[i]].dest[0] == 3) {
+            var att = computerAttacks[attacksThatHit[i]];
+            att.sort(function(a, b){return a-b});
+            for (var j = 0; j < att.length; j++) {
+                computerVision[att[j]] = "D";
+                //assuming that by this point, the three hits in one turn have already eliminated other destroyer possibilities from the database
+                //predict where the others are
+            }
+            var difference = Math.abs(att[0] - att[1]);
+            var difference2 = Math.abs(att[2] - att[1]);
+            if (difference != difference2) {
+                console.log("ALERT: differences to not match! difference1: " + difference1 + ", difference2: " + difference2);
+            }
+            var destLeft = playerShips.destroyer;
+            if (destLeft == 2) { //if two destroyers are left
+                var newAtt = att[0] - difference;
+                //if (computerVision[newAtt])
+            }
+        }
+    }
     
 }
 
@@ -971,25 +1037,13 @@ function generateComputerAttack() {
             playerGrid[arr[i]].attackTurn = turn;
         }
         computerAttacks.push(arr);
-        //var attack1 = 0;
-        //while (attack1 == 0 || playerGrid[attack1].attackTurn != 0) {
-        //    attack1 = randomIntFromInterval(1, 64);
-        //}
+
         var id = "p".concat(attack1.toString());
-        //playerGrid[attack1].attackTurn = turn;
         document.getElementById(id).innerHTML = turn.toString();
-        //var attack2 = 0;
-        //while (attack2 == 0 || playerGrid[attack2].attackTurn != 0) {
-        //attack2 = randomIntFromInterval(1, 64);
-        //}
-        //playerGrid[attack2].attackTurn = turn;
+
         id = "p".concat(attack2.toString());
         document.getElementById(id).innerHTML = turn.toString();
-        //attack3 == 0;
-        //while (attack3 == 0 || playerGrid[attack3].attackTurn != 0) {
-        //    var attack3 = randomIntFromInterval(1, 64);
-        //}
-        //playerGrid[attack3].attackTurn = turn;
+
         id = "p".concat(attack3.toString());
         document.getElementById(id).innerHTML = turn.toString();
     }
@@ -1116,31 +1170,3 @@ function endgame() {
 }
 
 
-window.onload=function(){
-    for (var i = 0 ; i < 65; i++) {
-        playerGrid.push({
-            ship: null,
-            attackTurn: 0
-        });
-        computerGrid.push({
-            ship: null,
-            attackTurn: 0
-        });
-        cellPossibilities[i] = 0;
-        computerVision[i] = "";
-    }
-    populateDatabase();
-    document.getElementById("selfShips").innerHTML = getShipsLeft(0);
-    document.getElementById("oppShips").innerHTML = getShipsLeft(1);
-    placeDestroyers("p");
-    placeTankers("p");
-    placeBC("B", "p");
-    placeBC("C", "p");
-    placeSub("p");
-    placeDestroyers("o");
-    placeTankers("o");
-    placeBC("B", "o");
-    placeBC("C", "o");
-    placeSub("o");
-    //getInstructions();
-}
