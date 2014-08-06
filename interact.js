@@ -31,7 +31,6 @@ function contains(a, obj) {
     return false;
 }
 
-
 window.onload = function () {
     getInstructions();
     for (var i = 0 ; i < 65; i++) {
@@ -289,7 +288,9 @@ function placeDestroyers(prefix) {
         //document.getElementById(id).innerHTML = "D";
         if (prefix == "p") {
             id = prefix.concat(cells[i].toString());
-            document.getElementById(id).innerHTML = "D"; /*for other ships, check to make sure cells are available*/
+            var cell = document.getElementById(id);
+            cell.innerHTML = "D"; /*for other ships, check to make sure cells are available*/
+            cell.style.backgroundColor = "DCB2B2";
             playerGrid[cells[i]].ship = "D";
         } else {
             computerGrid[cells[i]].ship = "D";
@@ -366,7 +367,9 @@ function placeTankers(prefix) {
         if (prefix == "p") {
             playerGrid[cells[i]].ship = "T";
             id = prefix.concat(cells[i].toString());
-            document.getElementById(id).innerHTML = "T";
+            var cell = document.getElementById(id);
+            cell.innerHTML = "T";
+            cell.style.backgroundColor = "FFD9CA";
         } else {
             computerGrid[cells[i]].ship = "T";
             //console.log("Tanker location is: " + cells[i]);
@@ -443,7 +446,13 @@ function placeBC(ship, prefix) {
         if (prefix == "p") {
             playerGrid[cells[i]].ship = ship;
             id = prefix.concat(cells[i].toString());
-            document.getElementById(id).innerHTML = ship;
+            var cell = document.getElementById(id);
+            cell.innerHTML = ship;
+            if (ship == "B") {
+                cell.style.backgroundColor = "B2B2DC";
+            } else {
+                cell.style.backgroundColor = "navajoWhite";
+            }
         } else {
             computerGrid[cells[i]].ship = ship;
             //console.log(ship + " location: " + cells[i]);
@@ -459,7 +468,9 @@ function placeSub(prefix) {
     //document.getElementById(prefix.concat(location.toString())).innerHTML = "S";
     if (prefix == "p") {
         playerGrid[location].ship = "S";
-        document.getElementById(prefix.concat(location.toString())).innerHTML = "S";
+        var cell = document.getElementById(prefix.concat(location.toString()));
+        cell.innerHTML = "S";
+        cell.style.backgroundColor = "plum";
     } else {
         computerGrid[location].ship = "S";
         //console.log("Submarine location: " + location);
@@ -1300,66 +1311,88 @@ function generateComputerAttack() {
                 attack1 = futureComputerAttacks.pop();
             }
         }//if there are no future attacks from the last turns
-            for (key in shipDatabase) { //if there's only one ship location left
-                if (shipDatabase[key].length == 1) {
-                    //console.log("The last possible " + key + " is located at " + shipDatabase[key][0]);
-                    for (var j = 0; j < shipDatabase[key][0].length; j++) {
-                        computerVision[shipDatabase[key][0][j]] = key.toString();
-                    }
-                    //console.log("cell possibilities: " + cellPossibilities);
-                    if (attack1 == 0 || attack2 == 0 || attack3 == 0) {
-                        for (var i = 0; i < shipDatabase[key][0].length; i++) {
-                            if (playerGrid[shipDatabase[key][0][i]].attackTurn == 0) {
-                                if (attack1 == 0) {
-                                    attack1 = shipDatabase[key][0][i];
-                                } else if (attack2 == 0) {
-                                    attack2 = shipDatabase[key][0][i];
-                                } else if (attack3 == 0) {
-                                    attack3 == shipDatabase[key][0][i];
-                                } else {
-                                    break;
-                                }
+        for (key in shipDatabase) { //if there's only one ship location left
+            if (shipDatabase[key].length == 1) {
+                //console.log("The last possible " + key + " is located at " + shipDatabase[key][0]);
+                for (var j = 0; j < shipDatabase[key][0].length; j++) {
+                    computerVision[shipDatabase[key][0][j]] = key.toString();
+                }
+                //console.log("cell possibilities: " + cellPossibilities);
+                if (attack1 == 0 || attack2 == 0 || attack3 == 0) {
+                    for (var i = 0; i < shipDatabase[key][0].length; i++) {
+                        if (playerGrid[shipDatabase[key][0][i]].attackTurn == 0) {
+                            if (attack1 == 0) {
+                                attack1 = shipDatabase[key][0][i];
+                            } else if (attack2 == 0) {
+                                attack2 = shipDatabase[key][0][i];
+                            } else if (attack3 == 0) {
+                                attack3 == shipDatabase[key][0][i];
+                            } else {
+                                break;
                             }
                         }
-                    } else {
-                        for (var i = 0; i < shipDatabase[key][0].length; i++) {
-                            if (playerGrid[shipDatabase[key][0][i]].attackTurn == 0) {
-                                futureComputerAttacks.push(shipDatabase[key][0][i]);
-                            }
-                        }
-                        break;
                     }
+                } else {
+                    for (var i = 0; i < shipDatabase[key][0].length; i++) {
+                        if (playerGrid[shipDatabase[key][0][i]].attackTurn == 0) {
+                            futureComputerAttacks.push(shipDatabase[key][0][i]);
+                        }
+                    }
+                    break;
                 }
             }
-            if (attack1 == 0) {
-                attack1 = getMaxPossibility();
-            }
-            cellPossibilities[attack1] = -1;
-            if (attack2 == 0) {
-                attack2 = getMaxPossibility(attack1);
-            }
-            cellPossibilities[attack2] = -1;
-            if (attack3 == 0) {
-                attack3 = getMaxPossibility(attack1,attack2);
-            }
-            cellPossibilities[attack3] = -1;
         }
-        var arr = [attack1, attack2, attack3];
-        for (var i = 0; i < arr.length; i++) {
-            cellPossibilities[arr[i]] = -1;
-            playerGrid[arr[i]].attackTurn = turn;
+        if (attack1 == 0) {
+            attack1 = getMaxPossibility();
         }
-        computerAttacks.push(arr);
-
-        var id = "p".concat(attack1.toString());
-        document.getElementById(id).innerHTML = turn.toString();
-
-        id = "p".concat(attack2.toString());
-        document.getElementById(id).innerHTML = turn.toString();
-
-        id = "p".concat(attack3.toString());
-        document.getElementById(id).innerHTML = turn.toString();
+        cellPossibilities[attack1] = -1;
+        if (attack2 == 0) {
+            attack2 = getMaxPossibility(attack1);
+        }
+        cellPossibilities[attack2] = -1;
+        if (attack3 == 0) {
+            attack3 = getMaxPossibility(attack1,attack2);
+        }
+        cellPossibilities[attack3] = -1;
     }
+    var arr = [attack1, attack2, attack3];
+    for (var i = 0; i < arr.length; i++) {
+        cellPossibilities[arr[i]] = -1;
+        playerGrid[arr[i]].attackTurn = turn;
+    }
+    computerAttacks.push(arr);
+    if (turn > 1) {
+        var prevTurn = turn - 1;
+        var id = "p".concat(computerAttacks[prevTurn][0].toString());
+        var cell = document.getElementById(id);
+        cell.style.color = "6633FF";
+        cell.innerHTML = prevTurn.toString();
+        id = "p".concat(computerAttacks[prevTurn][1].toString());
+        var cell = document.getElementById(id);
+        cell.style.color = "6633FF";
+        cell.innerHTML = prevTurn.toString();
+        id = "p".concat(computerAttacks[prevTurn][2].toString());
+        var cell = document.getElementById(id);
+        cell.style.color = "6633FF";
+        cell.innerHTML = prevTurn.toString();
+    }
+
+
+    id = "p".concat(attack1.toString());
+    cell = document.getElementById(id);
+    cell.style.color = "red";
+    cell.innerHTML = turn.toString();
+    
+    id = "p".concat(attack2.toString());
+    cell = document.getElementById(id);
+    cell.style.color = "red";
+    cell.innerHTML = turn.toString();
+
+    id = "p".concat(attack3.toString());
+    cell = document.getElementById(id);
+    cell.style.color = "red";
+    cell.innerHTML = turn.toString();
+}
 
 function possibilitiesUpdate(cells, direction) {
     //direction = 1 means add cells; direction = 0 means remove cells
