@@ -1,5 +1,5 @@
-﻿body {
-    
+﻿title {
+    font-weight:bolder;
 }
 table {
     padding-left:2em;
@@ -10,7 +10,8 @@ table {
 }
 caption {
     text-align:center;
-    font-size:large;
+    font-size:x-large;
+    font-weight:bold
 }
 td, th {
   width: 2em;
@@ -52,4 +53,8 @@ p {
     clear:left;
     padding-left:1em;
     padding-right:2em;
+}
+col {
+    background-color:aliceblue;
+    width:97px;
 }

@@ -48,7 +48,7 @@ window.onload = function () {
     }
     populateDatabase();
     document.getElementById("selfShips").innerHTML = getShipsLeft(0);
-    document.getElementById("oppShips").innerHTML = getShipsLeft(1);
+    getShipsLeft(1);
     placeDestroyers("p");
     placeTankers("p");
     placeBC("B", "p");
@@ -670,8 +670,8 @@ function getReport(attack, potDam, shipName, player) {
                     document.getElementById("sub").style.backgroundColor = "lawngreen";
                 }
             }
-            document.getElementById("oppShips").innerHTML = getShipsLeft(1);
             document.getElementById("selfShips").innerHTML = getShipsLeft(0);
+            getShipsLeft(1);
             if (ships.destroyer == 0 && ships.tanker == 0 && ships.battleship == 0 && ships.cruiser == 0 && ships.submarine == 0) {
                 if (player == 0) {
                     playerVictory = 1;
@@ -1465,7 +1465,13 @@ function getShipsLeft(specify) {
         }
        
     } else {
-        ret = "Destroyers: " + computerShips.destroyer + ", Tankers: " + computerShips.tanker + ", Cruisers: " + computerShips.cruiser + ", Battleships: " + computerShips.battleship + ", Submarine: " + computerShips.submarine;
+        var text = "Destroyer (" + computerShips.destroyer + ")"
+        document.getElementById("oppShipsDest").innerHTML = "<b> Destroyer (" + computerShips.destroyer + ") <b>";
+        document.getElementById("oppShipsTank").innerHTML = "<b> Tanker (" + computerShips.tanker + ") <b>";
+        document.getElementById("oppShipsCruise").innerHTML = "<b> Cruiser (" + computerShips.cruiser + ") <b>";
+        document.getElementById("oppShipsBat").innerHTML = "<b> Battleship (" + computerShips.battleship + ") <b>";
+        document.getElementById("oppShipsSub").innerHTML = "<b> Submarine (" + computerShips.submarine + ") <b>";
+        //ret = "Destroyers: " + computerShips.destroyer + ", Tankers: " + computerShips.tanker + ", Cruisers: " + computerShips.cruiser + ", Battleships: " + computerShips.battleship + ", Submarine: " + computerShips.submarine;
     }
 
     return ret;

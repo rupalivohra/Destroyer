@@ -116,7 +116,7 @@
                 </tr>
             </table>
         </div>
-        <button type="button" id="attack" onclick="finalizeAttack();" style="clear:both; justify-content:center; text-align:center; padding-left:12em;padding-right:12em;box-sizing:initial">
+        <button type="button" id="attack" onclick="finalizeAttack();" style="margin-left:76px;clear:both; justify-content:center; text-align:center; padding-left:100px;padding-right:100px;box-sizing:initial">
             Finalize attack
         </button>
         <div id="player">
@@ -224,7 +224,7 @@
             </table>
         </div>
     </div>
-    <div style="float:left">
+    <div style="float:left;width:500px">
         <!--<section>-->
         <div>
             <h3>Instructions</h3>
@@ -234,30 +234,30 @@
             <h4>How many ships you have left:</h4>
             <p id="selfShips"></p>
         </div>
-        <div>
+        <!--<div>
             <h4 style="clear:left">How many ships you need to attack:</h4>
             <p id="oppShips"></p>
-        </div>
+        </div>-->
         <!--</section>-->
     </div>
     <div style="float:left">
-        <table style="padding-left:3em; border:2px solid black;" id="report">
+        <table style="padding-left:10px; border:2px solid black;" id="report">
             <caption>Report</caption>
             <colgroup>
-                <col id="turn" span="1" />
-                <col id="dest" span="1" style="background-color:aliceblue" />
-                <col id="tank" span="1" style="background-color:aliceblue" />
-                <col id="cruise" span="1" style="background-color:aliceblue" />
-                <col id="bat" span="1" style="background-color:aliceblue" />
-                <col id="sub" span="1" style="background-color:aliceblue" />
+                <col id="turn" span="1" style="width:10px; background-color:white"/>
+                <col id="dest" span="1" />
+                <col id="tank" span="1" />
+                <col id="cruise" span="1" />
+                <col id="bat" span="1" />
+                <col id="sub" span="1" />
             </colgroup>
             <tr>
                 <th></th>
-                <th style="background-color:white">Destroyer</th>
-                <th style="background-color:white">Tanker</th>
-                <th style="background-color:white">Cruiser</th>
-                <th style="background-color:white">Battleship</th>
-                <th style="background-color:white">Submarine</th>
+                <th style="background-color:white" id="oppShipsDest">Destroyer</th>
+                <th style="background-color:white" id="oppShipsTank">Tanker</th>
+                <th style="background-color:white" id="oppShipsCruise">Cruiser</th>
+                <th style="background-color:white" id="oppShipsBat">Battleship</th>
+                <th style="background-color:white" id="oppShipsSub">Submarine</th>
             </tr>
         </table>
     </div>
