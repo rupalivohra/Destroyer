@@ -17,7 +17,8 @@ td, th {
   width: 2em;
   height: 2em;
   text-align: center;
-  border: 1px solid
+  border-style:solid;
+  border-width:1px
 }
 th {
   border-color: white;
@@ -39,13 +40,16 @@ h3 {
     /*padding-right:2em;*/
     text-align:left;
     font-size:large;
+    margin-bottom:3px;
+    clear:both;
 }
 h4 {
     float:left;
     padding-left:27px;
     /*padding-right:2em;*/
-    text-align:left;
+    text-align:justify;
     font-size:medium;
+    margin-right:3px;
 }
 p {
     float:left;
@@ -56,4 +60,13 @@ p {
 col {
     background-color:aliceblue;
     width:97px;
+}
+summary {
+    float:left;
+    clear:left;
+}
+details {
+    margin-left:27px;
+    float:left;
+    clear:left;
 }
