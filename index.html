@@ -245,12 +245,11 @@
             </tr>
         </table>
     </div>
-    <div style="float:left;width:500px">
+    <div style="float:left;width:505px">
         <!--<section>-->
-        <div id="potInstructions">
+        <div id="newPlayerInfo">
             <h4>New to Destroyer?</h4>
-            <button id="new" onclick="tutorial();" style="margin-top:20px">Yes</button>
-            <button id="old" onclick="notNew();">No</button>
+            <p style="padding-left:0px;clear:none;">Check out the "What to Expect" section below.</p>
         </div>
         <div id="instructionsDiv">
             <h3>Instructions</h3>
@@ -262,45 +261,49 @@
                 <summary><b>General Information</b></summary><br />
                 The two 8x8 grids on the left side are where you can attack your opponent (the grid labeled "Computer") and see where your ships are (the grid labeled "Player").<br />
                 Your ships have been randomly placed on the grid for you. If you do not like this layout, you can refresh the page and there will be a new layout.<br />
-                You make attacks on the "Computer" grid by clicking the locations you want to attack.<br />
+                You make attacks on the "Computer" grid by clicking the locations you want to attack. For more information on attacks, check out the "Attacks" section below.<br />
                 After you have selected the three attacks you want to make for your turn, click the "Finalize attack" button.<br />
                 A report will be generated for you, and will appear in the table labeled "Report."<br />
-                If you forget what to do at a certain step, do not worry! There will be instructions where you are reading these, though they will be less comprehensive. <br />
+                The game ends when either you hit all of your opponent's ships or your opponent hits all of yours.<br />
             </details>
 
             <details id="ships">
-                <summary><b>Ships</b></summary>
+                <summary><b>Ships</b></summary><br />
                 There are five different ships - a Destroyer, a Tanker, a Cruiser, a Battleship, and a Submarine.<br />
                 Ships can be placed horizontally, vertically, or diagonally.<br />
-                The Destroyer consists of 5 units.<br />
-                The Tanker consists of 4 units.<br />
-                Both the Cruiser and the Battleship consist of 3 units each.<br />
-                The Submarine consists of 1 unit.<br />
+                The Destroyer consists of <b>5</b> units.<br />
+                The Tanker consists of <b>4</b> units.<br />
+                Both the Cruiser and the Battleship consist of <b>3</b> units each.<br />
+                The Submarine consists of <b>1</b> unit.<br />
                 The ships each have their own color on the "Player" grid.<br />
             </details>
             <details id="attacks">
                 <summary><b>Attacks</b></summary><br />
-                At each turn, you make three attacks.<br />
-                To make an attack, left-click on the square you want to attack. The attack will be marked as a red-colored number.<br />
-                If you change your mind about where you want to make your attack, right click on the red number you wish to change, and then left-click where you want to make your attack.<br />
+                At each turn, you make <b>three</b> attacks.<br />
+                <b>Left-click</b> on the square you want to attack. The attack will be marked as a red-colored number.<br />
+                If you change your mind about where you want to make your attack, <b>right-click</b> on the red number you wish to change, and then left-click where you want to make your attack.<br />
                 After selecting your three attacks for the turn, click "Finalize attack."<br />
-                You will notice that a new row has been added to the Report. Consider this report as you plan your next attack. <br />
+                You will notice that a new row has been added to the Report. Consider this report as you plan your next attack (see "Understanding the Report" for more details). <br />
                 After you make your attack, the computer will make its attack, and you will see its attack marked on the "Player" grid.<br />
             </details>
             <details>
                 <summary><b>Understanding the Report</b></summary><br />
                 Each column stores the report for a different ship. The number in parentheses indicates how many more units of that ship you need to attack.<br />
-                The Report will have a new row after each turn.<br />
-                If one or more of your three attacks hit a ship unit, the number of hits will be indicated in the appropriate column. For example, if you hit one Destroyer in your first turn, the first row's first column will read "1h."<br />
+                The report will have a new row after each turn.<br />
+                If one or more of your three attacks hit a ship unit, the number of hits will be indicated in the appropriate column.<br />
+                <b>For example</b>, if you hit one Destroyer in your first turn, the first row's first column will read "1h."<br />
                 Each attack can only hit, at most, one ship unit (a hit is if you attack a cell where the ship unit is located).<br />
-                In addition to hitting a ship, you can also damage a ship. This is done by attacking a cell next to one where a ship unit is located. If you attack C3 and there is a Submarine located at C2, the report for the Submarine will read "1d."<br />
+                Once you hit all of the units of a ship, the ship's column in the report will turn <b>green</b>.
+                In addition to hitting a ship, you can also damage a ship. This is done by attacking a cell next to one where a ship unit is located.
+                <b>For example</b>, if you attack C3 and there is a Submarine located at C2, the report for the Submarine will read "1d."<br />
                 <b>*note:*</b> A cell is "next to" another cell even if they are diagonal to one another.<br />
-                For example, an attack at C3 can damage any ship units located at B2, C2, D2, B3, D3, B4, C4, or D4.<br />
-                A single cannot hit and damage ships. For example, suppose the Submarine located at C2, and the Battle ship is located in B3, C3, and D3. Let's say you again attack C3, and this time the column for Battleship will say "1h," but the submarine will not say "1d."<br />
-                After making your three attacks for each turn, the report will come in simultaneously for all three attacks; you will not be told which attack caused damage or which attack hit a ship. That is up to you to reason out.<br />
-                Keep in mind that a single cell can be damaged by more than one other cell. For example, let's say the Submarine is still hanging out at C2. This time, you attack B1 and C3. Although both of these cells damage the Submarine, the report for the Submarine will still read "1d."<br />
+                <b>For example</b>, an attack at C3 can damage any ship units located at B2, C2, D2, B3, D3, B4, C4, or D4.<br />
+                A single attack cannot hit and damage ships.<br />
+                <b>For example</b>, suppose the Submarine is located at C2, and the Battleship is located in B3, C3, and D3. Let's say you again attack C3, and this time the column for Battleship will say "1h," but the submarine will not say "1d."<br />
+                After making your three attacks for each turn, the report will come in <b>simultaneously</b> for all three attacks; you will <b>not</b> be told which attack caused damage or which attack hit a ship. That is up to you to reason out.<br />
+                Keep in mind that a single cell can be damaged by more than one other cell.<br />
+                <b>For example</b>, let's say the Submarine is still hanging out at C2. This time, you attack B1 and C3. Although both of these cells damage the Submarine, the report for the Submarine will still read "1d."<br />
             </details>
-                <button id="okay" onclick="tutorialOver();" style="float:left;clear:left;margin-left:27px;">I got it.</button>
         </div>
         <!--<div>
             <h4>How many ships you have left:</h4>

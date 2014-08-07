@@ -42,6 +42,7 @@ h3 {
     font-size:large;
     margin-bottom:3px;
     clear:both;
+    margin-top:0px;
 }
 h4 {
     float:left;
@@ -50,6 +51,7 @@ h4 {
     text-align:justify;
     font-size:medium;
     margin-right:3px;
+    margin-top:16px;
 }
 p {
     float:left;

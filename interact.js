@@ -32,7 +32,7 @@ function contains(a, obj) {
 }
 
 window.onload = function () {
-    document.getElementById("tutorialDiv").style.display = "none";
+    //document.getElementById("tutorialDiv").style.display = "none";
     getInstructions();
     for (var i = 0 ; i < 65; i++) {
         playerGrid.push({
@@ -62,21 +62,11 @@ window.onload = function () {
     //getInstructions();
 }
 
-function notNew() {
-    document.getElementById("potInstructions").style.display = "none";
-    document.getElementById("tutorialDiv").style.display = "inline";
-    document.getElementById("okay").style.display = "none";
-}
-function tutorial() {
-    document.getElementById("potInstructions").style.display = "none";
-    document.getElementById("instructionsDiv").style.display = "none";
-    document.getElementById("tutorialDiv").style.display = "inline";
-}
-function tutorialOver() {
-    document.getElementById("expect").style.display = "none";
-    document.getElementById("instructionsDiv").style.display = "inline";
-    document.getElementById("okay").style.display = "none";
-}
+//function tutorialOver() {
+//    document.getElementById("expect").style.display = "none";
+//    document.getElementById("instructionsDiv").style.display = "inline";
+//    document.getElementById("okay").style.display = "none";
+//}
 
 function getInstructions() {
     //stage 1 = place ships
