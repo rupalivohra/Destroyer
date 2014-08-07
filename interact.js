@@ -510,20 +510,22 @@ var whichButton = function (e) {
 }
 
 function selectAttackLocation(id,event) {
-    /*if (document.getElementById(id).style.color == "red" || document.getElementById("inner").style.color=="red") {
+    if (document.getElementById(id).style.color == "red") {
         document.getElementById(id).innerHTML = "";
-        alert("red";)
-    } else*/
-    var split = id.split("o");
-    var cellNum = parseInt(split[1]);
-    //console.log("You clicked cell #" + cellNum);
-    var leftClick = whichButton(event);
-    if (leftClick == 0) {
-        var cell = document.getElementById(id);
-        if (!(cell.style.color == "black" || contains(playerAttack, cellNum))) {
-            cell.style.color = "red";
-            cell.innerHTML = turn.toString();
-            playerAttack.push(cellNum);
+        deselectAttack(id);
+    }
+    if (playerAttack.length < 3) {
+        var split = id.split("o");
+        var cellNum = parseInt(split[1]);
+        //console.log("You clicked cell #" + cellNum);
+        var leftClick = whichButton(event);
+        if (leftClick == 0) {
+            var cell = document.getElementById(id);
+            if (!(cell.style.color == "black" || contains(playerAttack, cellNum))) {
+                cell.style.color = "red";
+                cell.innerHTML = turn.toString();
+                playerAttack.push(cellNum);
+            }
         }
     }
 }
@@ -1503,12 +1505,11 @@ function getShipsLeft(specify) {
         }
        
     } else {
-        var text = "Destroyer (" + computerShips.destroyer + ")"
-        document.getElementById("oppShipsDest").innerHTML = "<b> Destroyer (" + computerShips.destroyer + ") <b>";
-        document.getElementById("oppShipsTank").innerHTML = "<b> Tanker (" + computerShips.tanker + ") <b>";
-        document.getElementById("oppShipsCruise").innerHTML = "<b> Cruiser (" + computerShips.cruiser + ") <b>";
-        document.getElementById("oppShipsBat").innerHTML = "<b> Battleship (" + computerShips.battleship + ") <b>";
-        document.getElementById("oppShipsSub").innerHTML = "<b> Submarine (" + computerShips.submarine + ") <b>";
+        document.getElementById("oppShipsDest").innerHTML = "<b> Destroyer [" + computerShips.destroyer + "] <b>";
+        document.getElementById("oppShipsTank").innerHTML = "<b> Tanker [" + computerShips.tanker + "] <b>";
+        document.getElementById("oppShipsCruise").innerHTML = "<b> Cruiser [" + computerShips.cruiser + "] <b>";
+        document.getElementById("oppShipsBat").innerHTML = "<b> Battleship [" + computerShips.battleship + "] <b>";
+        document.getElementById("oppShipsSub").innerHTML = "<b> Submarine [" + computerShips.submarine + "] <b>";
         //ret = "Destroyers: " + computerShips.destroyer + ", Tankers: " + computerShips.tanker + ", Cruisers: " + computerShips.cruiser + ", Battleships: " + computerShips.battleship + ", Submarine: " + computerShips.submarine;
     }
 
