@@ -5,7 +5,7 @@
     <title>Destroyer</title>
 </head>
 <body oncontextmenu="return false;">
-    <!--[if IE]>
+    <!--[if lt IE 8]>
     <h1>Please use Chrome</h1>
     <![endif]-->
     <div id="header">
@@ -224,25 +224,9 @@
             </table>
         </div>
     </div>
-    <div style="float:left;width:500px">
-        <!--<section>-->
-        <div>
-            <h3>Instructions</h3>
-            <p id="instructions">1) Place your ships.<br />2) Click on Computer's screen where you want to attack (3 attacks/turn). <br />Click "Finalize attack" to submit your attacks.<br />3) Evaluate your report and make new attacks.</p>
-        </div>
-        <div>
-            <h4>How many ships you have left:</h4>
-            <p id="selfShips"></p>
-        </div>
-        <!--<div>
-            <h4 style="clear:left">How many ships you need to attack:</h4>
-            <p id="oppShips"></p>
-        </div>-->
-        <!--</section>-->
-    </div>
     <div style="float:left">
-        <table style="padding-left:10px; border:2px solid black;" id="report">
-            <caption>Report</caption>
+        <table style="padding-left:10px;border:2px solid black;" id="report">
+            <caption style="margin-bottom:34px">Report</caption>
             <colgroup>
                 <col id="turn" span="1" style="width:10px; background-color:white"/>
                 <col id="dest" span="1" />
@@ -260,6 +244,22 @@
                 <th style="background-color:white" id="oppShipsSub">Submarine</th>
             </tr>
         </table>
+    </div>
+    <div style="float:left;width:500px">
+        <!--<section>-->
+        <div>
+            <h3>Instructions</h3>
+            <p id="instructions">1) Place your ships.<br />2) Click on Computer's screen where you want to attack (3 attacks/turn). <br />Click "Finalize attack" to submit your attacks.<br />3) Evaluate your report and make new attacks.</p>
+        </div>
+        <!--<div>
+            <h4>How many ships you have left:</h4>
+            <p id="selfShips"></p>
+        </div>-->
+        <!--<div>
+            <h4 style="clear:left">How many ships you need to attack:</h4>
+            <p id="oppShips"></p>
+        </div>-->
+        <!--</section>-->
     </div>
 
 

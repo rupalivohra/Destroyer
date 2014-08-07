@@ -46,7 +46,7 @@ window.onload = function () {
         computerVision[i] = "";
     }
     populateDatabase();
-    document.getElementById("selfShips").innerHTML = getShipsLeft(0);
+    //document.getElementById("selfShips").innerHTML = getShipsLeft(0);
     getShipsLeft(1);
     placeDestroyers("p");
     placeTankers("p");
@@ -513,9 +513,7 @@ function selectAttackLocation(id,event) {
     var leftClick = whichButton(event);
     if (leftClick == 0) {
         var cell = document.getElementById(id);
-        if (cell.style.color == "black" || contains(playerAttack, cellNum)) {
-            alert("You have already attacked this location.");
-        } else {
+        if (!(cell.style.color == "black" || contains(playerAttack, cellNum))) {
             cell.style.color = "red";
             cell.innerHTML = turn.toString();
             playerAttack.push(cellNum);
@@ -681,7 +679,7 @@ function getReport(attack, potDam, shipName, player) {
                     document.getElementById("sub").style.backgroundColor = "lawngreen";
                 }
             }
-            document.getElementById("selfShips").innerHTML = getShipsLeft(0);
+            //document.getElementById("selfShips").innerHTML = getShipsLeft(0);
             getShipsLeft(1);
             if (ships.destroyer == 0 && ships.tanker == 0 && ships.battleship == 0 && ships.cruiser == 0 && ships.submarine == 0) {
                 if (player == 0) {

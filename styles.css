@@ -35,24 +35,23 @@ h2 {
 }
 h3 {
     float:left;
-    padding-left:1em;
-    padding-right:2em;
+    padding-left:27px;
+    /*padding-right:2em;*/
     text-align:left;
     font-size:large;
 }
 h4 {
     float:left;
-    caption-side;
-    padding-left:1em;
-    padding-right:2em;
+    padding-left:27px;
+    /*padding-right:2em;*/
     text-align:left;
     font-size:medium;
 }
 p {
     float:left;
     clear:left;
-    padding-left:1em;
-    padding-right:2em;
+    padding-left:27px;
+    /*padding-right:2em;*/
 }
 col {
     background-color:aliceblue;
