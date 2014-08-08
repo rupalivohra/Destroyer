@@ -510,13 +510,14 @@ var whichButton = function (e) {
 }
 
 function selectAttackLocation(id,event) {
-    if (document.getElementById(id).style.color == "red") {
-        document.getElementById(id).innerHTML = "";
+    var split = id.split("o");
+    var cellNum = parseInt(split[1]);
+    if (contains(playerAttack, cellNum)) {
         deselectAttack(id);
+        return;
     }
+
     if (playerAttack.length < 3) {
-        var split = id.split("o");
-        var cellNum = parseInt(split[1]);
         //console.log("You clicked cell #" + cellNum);
         var leftClick = whichButton(event);
         if (leftClick == 0) {
@@ -528,6 +529,7 @@ function selectAttackLocation(id,event) {
             }
         }
     }
+
 }
 
 function deselectAttack(id) {
@@ -539,6 +541,7 @@ function deselectAttack(id) {
         var cell = document.getElementById(id);
         if (cell.style.color == "red") {
             cell.innerHTML = "";
+            cell.style.color == "black";
         //} else {
         //    return true;
         }
