@@ -1,4 +1,9 @@
-﻿var stage = 2; //used to keep track of game progress for instructional purposes.
+﻿/*
+Created by Rupali Vohra
+Aug. 9, 2014
+*/
+
+var stage = 2; //used to keep track of game progress for instructional purposes.
 var playerGrid = []; //array of cell objects. Each object contains two fields: ship, attackTurn
 //ship = "D","T", "B", "C", "S", or null
 //attackTurn = the turn in which the cell was attacked (can be 0+)
@@ -47,6 +52,7 @@ window.onload = function () {
         computerVision[i] = "";
     }
     populateDatabase();
+    rebootPossibilities();
     //document.getElementById("selfShips").innerHTML = getShipsLeft(0);
     getShipsLeft(1);
     placeDestroyers("p");
@@ -96,32 +102,32 @@ function populateDatabase() {
             if (i % 8 <= 4 && i % 8 > 0) {
                 cells = getCells(i, 3, 5, null);
                 cells.sort(function (a, b) { return a - b });
-                possibilitiesUpdate(cells, 1);
+                //possibilitiesUpdate(cells, 1);
                 shipDatabase.dest.push(cells);
                 cells = getCells(i, 4, 5, null);
                 cells.sort(function (a, b) { return a - b });
-                possibilitiesUpdate(cells, 1);
+                //possibilitiesUpdate(cells, 1);
                 shipDatabase.dest.push(cells);
                 cells = getCells(i, 5, 5, null);
                 cells.sort(function (a, b) { return a - b });
-                possibilitiesUpdate(cells, 1);
+                //possibilitiesUpdate(cells, 1);
                 shipDatabase.dest.push(cells);
             }
             if (i % 8 > 4 || i % 8 == 0) {
                 cells = getCells(i, 5, 5, null);
                 cells.sort(function (a, b) { return a - b });
-                possibilitiesUpdate(cells, 1);
+                //possibilitiesUpdate(cells, 1);
                 shipDatabase.dest.push(cells);
             }
         } else {
             if (i % 8 <= 4 && i % 8 > 0) {
                 cells = getCells(i, 2, 5, null);
                 cells.sort(function (a, b) { return a - b });
-                possibilitiesUpdate(cells, 1);
+                //possibilitiesUpdate(cells, 1);
                 shipDatabase.dest.push(cells);
                 cells = getCells(i, 3, 5, null);
                 cells.sort(function (a, b) { return a - b });
-                possibilitiesUpdate(cells, 1);
+                //possibilitiesUpdate(cells, 1);
                 shipDatabase.dest.push(cells);
             }
         }
@@ -131,35 +137,35 @@ function populateDatabase() {
             if (i % 8 <= 5 && i % 8 > 0) {
                 cells = getCells(i, 3, 4, null);
                 cells.sort(function (a, b) { return a - b });
-                possibilitiesUpdate(cells, 1);
+                //possibilitiesUpdate(cells, 1);
                 shipDatabase.tank.push(cells);
                 cells = getCells(i, 4, 4, null);
                 cells.sort(function (a, b) { return a - b });
-                possibilitiesUpdate(cells, 1);
+                //possibilitiesUpdate(cells, 1);
                 shipDatabase.tank.push(cells);
                 cells = getCells(i, 5, 4, null);
                 cells.sort(function (a, b) { return a - b });
-                possibilitiesUpdate(cells, 1);
+                //possibilitiesUpdate(cells, 1);
                 shipDatabase.tank.push(cells);
             }
             if (i % 8 >= 4 || i % 8 == 0) {
                 cells = getCells(i, 6, 4, null);
                 cells.sort(function (a, b) { return a - b });
                 shipDatabase.tank.push(cells);
-                possibilitiesUpdate(cells, 1);
+                //possibilitiesUpdate(cells, 1);
             }
             if (i % 8 >= 6 || i % 8 == 0) {
                 cells = getCells(i, 5, 4, null);
                 cells.sort(function (a, b) { return a - b });
                 shipDatabase.tank.push(cells)
-                possibilitiesUpdate(cells, 1);
+                //possibilitiesUpdate(cells, 1);
             }
         } else {
             if (i % 8 <= 5 && i % 8 > 0) {
                 cells = getCells(i, 3, 4, null);
                 cells.sort(function (a, b) { return a - b });
                 shipDatabase.tank.push(cells);
-                possibilitiesUpdate(cells, 1);
+                //possibilitiesUpdate(cells, 1);
             }
         }
         //handle all Cruiser and Battleship possibilities: There are 168 possibilities.
@@ -168,15 +174,15 @@ function populateDatabase() {
             cells.sort(function (a, b) { return a - b });
             shipDatabase.cruise.push(cells);
             shipDatabase.bat.push(cells);
-            possibilitiesUpdate(cells, 1);
-            possibilitiesUpdate(cells, 1);
+            //possibilitiesUpdate(cells, 1);
+            //possibilitiesUpdate(cells, 1);
             if (i <= 48) {
                 cells = getCells(i, 4, 3, null);
                 cells.sort(function (a, b) { return a - b });
                 shipDatabase.cruise.push(cells);
                 shipDatabase.bat.push(cells);
-                possibilitiesUpdate(cells, 1);
-                possibilitiesUpdate(cells, 1);
+                //possibilitiesUpdate(cells, 1);
+                //possibilitiesUpdate(cells, 1);
             }
         }
         if (i <= 48) {
@@ -184,24 +190,48 @@ function populateDatabase() {
             cells.sort(function (a, b) { return a - b });
             shipDatabase.cruise.push(cells);
             shipDatabase.bat.push(cells);
-            possibilitiesUpdate(cells, 1);
-            possibilitiesUpdate(cells, 1);
+            //possibilitiesUpdate(cells, 1);
+            //possibilitiesUpdate(cells, 1);
             if (i % 8 != 1 && i % 8 != 2) {
                 cells = getCells(i, 6, 3, null);
                 cells.sort(function (a, b) { return a - b });
                 shipDatabase.cruise.push(cells);
                 shipDatabase.bat.push(cells);
-                possibilitiesUpdate(cells, 1);
-                possibilitiesUpdate(cells, 1);
+                //possibilitiesUpdate(cells, 1);
+                //possibilitiesUpdate(cells, 1);
             }
         }
         //handle all Submarine possibilities: There are 64 possibilities.
         cells = [i];
         shipDatabase.sub.push(cells);
-        possibilitiesUpdate(cells, 1);
-        
+        //possibilitiesUpdate(cells, 1);   
     }
-    //console.log("database for destroyers: " + shipDatabase.dest);
+}
+
+function rebootPossibilities() {
+    /*If cellPossibilities contains any information, that information is wiped out (except for previously made attacks). Then, the function runs through shipDatabase and updates cellPossibilities. */
+    //console.log("cellPossibilities before reboot: " + cellPossibilities);
+    for (var i = 0; i < cellPossibilities.length; i++) {
+        if (cellPossibilities[i] >= 0) {
+            cellPossibilities[i] = 0;
+        }
+    }
+    for (var i = 0; i < shipDatabase.dest.length; i++) {
+        possibilitiesUpdate(shipDatabase.dest[i], 1);
+    }
+    for (var i = 0; i < shipDatabase.tank.length; i++) {
+        possibilitiesUpdate(shipDatabase.tank[i], 1);
+    }
+    for (var i = 0; i < shipDatabase.cruise.length; i++) {
+        possibilitiesUpdate(shipDatabase.cruise[i], 1);
+    }
+    for (var i = 0; i < shipDatabase.bat.length; i++) {
+        possibilitiesUpdate(shipDatabase.bat[i], 1);
+    }
+    for (var i = 0; i < shipDatabase.sub.length; i++) {
+        possibilitiesUpdate(shipDatabase.sub[i], 1);
+    }
+    //console.log("cellPossibilities after reboot: " + cellPossibilities);
 }
 
 function getCells(startCell, shipDirection, shipSize, prefix) {
@@ -580,7 +610,11 @@ function finalizeAttack() {
             document.getElementById("attack").disabled = false;
         } else if (playerVictory == 1) {
             document.getElementById("attack").disabled = true;
-            alert("You win!");
+            if (computerVictory == 1) {
+                alert("It's a tie!");
+            } else {
+                alert("You win!");
+            }
             endgame();
         } else {
             alert("You lose :(");
@@ -1455,29 +1489,6 @@ function secondDegreePossibilitiesUpdate(cellNum) {
 
             }
         }
-    }
-}
-
-function rebootPossibilities() {
-    for (var i = 0; i < cellPossibilities.length; i++) {
-        if (cellPossibilities[i] >= 0) {
-            cellPossibilities[i] = 0;
-        }
-    }
-    for (var i = 0; i < shipDatabase.dest.length; i++) {
-        possibilitiesUpdate(shipDatabase.dest[i], 1);
-    }
-    for (var i = 0; i < shipDatabase.tank.length; i++) {
-        possibilitiesUpdate(shipDatabase.tank[i], 1);
-    }
-    for (var i = 0; i < shipDatabase.cruise.length; i++) {
-        possibilitiesUpdate(shipDatabase.cruise[i], 1);
-    }
-    for (var i = 0; i < shipDatabase.bat.length; i++) {
-        possibilitiesUpdate(shipDatabase.bat[i], 1);
-    }
-    for (var i = 0; i < shipDatabase.sub.length; i++) {
-        possibilitiesUpdate(shipDatabase.sub[i], 1);
     }
 }
 
