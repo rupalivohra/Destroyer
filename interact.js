@@ -11,11 +11,11 @@ var computerGrid = [];
 var computerShips = { destroyer: 5, tanker: 4, cruiser: 3, battleship: 3, submarine: 1 };
 var playerShips = { destroyer: 5, tanker: 4, cruiser: 3, battleship: 3, submarine: 1 };
 var computerVision = []; //array of objects for the computer to keep track of its report.
-var computerReport = [{dest:[0,0], tank:[0,0], cruise:[0,0], bat:[0,0], sub:[0,0]}]; //index = turn, {dest: [int hit, int dam], tank: [int hit, int dam], ...}}, {...},
+var computerReport = [{ dest: [0, 0], tank: [0, 0], cruise: [0, 0], bat: [0, 0], sub: [0, 0] }]; //index = turn, {dest: [int hit, int dam], tank: [int hit, int dam], ...}}, {...},
 var turn = 1; //used for keeping track of reports
 var playerAttack = []; //should have 3 cell numbers at the end of player's turn; emptiied after attack is finalized for the turn.
 var shipDatabase = { dest: [], tank: [], cruise: [], bat: [], sub: [] }; //key = ship type; value = array of arrays of cell numbers in which the specific ship can lie; used by computer to plan attacks
-var computerAttacks = [[0,0,0]]; //each element of the array is an array of three elements. each element is a cell number where the computer attacked in the turn corresponding to computerAttack's index.
+var computerAttacks = [[0, 0, 0]]; //each element of the array is an array of three elements. each element is a cell number where the computer attacked in the turn corresponding to computerAttack's index.
 var cellPossibilities = []; // an array of 65 where each element contains an int that says how many ships could be located there
 var playerVictory = 0; //1 if player wins
 var computerVictory = 0; //1 if computer wins
@@ -39,7 +39,7 @@ function contains(a, obj) {
 window.onload = function () {
     //document.getElementById("tutorialDiv").style.display = "none";
     getInstructions();
-    for (var i = 0 ; i < 65; i++) {
+    for (var i = 0; i < 65; i++) {
         playerGrid.push({
             ship: null,
             attackTurn: 0
@@ -131,7 +131,7 @@ function populateDatabase() {
                 shipDatabase.dest.push(cells);
             }
         }
-        
+
         //handle all Tanker possibilities: There are 132 possibilities
         if (i <= 40) {
             if (i % 8 <= 5 && i % 8 > 0) {
@@ -337,30 +337,30 @@ function placeDestroyers(prefix) {
 }
 
 function getTankhead(prefix) {
-    var tankhead = randomIntFromInterval(1,64);
+    var tankhead = randomIntFromInterval(1, 64);
     while (checkEmpty(tankhead, prefix) === false) { /*make sure tankhead is an empty cell*/
-        tankhead = randomIntFromInterval(1,64);
+        tankhead = randomIntFromInterval(1, 64);
     }
     return tankhead;
 }
 
-function getTankdir(tankhead){ 
+function getTankdir(tankhead) {
     var tankdir;
     if ((tankhead % 8) == 1 || (tankhead % 8) == 2 || (tankhead % 8) == 3) { /*left third*/
         if (tankhead < 24) {/*top left*/
-            tankdir = randomIntFromInterval(3,5);
+            tankdir = randomIntFromInterval(3, 5);
         } else if (tankhead < 40) { /*middle left*/
-            tankdir = randomIntFromInterval(1,5);
+            tankdir = randomIntFromInterval(1, 5);
         } else { /*bottom left*/
-            tankdir = randomIntFromInterval(1,3);
+            tankdir = randomIntFromInterval(1, 3);
         }
     } else if ((tankhead % 8) == 4 || (tankhead % 8) == 5) { /*middle third*/
         if (tankhead < 24) { /*top middle*/
-            tankdir = randomIntFromInterval(3,7);
+            tankdir = randomIntFromInterval(3, 7);
         } else if (tankhead < 40) { /*middle*/
-            tankdir = randomIntFromInterval(1,8);
+            tankdir = randomIntFromInterval(1, 8);
         } else { /*bottom middle*/
-            tankdir = randomIntFromInterval(1,5);
+            tankdir = randomIntFromInterval(1, 5);
             if (tankdir == 4) {
                 tankdir = 7;
             }
@@ -370,14 +370,14 @@ function getTankdir(tankhead){
         }
     } else { /*right third*/
         if (tankhead <= 24) { /*top right*/
-            tankdir = randomIntFromInterval(5,7);
+            tankdir = randomIntFromInterval(5, 7);
         } else if (tankhead <= 40) { /*middle right*/
-            tankdir = randomIntFromInterval(4,8);
+            tankdir = randomIntFromInterval(4, 8);
             if (tankdir == 4) {
                 tankdir = 1;
             }
         } else { /*bottom right*/
-            tankdir = randomIntFromInterval(6,8);
+            tankdir = randomIntFromInterval(6, 8);
             if (tankdir == 6) {
                 tankdir = 1;
             }
@@ -498,9 +498,9 @@ function placeBC(ship, prefix) {
 }
 
 function placeSub(prefix) {
-    var location = randomIntFromInterval(1,64);
+    var location = randomIntFromInterval(1, 64);
     while (checkEmpty(location, prefix) === false) {
-        location = randomIntFromInterval(1,64);
+        location = randomIntFromInterval(1, 64);
     }
     //document.getElementById(prefix.concat(location.toString())).innerHTML = "S";
     if (prefix == "p") {
@@ -539,7 +539,7 @@ var whichButton = function (e) {
     }
 }
 
-function selectAttackLocation(id,event) {
+function selectAttackLocation(id, event) {
     var split = id.split("o");
     var cellNum = parseInt(split[1]);
     if (contains(playerAttack, cellNum)) {
@@ -572,8 +572,8 @@ function deselectAttack(id) {
         if (cell.style.color == "red") {
             cell.innerHTML = "";
             cell.style.color == "black";
-        //} else {
-        //    return true;
+            //} else {
+            //    return true;
         }
     }
 }
@@ -584,7 +584,7 @@ function finalizeAttack() {
     } else if (playerAttack.length < 3 && playerAttack.length > 0) {
         alert("You must select three attack locations per turn. You have currently selected " + playerAttack.length + " attack(s), located at " + cellTranslator(playerAttack) + ". Left click on the computer's grid to attack the location.");
     } else if (playerAttack.length == 0) {
-        alert("You must select three attack locations per turn. Left clicko n the computer's grid to attack the location.");
+        alert("You must select three attack locations per turn. Left-click on the computer's grid to attack the location.");
     } else {
         document.getElementById("attack").disabled = true;
         for (var i = 0; i < 3; i++) {
@@ -637,8 +637,8 @@ function damageZone(attack, player) {
     for (var i = 0; i < 3; i++) { //for each attack
         if (grid[attack[i]].ship == null) { //if the attack is not a hit location for any ship
             var pot1 = attack[i] - 9; //a potential damage location is in its surrounding one-block radius
-            var pot2 = attack[i] - 8; 
-            var pot3 = attack[i] - 7; 
+            var pot2 = attack[i] - 8;
+            var pot3 = attack[i] - 7;
             var pot4 = attack[i] - 1;
             var pot5 = attack[i] + 1;
             //var pot5 = { value: attack[i] + 1, attackPoint: [attack[i]] };
@@ -672,7 +672,7 @@ function damageZone(attack, player) {
                     ret.push(pots[j]);
                 } else {
                     if (!contains(ret, pots[j])) { // if ret does not already has the damage location 
-                            ret.push(pots[j]); //add the damage location
+                        ret.push(pots[j]); //add the damage location
                     }
                 }
             }
@@ -923,22 +923,22 @@ function processDamage(shipName, report, potDam) {
             }
         }
     } else {*/
-        var counter; //keeps track of how many damages an attack should have
-        for (var j = 0; j < ship.length; j++) { //for every ship possibility
-            counter = 0;
-            for (var i = 0; i < potDam.length; i++) { //for each potential damage location
-                if (contains(ship[j], potDam[i]) && playerGrid[potDam[i]].attackTurn == 0) { //if the ship possibility contains a potential damage location
-                    counter++; //increase the counter
-                }
-            }
-            if (counter > (report[1] + report[0])) { //if the number of damages in that ship location is greater than the number of damages from the report
-                //console.log("counter = " + counter + "; report[1] = " + report[1]);
-                //console.log(shipName + " possibility removed from " + ship[j].toString() + " by attack at " + computerAttacks[turn].toString());
-                possibilitiesUpdate(ship[j], 0); //remove that ship location.
-                ship.splice(j, 1);
-                --j;
+    var counter; //keeps track of how many damages an attack should have
+    for (var j = 0; j < ship.length; j++) { //for every ship possibility
+        counter = 0;
+        for (var i = 0; i < potDam.length; i++) { //for each potential damage location
+            if (contains(ship[j], potDam[i]) && playerGrid[potDam[i]].attackTurn == 0) { //if the ship possibility contains a potential damage location
+                counter++; //increase the counter
             }
         }
+        if (counter > (report[1] + report[0])) { //if the number of damages in that ship location is greater than the number of damages from the report
+            //console.log("counter = " + counter + "; report[1] = " + report[1]);
+            //console.log(shipName + " possibility removed from " + ship[j].toString() + " by attack at " + computerAttacks[turn].toString());
+            possibilitiesUpdate(ship[j], 0); //remove that ship location.
+            ship.splice(j, 1);
+            --j;
+        }
+    }
     //}
 
 }
@@ -987,7 +987,7 @@ function estimateDestroyer() {
     //figure out where destroyers are based on information so far
     //at this point, the database has been cleared out at every turn
     var attacksThatHit = []; //array of turns in which a destroyer was hit
-    for (var i = 1; i < computerReport.length-1; i++) {
+    for (var i = 1; i < computerReport.length - 1; i++) {
         if (computerReport[i].dest[0] > 0) {
             attacksThatHit.push(i); //populate attacksThatHit
         }
@@ -1009,9 +1009,9 @@ function estimateDestroyer() {
     //make sure you check the computerVision array for cells that are known to be certain ships
     for (var i = 0; i < attacksThatHit.length; i++) {
         //handle three hits from the same attack turn
-        if (computerReport[attacksThatHit[i]].dest[0] == 3){ 
+        if (computerReport[attacksThatHit[i]].dest[0] == 3) {
             var att = computerAttacks[attacksThatHit[i]]; //the three attacks that hit the ship
-            att.sort(function(a, b){return a-b});
+            att.sort(function (a, b) { return a - b });
             for (var j = 0; j < att.length; j++) {
                 computerVision[att[j]] = "D";
                 //assuming that by this point, the three hits in one turn have already eliminated other destroyer possibilities from the database
@@ -1037,7 +1037,7 @@ function estimateDestroyer() {
                     newAtt = att[0] + difference;
                     if (computerVision[newAtt] == "" && playerGrid[newAtt].attackTurn == 0) {
                         if (!contains(futureComputerAttacks, newAtt)) {
-                           // console.log("future attack at " + newAtt + " pushed");
+                            // console.log("future attack at " + newAtt + " pushed");
                             futureComputerAttacks.push(newAtt);
                         }
                     } else {
@@ -1071,7 +1071,7 @@ function estimateDestroyer() {
                 var attacksFromSingleHitTurn = computerAttacks[requiredAttackTurn];
                 for (var j = 0; j < attacksFromSingleHitTurn; j++) {
                     //figure out the orientation of ships hit
-                    if (checkNeighbors(attacksFromSingleHitTurn[j], att[0]) && (Math.abs(att[0]-attacksFromSingleHitTurn[j]) % difference == 0) && (computerVision[attacksFromSingleHitTurn[j]] == "" || computerVision[attacksFromSingleHitTurn[j]] == "D")) {
+                    if (checkNeighbors(attacksFromSingleHitTurn[j], att[0]) && (Math.abs(att[0] - attacksFromSingleHitTurn[j]) % difference == 0) && (computerVision[attacksFromSingleHitTurn[j]] == "" || computerVision[attacksFromSingleHitTurn[j]] == "D")) {
                         att.push(attacksFromSingleHitTurn[j]);
                         //console.log(attacksFromSingleHitTurn[j] + "from turn " + requiredAttackTurn + " is probably a destroyer; it is next to " + att[0]);
                     }
@@ -1098,7 +1098,7 @@ function estimateDestroyer() {
                             potAtt = att[3] + difference;
                             if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
                                 if (!contains(futureComputerAttacks, potAtt)) {
-                                   // console.log("future attack at " + potAtt + " pushed");
+                                    // console.log("future attack at " + potAtt + " pushed");
                                     futureComputerAttacks.push(potAtt);
                                 }
                             }
@@ -1118,7 +1118,7 @@ function estimateDestroyer() {
                     } else {//three, blank, one
                         var potAtt = att[2] + difference;
                         if (!contains(futureComputerAttacks, potAtt)) {
-                           // console.log("future attack at " + potAtt + " pushed");
+                            // console.log("future attack at " + potAtt + " pushed");
                             futureComputerAttacks.push(potAtt);
                         }
                     }
@@ -1160,114 +1160,114 @@ function estimateDestroyer() {
                 var difference = Math.abs(att[1] - att[0]);
                 var destLeft = playerShips.destroyer;
                 //if (destLeft == 3) { //these two were the only two hits on the ship so far
-                    if (checkNeighbors(att[0], att[1])) { //two attacked are next to each other
-                        var potAtt = att[0] - difference;
+                if (checkNeighbors(att[0], att[1])) { //two attacked are next to each other
+                    var potAtt = att[0] - difference;
+                    if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
+                        if (!contains(futureComputerAttacks, potAtt)) {
+                            //console.log("future attack at " + potAtt + " pushed");
+                            futureComputerAttacks.push(potAtt);
+                        }
+                    } else {
+                        potAtt = att[1] + difference;
+                        if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
+                            if (!contains(futureComputerAttacks, potAtt)) {
+                                //console.log("future attack at " + potAtt + " pushed");
+                                futureComputerAttacks.push(potAtt);
+                            }
+                        }
+                    }
+                } else {
+                    //figure out which two were attacked
+                    if (difference % 9 == 0) {
+                        difference = 9;
+                    } else if (difference % 8 == 0) {
+                        difference = 8;
+                    } else if (difference % 7 == 0) {
+                        difference = 7;
+                    } else if (difference <= 4) {
+                        difference = 1;
+                    } else {
+                        console.log("ALERT: the difference is messed up");
+                    }
+                    //one,blank,blank,blank,one
+                    if ((att[1] - att[0]) == (4 * difference)) {
+                        var potAtt = att[0] + difference;
                         if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
                             if (!contains(futureComputerAttacks, potAtt)) {
                                 //console.log("future attack at " + potAtt + " pushed");
                                 futureComputerAttacks.push(potAtt);
                             }
                         } else {
-                            potAtt = att[1] + difference;
-                            if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
-                                if (!contains(futureComputerAttacks, potAtt)) {
-                                    //console.log("future attack at " + potAtt + " pushed");
-                                    futureComputerAttacks.push(potAtt);
-                                }
-                            }
-                        }
-                    } else {
-                        //figure out which two were attacked
-                        if (difference % 9 == 0) {
-                            difference = 9;
-                        } else if (difference % 8 == 0) {
-                            difference = 8;
-                        } else if (difference % 7 == 0) {
-                            difference = 7;
-                        } else if (difference <= 4) {
-                            difference = 1;
-                        } else {
-                            console.log("ALERT: the difference is messed up");
-                        }
-                        //one,blank,blank,blank,one
-                        if ((att[1] - att[0]) == (4 * difference)) {
-                            var potAtt = att[0] + difference;
+                            potAtt += difference;
                             if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
                                 if (!contains(futureComputerAttacks, potAtt)) {
                                     //console.log("future attack at " + potAtt + " pushed");
                                     futureComputerAttacks.push(potAtt);
                                 }
                             } else {
-                                potAtt += difference;
+                                potAtt = att[1] - difference;
                                 if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
                                     if (!contains(futureComputerAttacks, potAtt)) {
                                         //console.log("future attack at " + potAtt + " pushed");
                                         futureComputerAttacks.push(potAtt);
                                     }
-                                } else {
-                                    potAtt = att[1] - difference;
-                                    if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
-                                        if (!contains(futureComputerAttacks, potAtt)) {
-                                            //console.log("future attack at " + potAtt + " pushed");
-                                            futureComputerAttacks.push(potAtt);
-                                        }
-                                    }
                                 }
                             }
                         }
-                            //blank,one,blank,blank,one
-                            //one,blank,blank,one,blank
-                        else if ((att[1]-att[0]) == (3*difference)) {
-                            //don't know if att[0]-difference or att[1] + difference
-                            potAtt = att[0] + difference;
-                            if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
-                                if (!contains(futureComputerAttacks, potAtt)) {
-                                    //console.log("future attack at " + potAtt + " pushed");
-                                    futureComputerAttacks.push(potAtt);
-                                }
-                            } else {
-                                potAtt += difference;
-                                if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
-                                    if (!contains(futureComputerAttacks, potAtt)) {
-                                        //console.log("future attack at " + potAtt + " pushed");
-                                        futureComputerAttacks.push(potAtt);
-                                    }
-                                } else {
-                                    potAtt = att[0] - difference;
-                                    if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
-                                        if (!contains(futureComputerAttacks, potAtt)) {
-                                            //console.log("future attack at " + potAtt + " pushed");
-                                            futureComputerAttacks.push(potAtt);
-                                        }
-                                    } else {
-                                        potAtt = att[1] + difference;
-                                        if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
-                                            if (!contains(futureComputerAttacks, potAtt)) {
-                                                //console.log("future attack at " + potAtt + " pushed");
-                                                futureComputerAttacks.push(potAtt);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        } else if ((att[1] - att[0]) == (2 * difference)) {
-                            //blank,blank,one,blank,one
-                            //one,blank,one,blank,blank
-                            //blank,one,blank,one,blank
-                            if (playerShips.destroyer < 3) {
-                                if (attacksThatHit.length >1) {
-                                    var prevAttThatHit = []; //array of cell numbers that were attacked in turns that hit the ship
-
-                                }
-
-                            }
-                            //consider attacks over turns
-                            if (playerShips.destroyer == 3) {
-
-                            }
-                        }
-
                     }
+                    //blank,one,blank,blank,one
+                    //one,blank,blank,one,blank
+                    else if ((att[1] - att[0]) == (3 * difference)) {
+                        //don't know if att[0]-difference or att[1] + difference
+                        potAtt = att[0] + difference;
+                        if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
+                            if (!contains(futureComputerAttacks, potAtt)) {
+                                //console.log("future attack at " + potAtt + " pushed");
+                                futureComputerAttacks.push(potAtt);
+                            }
+                        } else {
+                            potAtt += difference;
+                            if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
+                                if (!contains(futureComputerAttacks, potAtt)) {
+                                    //console.log("future attack at " + potAtt + " pushed");
+                                    futureComputerAttacks.push(potAtt);
+                                }
+                            } else {
+                                potAtt = att[0] - difference;
+                                if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
+                                    if (!contains(futureComputerAttacks, potAtt)) {
+                                        //console.log("future attack at " + potAtt + " pushed");
+                                        futureComputerAttacks.push(potAtt);
+                                    }
+                                } else {
+                                    potAtt = att[1] + difference;
+                                    if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
+                                        if (!contains(futureComputerAttacks, potAtt)) {
+                                            //console.log("future attack at " + potAtt + " pushed");
+                                            futureComputerAttacks.push(potAtt);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else if ((att[1] - att[0]) == (2 * difference)) {
+                        //blank,blank,one,blank,one
+                        //one,blank,one,blank,blank
+                        //blank,one,blank,one,blank
+                        if (playerShips.destroyer < 3) {
+                            if (attacksThatHit.length > 1) {
+                                var prevAttThatHit = []; //array of cell numbers that were attacked in turns that hit the ship
+
+                            }
+
+                        }
+                        //consider attacks over turns
+                        if (playerShips.destroyer == 3) {
+
+                        }
+                    }
+
+                }
                 //}
             }
 
@@ -1286,25 +1286,25 @@ function checkCellsInLine(cell1, cell2, distance) {
     //distance = 1,2,3, or 4 (cell numbers; less for smaller ships)
     //for destroyer, x _ _ _ x has distance 4, x _ _ x _ has distance 3, x _ x _ _ has distance 2, x x _ _ _ has distance 1
     if (arguments.length == 2) {
-        var difference = Math.abs(cell2-cell1);
-        if (difference % 9 == 0 || difference % 8 == 0 ||difference % 7 == 0 || difference <= 4) {
+        var difference = Math.abs(cell2 - cell1);
+        if (difference % 9 == 0 || difference % 8 == 0 || difference % 7 == 0 || difference <= 4) {
             return true;
         }
         return false;
     } else if (arguments.length == 3) {
-        var difference = Math.abs(cell2-cell1);
+        var difference = Math.abs(cell2 - cell1);
         if (difference % 9 == 0) {
-            if (cell1 + 9*distance == cell2) {
+            if (cell1 + 9 * distance == cell2) {
                 return true;
-            } 
+            }
             return false;
         } else if (difference % 8 == 0) {
-            if (cell1 + 8*distance == cell2) {
+            if (cell1 + 8 * distance == cell2) {
                 return true;
             }
             return false;
         } else if (difference % 7 == 0) {
-            if (cell1 + 7*distance == cell2) {
+            if (cell1 + 7 * distance == cell2) {
                 return true;
             }
             return false;
@@ -1395,7 +1395,7 @@ function generateComputerAttack() {
         }
         cellPossibilities[attack2] = -1;
         if (attack3 == 0) {
-            attack3 = getMaxPossibility(attack1,attack2);
+            attack3 = getMaxPossibility(attack1, attack2);
         }
         cellPossibilities[attack3] = -1;
     }
@@ -1426,7 +1426,7 @@ function generateComputerAttack() {
     cell = document.getElementById(id);
     cell.style.color = "red";
     cell.innerHTML = turn.toString();
-    
+
     id = "p".concat(attack2.toString());
     cell = document.getElementById(id);
     cell.style.color = "red";
@@ -1517,7 +1517,7 @@ function getShipsLeft(specify) {
             shipDatabase.sub = [];
             rebootPossibilities();
         }
-       
+
     } else {
         document.getElementById("oppShipsDest").innerHTML = "<b> Destroyer [" + computerShips.destroyer + "] <b>";
         document.getElementById("oppShipsTank").innerHTML = "<b> Tanker [" + computerShips.tanker + "] <b>";
