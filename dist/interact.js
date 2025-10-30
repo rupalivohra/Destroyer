@@ -1,10 +1,8 @@
-﻿/*
+/*
 Created by Rupali Vohra
 Aug. 9, 2014
 */
-
-import { Stage } from './stage.js'
-
+import { Stage } from './stage.js';
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
 var playerGrid = []; //array of cell objects. Each object contains two fields: ship, attackTurn
 //ship = "D","T", "B", "C", "S", or null
@@ -22,12 +20,9 @@ var cellPossibilities = []; // an array of 65 where each element contains an int
 var playerVictory = 0; //1 if player wins
 var computerVictory = 0; //1 if computer wins
 var futureComputerAttacks = []; //used if final locations of ships are known, but there aren't enough attacks for them
-
-
 function randomIntFromInterval(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
-
 function contains(a, obj) {
     //taken from stackoverflow. a is an array, obj is an object potentially in a.
     for (var i = 0; i < a.length; i++) {
@@ -37,7 +32,6 @@ function contains(a, obj) {
     }
     return false;
 }
-
 window.onload = function () {
     //document.getElementById("tutorialDiv").style.display = "none";
     getInstructions();
@@ -67,7 +61,6 @@ window.onload = function () {
     placeBC("B", "o");
     placeBC("C", "o");
     placeSub("o");
-
     // Attach left-click to selectAttackLocation and right-click (contextmenu) to deselectAttack.
     for (let i = 1; i <= 64; i++) {
         let oid = "o" + i;
@@ -84,43 +77,42 @@ window.onload = function () {
             });
         }
     }
-
     // Ensure the "attack" button triggers finalizeAttack from the module
     const attackBtn = document.getElementById("attack");
     if (attackBtn) {
         // remove any inline onclick that might exist and add a modern listener
-        try { attackBtn.onclick = null; } catch (e) { /* ignore */ }
+        try {
+            attackBtn.onclick = null;
+        }
+        catch (e) { /* ignore */ }
         attackBtn.addEventListener("click", finalizeAttack);
     }
-
     //getInstructions();
 };
-
 //function tutorialOver() {
 //    document.getElementById("expect").style.display = "none";
 //    document.getElementById("instructionsDiv").style.display = "inline";
 //    document.getElementById("okay").style.display = "none";
 //}
-
 function getInstructions() {
     //stage 1 = place ships
     //stage 2 = make attack
     if (stage == Stage.PlayerAttack) {
         if (turn == 1) {
-            document.getElementById("instructions").innerHTML = "Make three attacks on your opponent by clicking on three squares on your opponents grid where you would like to attack."
-        } else {
-            document.getElementById("instructions").innerHTML = "Evaluate your report and make three more attacks on your opponent. Keep in mind that ships can be placed diagonally. <br />Damaging a ship means that at least one of your attacks was within one unit of the enemy's ship.<br />If you hit a ship with an attack, the report will not indicate whether you also damaged a ship with that attack."
+            document.getElementById("instructions").innerHTML = "Make three attacks on your opponent by clicking on three squares on your opponents grid where you would like to attack.";
+        }
+        else {
+            document.getElementById("instructions").innerHTML = "Evaluate your report and make three more attacks on your opponent. Keep in mind that ships can be placed diagonally. <br />Damaging a ship means that at least one of your attacks was within one unit of the enemy's ship.<br />If you hit a ship with an attack, the report will not indicate whether you also damaged a ship with that attack.";
         }
     }
     //stage 3 = receive report
     if (stage == Stage.RecieveReport) {
-        document.getElementById("instructions").innerHTML = "Your report indicates how many ships you hit and how many you damaged. You can not hit and damage any ship with one attack."
+        document.getElementById("instructions").innerHTML = "Your report indicates how many ships you hit and how many you damaged. You can not hit and damage any ship with one attack.";
     }
     //stage 4 = opponent makes attacks
     //stage 5 = opponent gets report
     //back to stage 2
 }
-
 function populateDatabase() {
     /*key = ship type; value = array of arrays of cell numbers in which the specific ship can lie; used by computer to plan attacks*/
     var cells = [];
@@ -129,69 +121,70 @@ function populateDatabase() {
         if (i <= 32) {
             if (i % 8 <= 4 && i % 8 > 0) {
                 cells = getCells(i, 3, 5, null);
-                cells.sort(function (a, b) { return a - b });
+                cells.sort(function (a, b) { return a - b; });
                 //possibilitiesUpdate(cells, 1);
                 shipDatabase.dest.push(cells);
                 cells = getCells(i, 4, 5, null);
-                cells.sort(function (a, b) { return a - b });
+                cells.sort(function (a, b) { return a - b; });
                 //possibilitiesUpdate(cells, 1);
                 shipDatabase.dest.push(cells);
                 cells = getCells(i, 5, 5, null);
-                cells.sort(function (a, b) { return a - b });
+                cells.sort(function (a, b) { return a - b; });
                 //possibilitiesUpdate(cells, 1);
                 shipDatabase.dest.push(cells);
             }
             if (i % 8 > 4 || i % 8 == 0) {
                 cells = getCells(i, 5, 5, null);
-                cells.sort(function (a, b) { return a - b });
-                //possibilitiesUpdate(cells, 1);
-                shipDatabase.dest.push(cells);
-            }
-        } else {
-            if (i % 8 <= 4 && i % 8 > 0) {
-                cells = getCells(i, 2, 5, null);
-                cells.sort(function (a, b) { return a - b });
-                //possibilitiesUpdate(cells, 1);
-                shipDatabase.dest.push(cells);
-                cells = getCells(i, 3, 5, null);
-                cells.sort(function (a, b) { return a - b });
+                cells.sort(function (a, b) { return a - b; });
                 //possibilitiesUpdate(cells, 1);
                 shipDatabase.dest.push(cells);
             }
         }
-
+        else {
+            if (i % 8 <= 4 && i % 8 > 0) {
+                cells = getCells(i, 2, 5, null);
+                cells.sort(function (a, b) { return a - b; });
+                //possibilitiesUpdate(cells, 1);
+                shipDatabase.dest.push(cells);
+                cells = getCells(i, 3, 5, null);
+                cells.sort(function (a, b) { return a - b; });
+                //possibilitiesUpdate(cells, 1);
+                shipDatabase.dest.push(cells);
+            }
+        }
         //handle all Tanker possibilities: There are 132 possibilities
         if (i <= 40) {
             if (i % 8 <= 5 && i % 8 > 0) {
                 cells = getCells(i, 3, 4, null);
-                cells.sort(function (a, b) { return a - b });
+                cells.sort(function (a, b) { return a - b; });
                 //possibilitiesUpdate(cells, 1);
                 shipDatabase.tank.push(cells);
                 cells = getCells(i, 4, 4, null);
-                cells.sort(function (a, b) { return a - b });
+                cells.sort(function (a, b) { return a - b; });
                 //possibilitiesUpdate(cells, 1);
                 shipDatabase.tank.push(cells);
                 cells = getCells(i, 5, 4, null);
-                cells.sort(function (a, b) { return a - b });
+                cells.sort(function (a, b) { return a - b; });
                 //possibilitiesUpdate(cells, 1);
                 shipDatabase.tank.push(cells);
             }
             if (i % 8 >= 4 || i % 8 == 0) {
                 cells = getCells(i, 6, 4, null);
-                cells.sort(function (a, b) { return a - b });
+                cells.sort(function (a, b) { return a - b; });
                 shipDatabase.tank.push(cells);
                 //possibilitiesUpdate(cells, 1);
             }
             if (i % 8 >= 6 || i % 8 == 0) {
                 cells = getCells(i, 5, 4, null);
-                cells.sort(function (a, b) { return a - b });
-                shipDatabase.tank.push(cells)
+                cells.sort(function (a, b) { return a - b; });
+                shipDatabase.tank.push(cells);
                 //possibilitiesUpdate(cells, 1);
             }
-        } else {
+        }
+        else {
             if (i % 8 <= 5 && i % 8 > 0) {
                 cells = getCells(i, 3, 4, null);
-                cells.sort(function (a, b) { return a - b });
+                cells.sort(function (a, b) { return a - b; });
                 shipDatabase.tank.push(cells);
                 //possibilitiesUpdate(cells, 1);
             }
@@ -199,14 +192,14 @@ function populateDatabase() {
         //handle all Cruiser and Battleship possibilities: There are 168 possibilities.
         if (i % 8 >= 1 && i % 8 <= 6) {
             cells = getCells(i, 3, 3, null);
-            cells.sort(function (a, b) { return a - b });
+            cells.sort(function (a, b) { return a - b; });
             shipDatabase.cruise.push(cells);
             shipDatabase.bat.push(cells);
             //possibilitiesUpdate(cells, 1);
             //possibilitiesUpdate(cells, 1);
             if (i <= 48) {
                 cells = getCells(i, 4, 3, null);
-                cells.sort(function (a, b) { return a - b });
+                cells.sort(function (a, b) { return a - b; });
                 shipDatabase.cruise.push(cells);
                 shipDatabase.bat.push(cells);
                 //possibilitiesUpdate(cells, 1);
@@ -215,14 +208,14 @@ function populateDatabase() {
         }
         if (i <= 48) {
             cells = getCells(i, 5, 3, null);
-            cells.sort(function (a, b) { return a - b });
+            cells.sort(function (a, b) { return a - b; });
             shipDatabase.cruise.push(cells);
             shipDatabase.bat.push(cells);
             //possibilitiesUpdate(cells, 1);
             //possibilitiesUpdate(cells, 1);
             if (i % 8 != 1 && i % 8 != 2) {
                 cells = getCells(i, 6, 3, null);
-                cells.sort(function (a, b) { return a - b });
+                cells.sort(function (a, b) { return a - b; });
                 shipDatabase.cruise.push(cells);
                 shipDatabase.bat.push(cells);
                 //possibilitiesUpdate(cells, 1);
@@ -235,7 +228,6 @@ function populateDatabase() {
         //possibilitiesUpdate(cells, 1);   
     }
 }
-
 function rebootPossibilities() {
     /*If cellPossibilities contains any information, that information is wiped out (except for previously made attacks). Then, the function runs through shipDatabase and updates cellPossibilities. */
     //console.log("cellPossibilities before reboot: " + cellPossibilities);
@@ -261,7 +253,6 @@ function rebootPossibilities() {
     }
     //console.log("cellPossibilities after reboot: " + cellPossibilities);
 }
-
 function getCells(startCell, shipDirection, shipSize, prefix) {
     /* startCell is the head of the ship
     shipDirection is the direction relative to the head the ship should be placed
@@ -274,25 +265,32 @@ function getCells(startCell, shipDirection, shipSize, prefix) {
         if (shipDirection == 1) {
             location = location - 8;
             ret.push(location);
-        } else if (shipDirection == 2) {
+        }
+        else if (shipDirection == 2) {
             location = location - 7;
             ret.push(location);
-        } else if (shipDirection == 3) {
+        }
+        else if (shipDirection == 3) {
             location = location + 1;
             ret.push(location);
-        } else if (shipDirection == 4) {
+        }
+        else if (shipDirection == 4) {
             location = location + 9;
             ret.push(location);
-        } else if (shipDirection == 5) {
+        }
+        else if (shipDirection == 5) {
             location = location + 8;
             ret.push(location);
-        } else if (shipDirection == 6) {
+        }
+        else if (shipDirection == 6) {
             location = location + 7;
             ret.push(location);
-        } else if (shipDirection == 7) {
+        }
+        else if (shipDirection == 7) {
             location = location - 1;
             ret.push(location);
-        } else {
+        }
+        else {
             location = location - 9;
             ret.push(location);
         }
@@ -307,7 +305,6 @@ function getCells(startCell, shipDirection, shipSize, prefix) {
     //alert(ret)
     return ret;
 }
-
 function checkEmpty(cell, prefix) {
     /* cell is the number of the cell to check.
     returns True if the cell is empty. returns False if the cell is occupied.*/
@@ -315,29 +312,32 @@ function checkEmpty(cell, prefix) {
         if (playerGrid[cell].ship == null) {
             return true;
         }
-    } else {
+    }
+    else {
         if (computerGrid[cell].ship == null) {
             return true;
         }
     }
     return false;
 }
-
 function placeDestroyers(prefix) {
     var desthead; /*first D cell*/
     var destdir; /*direction of D cells relative to desthead*/
     desthead = randomIntFromInterval(1, 64);
     //alert("desthead=" + desthead);
     if ((desthead % 8) == 1 || (desthead % 8) == 2 || (desthead % 8) == 3 || (desthead % 8) == 4) { /*left half*/
-        if (desthead < 32) {/*top left quadrant*/
+        if (desthead < 32) { /*top left quadrant*/
             destdir = randomIntFromInterval(3, 5);
-        } else { /*bottom left quadrant*/
+        }
+        else { /*bottom left quadrant*/
             destdir = randomIntFromInterval(1, 3);
         }
-    } else { /*right half*/
+    }
+    else { /*right half*/
         if (desthead <= 32) { /*top right quadrant*/
             destdir = randomIntFromInterval(5, 7);
-        } else { /*bottom right quadrant*/
+        }
+        else { /*bottom right quadrant*/
             destdir = randomIntFromInterval(6, 8);
             if (destdir == 6) {
                 destdir = 1;
@@ -357,13 +357,13 @@ function placeDestroyers(prefix) {
             cell.innerHTML = "D"; /*for other ships, check to make sure cells are available*/
             cell.style.backgroundColor = "DCB2B2";
             playerGrid[cells[i]].ship = "D";
-        } else {
+        }
+        else {
             computerGrid[cells[i]].ship = "D";
             //console.log("Destroyer ship location is at: " + cells[i] + " ");
         }
     }
 }
-
 function getTankhead(prefix) {
     var tankhead = randomIntFromInterval(1, 64);
     while (checkEmpty(tankhead, prefix) === false) { /*make sure tankhead is an empty cell*/
@@ -371,23 +371,27 @@ function getTankhead(prefix) {
     }
     return tankhead;
 }
-
 function getTankdir(tankhead) {
     var tankdir;
     if ((tankhead % 8) == 1 || (tankhead % 8) == 2 || (tankhead % 8) == 3) { /*left third*/
-        if (tankhead < 24) {/*top left*/
+        if (tankhead < 24) { /*top left*/
             tankdir = randomIntFromInterval(3, 5);
-        } else if (tankhead < 40) { /*middle left*/
+        }
+        else if (tankhead < 40) { /*middle left*/
             tankdir = randomIntFromInterval(1, 5);
-        } else { /*bottom left*/
+        }
+        else { /*bottom left*/
             tankdir = randomIntFromInterval(1, 3);
         }
-    } else if ((tankhead % 8) == 4 || (tankhead % 8) == 5) { /*middle third*/
+    }
+    else if ((tankhead % 8) == 4 || (tankhead % 8) == 5) { /*middle third*/
         if (tankhead < 24) { /*top middle*/
             tankdir = randomIntFromInterval(3, 7);
-        } else if (tankhead < 40) { /*middle*/
+        }
+        else if (tankhead < 40) { /*middle*/
             tankdir = randomIntFromInterval(1, 8);
-        } else { /*bottom middle*/
+        }
+        else { /*bottom middle*/
             tankdir = randomIntFromInterval(1, 5);
             if (tankdir == 4) {
                 tankdir = 7;
@@ -396,15 +400,18 @@ function getTankdir(tankhead) {
                 tankdir = 8;
             }
         }
-    } else { /*right third*/
+    }
+    else { /*right third*/
         if (tankhead <= 24) { /*top right*/
             tankdir = randomIntFromInterval(5, 7);
-        } else if (tankhead <= 40) { /*middle right*/
+        }
+        else if (tankhead <= 40) { /*middle right*/
             tankdir = randomIntFromInterval(4, 8);
             if (tankdir == 4) {
                 tankdir = 1;
             }
-        } else { /*bottom right*/
+        }
+        else { /*bottom right*/
             tankdir = randomIntFromInterval(6, 8);
             if (tankdir == 6) {
                 tankdir = 1;
@@ -413,7 +420,6 @@ function getTankdir(tankhead) {
     }
     return tankdir;
 }
-
 function placeTankers(prefix) {
     var tankhead = getTankhead(prefix); /*first T cell*/
     var tankdir; /*direction of T cells relative to tankhead*/
@@ -435,13 +441,13 @@ function placeTankers(prefix) {
             var cell = document.getElementById(id);
             cell.innerHTML = "T";
             cell.style.backgroundColor = "FFD9CA";
-        } else {
+        }
+        else {
             computerGrid[cells[i]].ship = "T";
             //console.log("Tanker location is: " + cells[i]);
         }
     }
 }
-
 function getbchead(prefix) {
     var bchead = randomIntFromInterval(1, 64);
     while (checkEmpty(bchead, prefix) === false) { /*make sure bchead is an empty cell*/
@@ -449,23 +455,27 @@ function getbchead(prefix) {
     }
     return bchead;
 }
-
 function getbcdir(bchead) {
     var bcdir;
     if ((bchead % 8) == 1 || (bchead % 8) == 2) { /*left third*/
-        if (bchead < 16) {/*top left*/
+        if (bchead < 16) { /*top left*/
             bcdir = randomIntFromInterval(3, 5);
-        } else if (bchead < 48) { /*middle left*/
+        }
+        else if (bchead < 48) { /*middle left*/
             bcdir = randomIntFromInterval(1, 5);
-        } else { /*bottom left*/
+        }
+        else { /*bottom left*/
             bcdir = randomIntFromInterval(1, 3);
         }
-    } else if ((bchead % 8) == 3 || (bchead % 8) == 4 || (bchead % 8) == 5 || (bchead % 8) == 6) { /*middle third*/
+    }
+    else if ((bchead % 8) == 3 || (bchead % 8) == 4 || (bchead % 8) == 5 || (bchead % 8) == 6) { /*middle third*/
         if (bchead < 16) { /*top middle*/
             bcdir = randomIntFromInterval(3, 7);
-        } else if (bchead < 48) { /*middle*/
+        }
+        else if (bchead < 48) { /*middle*/
             bcdir = randomIntFromInterval(1, 8);
-        } else { /*bottom middle*/
+        }
+        else { /*bottom middle*/
             bcdir = randomIntFromInterval(1, 5);
             if (bcdir == 4) {
                 bcdir = 7;
@@ -474,15 +484,18 @@ function getbcdir(bchead) {
                 bcdir = 8;
             }
         }
-    } else { /*right third*/
+    }
+    else { /*right third*/
         if (bchead <= 16) { /*top right*/
             bcdir = randomIntFromInterval(5, 7);
-        } else if (bchead <= 48) { /*middle right*/
+        }
+        else if (bchead <= 48) { /*middle right*/
             bcdir = randomIntFromInterval(4, 8);
             if (bcdir == 4) {
                 bcdir = 1;
             }
-        } else { /*bottom right*/
+        }
+        else { /*bottom right*/
             bcdir = randomIntFromInterval(6, 8);
             if (bcdir == 6) {
                 bcdir = 1;
@@ -491,7 +504,6 @@ function getbcdir(bchead) {
     }
     return bcdir;
 }
-
 function placeBC(ship, prefix) {
     /* ship is a string that tells what the ship type should be - battleship or cruiser */
     var bchead = getbchead(prefix); /*first B/C cell*/
@@ -515,16 +527,17 @@ function placeBC(ship, prefix) {
             cell.innerHTML = ship;
             if (ship == "B") {
                 cell.style.backgroundColor = "B2B2DC";
-            } else {
+            }
+            else {
                 cell.style.backgroundColor = "navajoWhite";
             }
-        } else {
+        }
+        else {
             computerGrid[cells[i]].ship = ship;
             //console.log(ship + " location: " + cells[i]);
         }
     }
 }
-
 function placeSub(prefix) {
     var location = randomIntFromInterval(1, 64);
     while (checkEmpty(location, prefix) === false) {
@@ -536,18 +549,16 @@ function placeSub(prefix) {
         var cell = document.getElementById(prefix.concat(location.toString()));
         cell.innerHTML = "S";
         cell.style.backgroundColor = "plum";
-    } else {
+    }
+    else {
         computerGrid[location].ship = "S";
         //console.log("Submarine location: " + location);
     }
-
 }
-
 var whichButton = function (e) {
     // Handle different event models
     var e = e || window.event;
     var btnCode;
-
     if ('object' === typeof e) {
         btnCode = e.button;
         return btnCode;
@@ -565,8 +576,7 @@ var whichButton = function (e) {
                 alert('Unexpected code: ' + btnCode);
         }*/
     }
-}
-
+};
 function selectAttackLocation(id, event) {
     var split = id.split("o");
     var cellNum = parseInt(split[1]);
@@ -574,7 +584,6 @@ function selectAttackLocation(id, event) {
         deselectAttack(id);
         return;
     }
-
     if (playerAttack.length < 3) {
         //console.log("You clicked cell #" + cellNum);
         var leftClick = whichButton(event);
@@ -587,9 +596,7 @@ function selectAttackLocation(id, event) {
             }
         }
     }
-
 }
-
 function deselectAttack(id) {
     var split = id.split("o");
     var cellNum = parseInt(split[1]);
@@ -605,15 +612,17 @@ function deselectAttack(id) {
         }
     }
 }
-
 function finalizeAttack() {
     if (playerAttack.length > 3) {
-        alert("You may only select three attack locations per turn. You have currently selected " + playerAttack.length + " attacks, located at " + cellTranslator(playerAttack) + ". Right click to deselect attack locations.")
-    } else if (playerAttack.length < 3 && playerAttack.length > 0) {
+        alert("You may only select three attack locations per turn. You have currently selected " + playerAttack.length + " attacks, located at " + cellTranslator(playerAttack) + ". Right click to deselect attack locations.");
+    }
+    else if (playerAttack.length < 3 && playerAttack.length > 0) {
         alert("You must select three attack locations per turn. You have currently selected " + playerAttack.length + " attack(s), located at " + cellTranslator(playerAttack) + ". Left click on the computer's grid to attack the location.");
-    } else if (playerAttack.length == 0) {
+    }
+    else if (playerAttack.length == 0) {
         alert("You must select three attack locations per turn. Left-click on the computer's grid to attack the location.");
-    } else {
+    }
+    else {
         document.getElementById("attack").disabled = true;
         for (var i = 0; i < 3; i++) {
             computerGrid[playerAttack[i]].attackTurn = turn;
@@ -636,32 +645,34 @@ function finalizeAttack() {
         getInstructions();
         if (playerVictory == 0 && computerVictory == 0) {
             document.getElementById("attack").disabled = false;
-        } else if (playerVictory == 1) {
+        }
+        else if (playerVictory == 1) {
             document.getElementById("attack").disabled = true;
             if (computerVictory == 1) {
                 alert("It's a tie!");
-            } else {
+            }
+            else {
                 alert("You win!");
             }
             endgame();
-        } else {
+        }
+        else {
             alert("You lose :(");
             endgame();
         }
     }
 }
-
 function damageZone(attack, player) {
     //generates an array of cell numbers that the given attacks can damage. Can be adjusted by caller depending on attacks hitting ships.
     var grid;
     if (player == 0) { //for player
         grid = computerGrid;
-    } else {
+    }
+    else {
         grid = playerGrid; //for computer
     }
     var ret = [];
     var pots = [];
-
     for (var i = 0; i < 3; i++) { //for each attack
         if (grid[attack[i]].ship == null) { //if the attack is not a hit location for any ship
             var pot1 = attack[i] - 9; //a potential damage location is in its surrounding one-block radius
@@ -675,21 +686,29 @@ function damageZone(attack, player) {
             var pot8 = attack[i] + 9;
             if (attack[i] == 1) { //the damage area does not wrap around the grid
                 pots = [pot5, pot7, pot8];
-            } else if (attack[i] == 8) { //so the potentially damaged areas must be limited depending on where the attack is
+            }
+            else if (attack[i] == 8) { //so the potentially damaged areas must be limited depending on where the attack is
                 pots = [pot4, pot6, pot7];
-            } else if (attack[i] == 57) {
+            }
+            else if (attack[i] == 57) {
                 pots = [pot2, pot3, pot5];
-            } else if (attack[i] == 64) {
+            }
+            else if (attack[i] == 64) {
                 pots = [pot1, pot2, pot4];
-            } else if (attack[i] < 8) {
+            }
+            else if (attack[i] < 8) {
                 pots = [pot4, pot5, pot6, pot7, pot8];
-            } else if (attack[i] > 57) {
+            }
+            else if (attack[i] > 57) {
                 pots = [pot1, pot2, pot3, pot4, pot5];
-            } else if (attack[i] % 8 == 1) {
+            }
+            else if (attack[i] % 8 == 1) {
                 pots = [pot2, pot3, pot5, pot7, pot8];
-            } else if (attack[i] % 8 == 0) {
+            }
+            else if (attack[i] % 8 == 0) {
                 pots = [pot1, pot2, pot4, pot6, pot7];
-            } else {
+            }
+            else {
                 pots = [pot1, pot2, pot3, pot4, pot5, pot6, pot7, pot8];
             }
             for (var j = 0; j < pots.length; j++) {
@@ -698,7 +717,8 @@ function damageZone(attack, player) {
                 //console.log("max = " + max);
                 if (max == 0) {
                     ret.push(pots[j]);
-                } else {
+                }
+                else {
                     if (!contains(ret, pots[j])) { // if ret does not already has the damage location 
                         ret.push(pots[j]); //add the damage location
                     }
@@ -708,7 +728,6 @@ function damageZone(attack, player) {
     }
     return ret;
 }
-
 function getReport(attack, potDam, shipName, player) {
     //if player == 0, player. if player == 1, computer.
     var grid;
@@ -716,14 +735,13 @@ function getReport(attack, potDam, shipName, player) {
     if (player == 0) {
         grid = computerGrid;
         ships = computerShips;
-    } else {
+    }
+    else {
         grid = playerGrid;
         ships = playerShips;
     }
-
     var numHit = 0;
     var numDamage = 0;
-
     for (var r = 0; r < attack.length; r++) { //for each attack
         if (grid[attack[r]].ship == shipName) { //if attack is a hit for the ship in question
             ++numHit;
@@ -732,22 +750,26 @@ function getReport(attack, potDam, shipName, player) {
                 if (ships.destroyer == 0 && player == 0) {
                     document.getElementById("dest").style.backgroundColor = "lawngreen";
                 }
-            } else if (shipName == "T") {
+            }
+            else if (shipName == "T") {
                 --ships.tanker;
                 if (ships.tanker == 0 && player == 0) {
                     document.getElementById("tank").style.backgroundColor = "lawngreen";
                 }
-            } else if (shipName == "B") {
+            }
+            else if (shipName == "B") {
                 --ships.battleship;
                 if (ships.battleship == 0 && player == 0) {
                     document.getElementById("bat").style.backgroundColor = "lawngreen";
                 }
-            } else if (shipName == "C") {
+            }
+            else if (shipName == "C") {
                 --ships.cruiser;
                 if (ships.cruiser == 0 && player == 0) {
                     document.getElementById("cruise").style.backgroundColor = "lawngreen";
                 }
-            } else { //sub is hit
+            }
+            else { //sub is hit
                 --ships.submarine;
                 if (player == 0) {
                     document.getElementById("sub").style.backgroundColor = "lawngreen";
@@ -758,7 +780,8 @@ function getReport(attack, potDam, shipName, player) {
             if (ships.destroyer == 0 && ships.tanker == 0 && ships.battleship == 0 && ships.cruiser == 0 && ships.submarine == 0) {
                 if (player == 0) {
                     playerVictory = 1;
-                } else {
+                }
+                else {
                     computerVictory = 1;
                 }
                 break;
@@ -781,7 +804,6 @@ function getReport(attack, potDam, shipName, player) {
     if (player == 0) {
         var hitstring = "";
         var damstring = "";
-
         if (numHit > 0) {
             hitstring = "<font color = 'CC0066'>" + numHit + "h</font>";
         }
@@ -792,19 +814,16 @@ function getReport(attack, potDam, shipName, player) {
             damstring = "<font color = '6633FF'>" + numDamage + "d</font>";
         }
         var ret = hitstring.concat(damstring);
-    } else {
+    }
+    else {
         var ret = [numHit, numDamage];
     }
     return ret;
 }
-
 function generateReportForPlayer() {
     var table = document.getElementById("report");
-
     var rowCount = table.rows.length;
-
     var row = table.insertRow(rowCount);
-
     var cell1 = row.insertCell(0);
     var cell2 = row.insertCell(1);
     var cell3 = row.insertCell(2);
@@ -814,22 +833,18 @@ function generateReportForPlayer() {
     //var element1 = document.createElement("h1");
     //element1.innerHTML = turn;
     //cell1.appendChild(element1);
-
     cell1.innerHTML = "<b>" + turn + "</b>";
     cell1.style.border = 0;
-
     var attack1 = playerAttack.pop();
     var attack2 = playerAttack.pop();
     var attack3 = playerAttack.pop();
     var attack = [attack1, attack2, attack3]; //took it out of a list and into another to clear the recycled global variable (playerAttack)
     var potDam = damageZone(attack, 0);
-
     cell2.innerHTML = getReport(attack, potDam, "D", 0);
     cell3.innerHTML = getReport(attack, potDam, "T", 0);
     cell4.innerHTML = getReport(attack, potDam, "C", 0);
     cell5.innerHTML = getReport(attack, potDam, "B", 0);
     cell6.innerHTML = getReport(attack, potDam, "S", 0);
-
     if (cell2.innerHTML.length == 0 && cell3.innerHTML.length == 0 && cell4.innerHTML.length == 0 && cell5.innerHTML.length == 0 && cell6.innerHTML.length == 0) {
         cell2.innerHTML = "N O";
         cell4.innerHTML = "R E";
@@ -837,18 +852,15 @@ function generateReportForPlayer() {
         cell6.innerHTML = "R T";
     }
 }
-
 function checkAllHits() {
     if (computerReport[turn].dest[0] + computerReport[turn].tank[0] + computerReport[turn].cruise[0] + computerReport[turn].bat[0] + computerReport[turn].sub[0] == 3) {
         return true;
     }
     return false;
 }
-
 function generateReportForComputer() {
     var potDam = damageZone(computerAttacks[turn], 1);
     //console.log("before: " + potDam);
-
     var destroy = getReport(computerAttacks[turn], potDam, "D", 1);
     var tanker = getReport(computerAttacks[turn], potDam, "T", 1);
     var cruiser = getReport(computerAttacks[turn], potDam, "C", 1);
@@ -856,7 +868,6 @@ function generateReportForComputer() {
     var submarine = getReport(computerAttacks[turn], potDam, "S", 1);
     computerReport.push({ dest: destroy, tank: tanker, cruise: cruiser, bat: battle, sub: submarine });
     //console.log("after: " + potDam);
-
     //console.log("turn " + turn + "- destroyer report:" + destroy + "; tanker report: " + tanker + "; cruiser report: " + cruiser + "; battleship report: " + battle + "; submarine report: " + submarine);
     //update cellPossibilities & database
     //process hits
@@ -876,18 +887,21 @@ function generateReportForComputer() {
     processDamage("S", submarine, potDam);
     //console.log("cell Possibilities after damage processing: " + cellPossibilities);
 }
-
-function processHits(shipName, report) { //updates future attack choices by eliminating impossibilities based on hit locations
+function processHits(shipName, report) {
     var ship = null;
     if (shipName == "D") {
         ship = shipDatabase.dest;
-    } else if (shipName == "T") {
+    }
+    else if (shipName == "T") {
         ship = shipDatabase.tank;
-    } else if (shipName == "C") {
+    }
+    else if (shipName == "C") {
         ship = shipDatabase.cruise;
-    } else if (shipName == "B") {
+    }
+    else if (shipName == "B") {
         ship = shipDatabase.bat;
-    } else {
+    }
+    else {
         ship = shipDatabase.sub;
     }
     if (report[0] == 1) {
@@ -923,27 +937,29 @@ function processHits(shipName, report) { //updates future attack choices by elim
         }
     }
 }
-
 function processDamage(shipName, report, potDam) {
     var ship = null;
     if (shipName == "D") {
         ship = shipDatabase.dest;
-    } else if (shipName == "T") {
+    }
+    else if (shipName == "T") {
         ship = shipDatabase.tank;
-    } else if (shipName == "C") {
+    }
+    else if (shipName == "C") {
         ship = shipDatabase.cruise;
-    } else if (shipName == "B") {
+    }
+    else if (shipName == "B") {
         ship = shipDatabase.bat;
-    } else {
+    }
+    else {
         ship = shipDatabase.sub;
     }
-
     /*if (report[1] == 0 && !checkAllHits()) { //0 damaged
         for (var j = 0; j < ship.length; j++) {
             for (var i = 0; i < potDam.length; i++) {
                 if (contains(ship[j], potDam[i])) {
                     console.log(shipName + " possibility removed from " + ship[j].toString() + " by attack at " + computerAttacks[turn].toString());
-                    possibilitiesUpdate(ship[j], 0); 
+                    possibilitiesUpdate(ship[j], 0);
                     ship.splice(j, 1);
                     --j;
                     break;
@@ -968,9 +984,7 @@ function processDamage(shipName, report, potDam) {
         }
     }
     //}
-
 }
-
 function getMaxPossibility(avoidCell, avoidCell2) {
     var max = 0;
     var ret = 0; //returns index of greatest value
@@ -1001,7 +1015,6 @@ function getMaxPossibility(avoidCell, avoidCell2) {
     //}
     return ret;
 }
-
 function checkNeighbors(cell1, cell2) {
     /*returns true if cell1 and cell2 are next to each other horizontally, vertically, or diagonally*/
     var difference = Math.abs(cell2 - cell1);
@@ -1010,7 +1023,6 @@ function checkNeighbors(cell1, cell2) {
     }
     return false;
 }
-
 function estimateDestroyer() {
     //figure out where destroyers are based on information so far
     //at this point, the database has been cleared out at every turn
@@ -1032,14 +1044,13 @@ function estimateDestroyer() {
             }
         }
     }
-
     //based on number of destroyers hit so far, figure out which attacks in the corresponding turns were next to each other
     //make sure you check the computerVision array for cells that are known to be certain ships
     for (var i = 0; i < attacksThatHit.length; i++) {
         //handle three hits from the same attack turn
         if (computerReport[attacksThatHit[i]].dest[0] == 3) {
             var att = computerAttacks[attacksThatHit[i]]; //the three attacks that hit the ship
-            att.sort(function (a, b) { return a - b });
+            att.sort(function (a, b) { return a - b; });
             for (var j = 0; j < att.length; j++) {
                 computerVision[att[j]] = "D";
                 //assuming that by this point, the three hits in one turn have already eliminated other destroyer possibilities from the database
@@ -1048,9 +1059,11 @@ function estimateDestroyer() {
             var difference = 0;
             if (checkNeighbors(att[0], att[1])) {
                 difference = Math.abs(att[0] - att[1]);
-            } else if (checkNeighbors(att[1], att[2])) {
+            }
+            else if (checkNeighbors(att[1], att[2])) {
                 difference = Math.abs(att[2] - att[1]);
-            } else {
+            }
+            else {
                 difference = (Math.abs(att[2] - att[1])) / 2;
             }
             var destLeft = playerShips.destroyer;
@@ -1061,21 +1074,24 @@ function estimateDestroyer() {
                         //console.log("future attack at " + newAtt + " pushed");
                         futureComputerAttacks.push(newAtt);
                     }
-                } else {
+                }
+                else {
                     newAtt = att[0] + difference;
                     if (computerVision[newAtt] == "" && playerGrid[newAtt].attackTurn == 0) {
                         if (!contains(futureComputerAttacks, newAtt)) {
                             // console.log("future attack at " + newAtt + " pushed");
                             futureComputerAttacks.push(newAtt);
                         }
-                    } else {
+                    }
+                    else {
                         newAtt = att[1] + difference;
                         if (computerVision[newAtt] == "" && playerGrid[newAtt].attackTurn == 0) {
                             if (!contains(futureComputerAttacks, newAtt)) {
                                 //console.log("future attack at " + newAtt + " pushed");
                                 futureComputerAttacks.push(newAtt);
                             }
-                        } else {
+                        }
+                        else {
                             newAtt = att[2] + difference;
                             if (computerVision[newAtt] == "" && playerGrid[newAtt].attackTurn == 0) {
                                 if (!contains(futureComputerAttacks, newAtt)) {
@@ -1093,7 +1109,8 @@ function estimateDestroyer() {
                 var destHit = 0; //cell number of the fourth attack on the destroyer
                 if (i = 0) {
                     requiredAttackTurn = attacksThatHit[i + 1];
-                } else {
+                }
+                else {
                     requiredAttackTurn = attacksThatHit[i - 1];
                 }
                 var attacksFromSingleHitTurn = computerAttacks[requiredAttackTurn];
@@ -1104,7 +1121,7 @@ function estimateDestroyer() {
                         //console.log(attacksFromSingleHitTurn[j] + "from turn " + requiredAttackTurn + " is probably a destroyer; it is next to " + att[0]);
                     }
                     if (checkNeighbors(attacksFromSingleHitTurn[j], att[1]) && (Math.abs(att[1] - attacksFromSingleHitTurn[j]) % difference == 0) && (computerVision[attacksFromSingleHitTurn[j]] == "" || computerVision[attacksFromSingleHitTurn[j]] == "D")) {
-                        att.push(attacksFromSingleHitTurn[j])
+                        att.push(attacksFromSingleHitTurn[j]);
                         //console.log(attacksFromSingleHitTurn[j] + "from turn " + requiredAttackTurn + " is probably a destroyer; it is next to " + att[1]);
                     }
                     if (checkNeighbors(attacksFromSingleHitTurn[j], att[2]) && (Math.abs(att[2] - attacksFromSingleHitTurn[j]) % difference == 0) && (computerVision[attacksFromSingleHitTurn[j]] == "" || computerVision[attacksFromSingleHitTurn[j]] == "D")) {
@@ -1112,7 +1129,7 @@ function estimateDestroyer() {
                         //console.log(attacksFromSingleHitTurn[j] + "from turn " + requiredAttackTurn + " is probably a destroyer; it is next to " + att[2]);
                     }
                 }
-                att.sort(function (a, b) { return a - b });
+                att.sort(function (a, b) { return a - b; });
                 if (att.length == 4) { //if there are more than 4, then there was some trouble figuring out the hits in the previous for loop
                     //four in a row
                     if (checkNeighbors(att[0], att[1]) && checkNeighbors(att[1], att[2]) && checkNeighbors(att[2], att[3])) {
@@ -1122,7 +1139,8 @@ function estimateDestroyer() {
                                 //console.log("future attack at " + potAtt + " pushed");
                                 futureComputerAttacks.push(potAtt);
                             }
-                        } else {
+                        }
+                        else {
                             potAtt = att[3] + difference;
                             if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
                                 if (!contains(futureComputerAttacks, potAtt)) {
@@ -1131,19 +1149,22 @@ function estimateDestroyer() {
                                 }
                             }
                         }
-                    } else if ((att[1] - att[0]) == (2 * difference) && checkNeighbors(att[1], att[2]) && checkNeighbors(att[2], att[3])) { //one, blank, three
+                    }
+                    else if ((att[1] - att[0]) == (2 * difference) && checkNeighbors(att[1], att[2]) && checkNeighbors(att[2], att[3])) { //one, blank, three
                         var potAtt = att[0] + difference;
                         if (!contains(futureComputerAttacks, potAtt)) {
                             //console.log("future attack at " + potAtt + " pushed");
                             futureComputerAttacks.push(potAtt);
                         }
-                    } else if (checkNeighbors(att[0], att[1]) && (att[2] - att[1]) == (2 * difference) && checkNeighbors(att[2], att[3])) { //two, blank, two
+                    }
+                    else if (checkNeighbors(att[0], att[1]) && (att[2] - att[1]) == (2 * difference) && checkNeighbors(att[2], att[3])) { //two, blank, two
                         var potAtt = att[1] + difference;
                         if (!contains(futureComputerAttacks, potAtt)) {
                             //console.log("future attack at " + potAtt + " pushed");
                             futureComputerAttacks.push(potAtt);
                         }
-                    } else {//three, blank, one
+                    }
+                    else { //three, blank, one
                         var potAtt = att[2] + difference;
                         if (!contains(futureComputerAttacks, potAtt)) {
                             // console.log("future attack at " + potAtt + " pushed");
@@ -1152,9 +1173,10 @@ function estimateDestroyer() {
                     }
                 }
             }
-        } else if (computerReport[attacksThatHit[i]].dest[0] == 2) { //handle two hits from the same attack turn
+        }
+        else if (computerReport[attacksThatHit[i]].dest[0] == 2) { //handle two hits from the same attack turn
             var att = computerAttacks[attacksThatHit[i]]; //the three attacks; 2 of these hit the ship
-            att.sort(function (a, b) { return a - b });
+            att.sort(function (a, b) { return a - b; });
             for (var j = 0; j < att.length; j++) {
                 if (computerVision[att[j]] != "" || computerVision[att[j]] != "D") { //if one of the attacks is known to be another ship, remove it from this possibility
                     att.splice(j, 1);
@@ -1195,7 +1217,8 @@ function estimateDestroyer() {
                             //console.log("future attack at " + potAtt + " pushed");
                             futureComputerAttacks.push(potAtt);
                         }
-                    } else {
+                    }
+                    else {
                         potAtt = att[1] + difference;
                         if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
                             if (!contains(futureComputerAttacks, potAtt)) {
@@ -1204,17 +1227,22 @@ function estimateDestroyer() {
                             }
                         }
                     }
-                } else {
+                }
+                else {
                     //figure out which two were attacked
                     if (difference % 9 == 0) {
                         difference = 9;
-                    } else if (difference % 8 == 0) {
+                    }
+                    else if (difference % 8 == 0) {
                         difference = 8;
-                    } else if (difference % 7 == 0) {
+                    }
+                    else if (difference % 7 == 0) {
                         difference = 7;
-                    } else if (difference <= 4) {
+                    }
+                    else if (difference <= 4) {
                         difference = 1;
-                    } else {
+                    }
+                    else {
                         console.log("ALERT: the difference is messed up");
                     }
                     //one,blank,blank,blank,one
@@ -1225,14 +1253,16 @@ function estimateDestroyer() {
                                 //console.log("future attack at " + potAtt + " pushed");
                                 futureComputerAttacks.push(potAtt);
                             }
-                        } else {
+                        }
+                        else {
                             potAtt += difference;
                             if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
                                 if (!contains(futureComputerAttacks, potAtt)) {
                                     //console.log("future attack at " + potAtt + " pushed");
                                     futureComputerAttacks.push(potAtt);
                                 }
-                            } else {
+                            }
+                            else {
                                 potAtt = att[1] - difference;
                                 if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
                                     if (!contains(futureComputerAttacks, potAtt)) {
@@ -1253,21 +1283,24 @@ function estimateDestroyer() {
                                 //console.log("future attack at " + potAtt + " pushed");
                                 futureComputerAttacks.push(potAtt);
                             }
-                        } else {
+                        }
+                        else {
                             potAtt += difference;
                             if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
                                 if (!contains(futureComputerAttacks, potAtt)) {
                                     //console.log("future attack at " + potAtt + " pushed");
                                     futureComputerAttacks.push(potAtt);
                                 }
-                            } else {
+                            }
+                            else {
                                 potAtt = att[0] - difference;
                                 if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
                                     if (!contains(futureComputerAttacks, potAtt)) {
                                         //console.log("future attack at " + potAtt + " pushed");
                                         futureComputerAttacks.push(potAtt);
                                     }
-                                } else {
+                                }
+                                else {
                                     potAtt = att[1] + difference;
                                     if ((computerVision[potAtt] == "" || computerVision[potAtt] == "D") && playerGrid[potAtt].attackTurn == 0) {
                                         if (!contains(futureComputerAttacks, potAtt)) {
@@ -1278,33 +1311,28 @@ function estimateDestroyer() {
                                 }
                             }
                         }
-                    } else if ((att[1] - att[0]) == (2 * difference)) {
+                    }
+                    else if ((att[1] - att[0]) == (2 * difference)) {
                         //blank,blank,one,blank,one
                         //one,blank,one,blank,blank
                         //blank,one,blank,one,blank
                         if (playerShips.destroyer < 3) {
                             if (attacksThatHit.length > 1) {
                                 var prevAttThatHit = []; //array of cell numbers that were attacked in turns that hit the ship
-
                             }
-
                         }
                         //consider attacks over turns
                         if (playerShips.destroyer == 3) {
-
                         }
                     }
-
                 }
                 //}
             }
-
-        } else {
-
+        }
+        else {
         }
     }
 }
-
 function checkCellsInLine(cell1, cell2, distance) {
     if (cell1 > cell2) { //make sure cell1 is the smaller one
         var temp = cell1;
@@ -1319,41 +1347,44 @@ function checkCellsInLine(cell1, cell2, distance) {
             return true;
         }
         return false;
-    } else if (arguments.length == 3) {
+    }
+    else if (arguments.length == 3) {
         var difference = Math.abs(cell2 - cell1);
         if (difference % 9 == 0) {
             if (cell1 + 9 * distance == cell2) {
                 return true;
             }
             return false;
-        } else if (difference % 8 == 0) {
+        }
+        else if (difference % 8 == 0) {
             if (cell1 + 8 * distance == cell2) {
                 return true;
             }
             return false;
-        } else if (difference % 7 == 0) {
+        }
+        else if (difference % 7 == 0) {
             if (cell1 + 7 * distance == cell2) {
                 return true;
             }
             return false;
-        } else if (difference <= 4) {
+        }
+        else if (difference <= 4) {
             if (cell1 + distance == cell2) {
                 return true;
             }
             return false;
         }
-    } else {
+    }
+    else {
         return false;
     }
 }
-
 function verifyInLine(cell1, potentialAttackCell, difference) {
     if (Math.abs(potentialAttackCell - cell1) % difference == 0) {
         return true;
     }
     return false;
 }
-
 function generateComputerAttack() {
     var attack1 = 0;
     var attack2 = 0;
@@ -1364,25 +1395,29 @@ function generateComputerAttack() {
             attack1 = randomIntFromInterval(10, 15);
             attack2 = randomIntFromInterval(26, 31);
             attack3 = randomIntFromInterval(42, 47);
-        } else {
+        }
+        else {
             attack1 = randomIntFromInterval(18, 23);
             attack2 = randomIntFromInterval(34, 39);
             attack3 = randomIntFromInterval(50, 55);
         }
-    } else {
+    }
+    else {
         estimateDestroyer();
         if (!(futureComputerAttacks.length == 0)) { //if there are future attacks from the last turns
             if (futureComputerAttacks.length >= 3) {
                 attack1 = futureComputerAttacks.pop();
                 attack2 = futureComputerAttacks.pop();
                 attack3 = futureComputerAttacks.pop();
-            } else if (futureComputerAttacks.length == 2) {
+            }
+            else if (futureComputerAttacks.length == 2) {
                 attack1 = futureComputerAttacks.pop();
                 attack2 = futureComputerAttacks.pop();
-            } else {
+            }
+            else {
                 attack1 = futureComputerAttacks.pop();
             }
-        }//if there are no future attacks from the last turns
+        } //if there are no future attacks from the last turns
         for (key in shipDatabase) { //if there's only one ship location left
             if (shipDatabase[key].length == 1) {
                 //console.log("The last possible " + key + " is located at " + shipDatabase[key][0]);
@@ -1395,16 +1430,20 @@ function generateComputerAttack() {
                         if (playerGrid[shipDatabase[key][0][i]].attackTurn == 0) {
                             if (attack1 == 0) {
                                 attack1 = shipDatabase[key][0][i];
-                            } else if (attack2 == 0) {
+                            }
+                            else if (attack2 == 0) {
                                 attack2 = shipDatabase[key][0][i];
-                            } else if (attack3 == 0) {
+                            }
+                            else if (attack3 == 0) {
                                 attack3 == shipDatabase[key][0][i];
-                            } else {
+                            }
+                            else {
                                 break;
                             }
                         }
                     }
-                } else {
+                }
+                else {
                     for (var i = 0; i < shipDatabase[key][0].length; i++) {
                         if (playerGrid[shipDatabase[key][0][i]].attackTurn == 0) {
                             futureComputerAttacks.push(shipDatabase[key][0][i]);
@@ -1448,24 +1487,19 @@ function generateComputerAttack() {
         cell.style.color = "6633FF";
         cell.innerHTML = prevTurn.toString();
     }
-
-
     id = "p".concat(attack1.toString());
     cell = document.getElementById(id);
     cell.style.color = "red";
     cell.innerHTML = turn.toString();
-
     id = "p".concat(attack2.toString());
     cell = document.getElementById(id);
     cell.style.color = "red";
     cell.innerHTML = turn.toString();
-
     id = "p".concat(attack3.toString());
     cell = document.getElementById(id);
     cell.style.color = "red";
     cell.innerHTML = turn.toString();
 }
-
 function possibilitiesUpdate(cells, direction) {
     //direction = 1 means add cells; direction = 0 means remove cells
     if (direction == 1) {
@@ -1474,7 +1508,8 @@ function possibilitiesUpdate(cells, direction) {
                 ++cellPossibilities[cells[j]];
             }
         }
-    } else {
+    }
+    else {
         for (var j = 0; j < cells.length; j++) {
             if (cellPossibilities[cells[j]] > 0) {
                 --cellPossibilities[cells[j]];
@@ -1486,20 +1521,23 @@ function possibilitiesUpdate(cells, direction) {
     }
     //console.log("Cell possibilities: " + cellPossibilities);
 }
-
 function secondDegreePossibilitiesUpdate(cellNum) {
     var arr = [shipDatabase.dest, shipDatabase.tank, shipDatabase.cruise, shipDatabase.bat, shipDatabase.sub];
     var ship = "";
     for (var j = 0; j < arr.length; j++) {
         if (j == 0) {
             ship = "D";
-        } else if (j == 1) {
+        }
+        else if (j == 1) {
             ship = "T";
-        } else if (j == 2) {
+        }
+        else if (j == 2) {
             ship = "C";
-        } else if (j == 3) {
+        }
+        else if (j == 3) {
             ship = "B";
-        } else {
+        }
+        else {
             ship = "S";
         }
         for (var i = 0; i < arr[j].length; i++) {
@@ -1514,12 +1552,10 @@ function secondDegreePossibilitiesUpdate(cellNum) {
                 arr[j].splice(i, 1);
                 --i;
                 possibilitiesUpdate(cells, 0);
-
             }
         }
     }
 }
-
 function getShipsLeft(specify) {
     /*specify = 0 for player's ships, specify = 1 for computer's ships*/
     var ret = "";
@@ -1545,8 +1581,8 @@ function getShipsLeft(specify) {
             shipDatabase.sub = [];
             rebootPossibilities();
         }
-
-    } else {
+    }
+    else {
         document.getElementById("oppShipsDest").innerHTML = "<b> Destroyer [" + computerShips.destroyer + "] <b>";
         document.getElementById("oppShipsTank").innerHTML = "<b> Tanker [" + computerShips.tanker + "] <b>";
         document.getElementById("oppShipsCruise").innerHTML = "<b> Cruiser [" + computerShips.cruiser + "] <b>";
@@ -1554,52 +1590,61 @@ function getShipsLeft(specify) {
         document.getElementById("oppShipsSub").innerHTML = "<b> Submarine [" + computerShips.submarine + "] <b>";
         //ret = "Destroyers: " + computerShips.destroyer + ", Tankers: " + computerShips.tanker + ", Cruisers: " + computerShips.cruiser + ", Battleships: " + computerShips.battleship + ", Submarine: " + computerShips.submarine;
     }
-
     return ret;
 }
-
 function cellTranslator(cellNumber) {
     var ret = "";
-
     for (var i = 0; i < cellNumber.length; i++) {
         if (cellNumber[i] % 8 == 0) {
             ret += "H";
-        } else if (cellNumber[i] % 8 == 1) {
+        }
+        else if (cellNumber[i] % 8 == 1) {
             ret += "A";
-        } else if (cellNumber[i] % 8 == 2) {
+        }
+        else if (cellNumber[i] % 8 == 2) {
             ret += "B";
-        } else if (cellNumber[i] % 8 == 3) {
+        }
+        else if (cellNumber[i] % 8 == 3) {
             ret += "C";
-        } else if (cellNumber[i] % 8 == 4) {
+        }
+        else if (cellNumber[i] % 8 == 4) {
             ret += "D";
-        } else if (cellNumber[i] % 8 == 5) {
+        }
+        else if (cellNumber[i] % 8 == 5) {
             ret += "E";
-        } else if (cellNumber[i] % 8 == 6) {
+        }
+        else if (cellNumber[i] % 8 == 6) {
             ret += "F";
-        } else {
+        }
+        else {
             ret += "G";
         }
-
         if (cellNumber[i] <= 8) {
             ret += "1";
-        } else if (cellNumber[i] <= 16) {
+        }
+        else if (cellNumber[i] <= 16) {
             ret += "2";
-        } else if (cellNumber[i] <= 24) {
+        }
+        else if (cellNumber[i] <= 24) {
             ret += "3";
-        } else if (cellNumber[i] <= 32) {
+        }
+        else if (cellNumber[i] <= 32) {
             ret += "4";
-        } else if (cellNumber[i] <= 40) {
+        }
+        else if (cellNumber[i] <= 40) {
             ret += "5";
-        } else if (cellNumber[i] <= 48) {
+        }
+        else if (cellNumber[i] <= 48) {
             ret += "6";
-        } else if (cellNumber[i] <= 56) {
+        }
+        else if (cellNumber[i] <= 56) {
             ret += "7";
-        } else {
+        }
+        else {
             ret += "8";
         }
-
         if (i < cellNumber.length - 1 && cellNumber.length >= 3) {
-            ret += ", "
+            ret += ", ";
         }
         if (i == cellNumber.length - 2) {
             ret += " and ";
@@ -1607,11 +1652,11 @@ function cellTranslator(cellNumber) {
     }
     return ret;
 }
-
 function endgame() {
     document.getElementById("attack").innerHTML = "Play again?";
     document.getElementById("attack").disabled = false;
     document.getElementById("attack").onclick = function () {
         location.reload(false);
-    }
+    };
 }
+//# sourceMappingURL=interact.js.map
