@@ -4,8 +4,8 @@ Aug. 9, 2014
 */
 
 import { PlayerType, Stage } from './enums.js'
-import { ShipTypeAbbr } from './ships.js'
-import { getCells, getStartingCellForShip, placeDestroyers, placeTankers } from './placement.js';
+import { ShipTypeAbbr, Ship } from './ships.js'
+import { getCells, getStartingCellForShip, placeDestroyers, placeTankers, placeBC } from './placement.js';
 import { randomIntFromInterval } from './utils.js';
 
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
@@ -57,14 +57,14 @@ window.onload = function () {
     getShipsLeft(1);
     placeDestroyers(PlayerType.Player, playerGrid, computerGrid);
     placeTankers(PlayerType.Player, playerGrid, computerGrid);
-    placeBC(ShipTypeAbbr.Battleship, PlayerType.Player);
-    placeBC(ShipTypeAbbr.Cruiser, PlayerType.Player);
+    placeBC(Ship.Battleship, PlayerType.Player, playerGrid, computerGrid);
+    placeBC(Ship.Cruiser, PlayerType.Player, playerGrid, computerGrid);
     placeSub(PlayerType.Player);
 
     placeDestroyers(PlayerType.Computer, playerGrid, computerGrid);
     placeTankers(PlayerType.Computer, playerGrid, computerGrid);
-    placeBC(ShipTypeAbbr.Battleship, PlayerType.Computer);
-    placeBC(ShipTypeAbbr.Cruiser, PlayerType.Computer);
+    placeBC(Ship.Battleship, PlayerType.Computer, playerGrid, computerGrid);
+    placeBC(Ship.Cruiser, PlayerType.Computer, playerGrid, computerGrid);
     placeSub(PlayerType.Computer);
 
     // Attach left-click to selectAttackLocation and right-click (contextmenu) to deselectAttack.
@@ -259,81 +259,6 @@ function rebootPossibilities() {
         possibilitiesUpdate(shipDatabase.sub[i], 1);
     }
     //console.log("cellPossibilities after reboot: " + cellPossibilities);
-}
-
-function getbcdir(bchead) {
-    var bcdir;
-    if ((bchead % 8) == 1 || (bchead % 8) == 2) { /*left third*/
-        if (bchead < 16) {/*top left*/
-            bcdir = randomIntFromInterval(3, 5);
-        } else if (bchead < 48) { /*middle left*/
-            bcdir = randomIntFromInterval(1, 5);
-        } else { /*bottom left*/
-            bcdir = randomIntFromInterval(1, 3);
-        }
-    } else if ((bchead % 8) == 3 || (bchead % 8) == 4 || (bchead % 8) == 5 || (bchead % 8) == 6) { /*middle third*/
-        if (bchead < 16) { /*top middle*/
-            bcdir = randomIntFromInterval(3, 7);
-        } else if (bchead < 48) { /*middle*/
-            bcdir = randomIntFromInterval(1, 8);
-        } else { /*bottom middle*/
-            bcdir = randomIntFromInterval(1, 5);
-            if (bcdir == 4) {
-                bcdir = 7;
-            }
-            if (bcdir == 5) {
-                bcdir = 8;
-            }
-        }
-    } else { /*right third*/
-        if (bchead <= 16) { /*top right*/
-            bcdir = randomIntFromInterval(5, 7);
-        } else if (bchead <= 48) { /*middle right*/
-            bcdir = randomIntFromInterval(4, 8);
-            if (bcdir == 4) {
-                bcdir = 1;
-            }
-        } else { /*bottom right*/
-            bcdir = randomIntFromInterval(6, 8);
-            if (bcdir == 6) {
-                bcdir = 1;
-            }
-        }
-    }
-    return bcdir;
-}
-
-function placeBC(ship, playerType) {
-    /* ship is a string that tells what the ship type should be - battleship or cruiser */
-    var bchead = getStartingCellForShip(playerType, playerGrid, computerGrid); /*first B/C cell*/
-    var bcdir; /*direction of B/C cells relative to tankhead*/
-    /*have head and direction. now just place the letters*/
-    var cells = [];
-    while (cells.length == 0) {
-        /* ensures we get empty cells*/
-        bcdir = getbcdir(bchead);
-        //alert("bchead=" + bchead + ", bcdir=" + bcdir);
-        cells = getCells(bchead, bcdir, 3, playerType, playerGrid, computerGrid);
-    }
-    var id;
-    for (var i = 0; i < cells.length; i++) {
-        //id = playerType.concat(cells[i].toString());
-        //document.getElementById(id).innerHTML = ship;
-        if (playerType == PlayerType.Player) {
-            playerGrid[cells[i]].ship = ship;
-            id = "p".concat(cells[i].toString());
-            var cell = document.getElementById(id);
-            cell.innerHTML = ship;
-            if (ship == ShipTypeAbbr.Battleship) {
-                cell.style.backgroundColor = "B2B2DC";
-            } else {
-                cell.style.backgroundColor = "navajoWhite";
-            }
-        } else {
-            computerGrid[cells[i]].ship = ship;
-            //console.log(ship + " location: " + cells[i]);
-        }
-    }
 }
 
 function placeSub(playerType) {

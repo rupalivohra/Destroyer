@@ -90,6 +90,55 @@ export function placeTankers(playerType: PlayerType, playerGrid: any, computerGr
     placeCells(cells, Ship.Tanker, playerType, playerGrid, computerGrid);
 }
 
+export function placeBC(ship: Ship, playerType: PlayerType, playerGrid: any, computerGrid: any): void {
+    /* ship is a string that tells what the ship type should be - battleship or cruiser */
+    const bcHead = getStartingCellForShip(playerType, playerGrid, computerGrid); /*first B/C cell*/
+    let bcDirection; /*direction of B/C cells relative to tankhead*/
+    /*have head and direction. now just place the letters*/
+    let cells: number[] = [];
+    while (cells.length == 0) {
+        /* ensures we get empty cells*/
+        bcDirection = getBCDirection(bcHead);
+        cells = getCells(bcHead, bcDirection, ShipTypes[ship].size, playerType, playerGrid, computerGrid);
+    }
+
+    placeCells(cells, ship, playerType, playerGrid, computerGrid);
+}
+
+export function getStartingCellForShip(playerType: PlayerType, playerGrid: any, computerGrid: any): number {
+    let grid = playerType == PlayerType.Player ? playerGrid : computerGrid;
+    var startingCell = randomIntFromInterval(1, grid?.length - 1);
+    while (checkEmpty(startingCell, grid) === false) { /*make sure startingCell is an empty cell*/
+        startingCell = randomIntFromInterval(1, grid?.length - 1);
+    }
+    return startingCell;
+}
+
+function placeCells(cells: number[], shipName: Ship, playerType: PlayerType, playerGrid: any, computerGrid: any): void {
+    var id;
+    for (var i = 0; i < cells.length; i++) {
+        if (playerType == PlayerType.Player) {
+            id = "p".concat(cells[i].toString());
+            var cell = document.getElementById(id);
+            if (cell != null) {
+                cell.innerHTML = ShipTypes[shipName].shorthand; /*for non-Destroyer ships, check to make sure cells are available*/
+                cell.style.backgroundColor = ShipTypes[shipName].backgroundColor;
+            }
+            playerGrid[cells[i]].ship = ShipTypes[shipName].shorthand;
+        } else {
+            computerGrid[cells[i]].ship = ShipTypes[shipName].shorthand;
+        }
+    }
+
+    console.debug("Placed " + playerType + " " + ShipTypes[shipName].shorthand + " at cells " + cells);
+}
+
+function checkEmpty(cell: number, grid: any): boolean {
+    /* cell is the number of the cell to check.
+    returns True if the cell is empty. returns False if the cell is occupied or grid is null.*/
+    return grid[cell].ship == null;
+}
+
 function getTankerDirection(startingTankerCell: number): Direction {
     let tankerDirection: Direction;
     if ((startingTankerCell % 8) == 1 || (startingTankerCell % 8) == 2 || (startingTankerCell % 8) == 3) { /*left third*/
@@ -132,38 +181,46 @@ function getTankerDirection(startingTankerCell: number): Direction {
     return tankerDirection;
 }
 
-export function getStartingCellForShip(playerType: PlayerType, playerGrid: any, computerGrid: any): number {
-    let grid = playerType == PlayerType.Player ? playerGrid : computerGrid;
-    var startingCell = randomIntFromInterval(1, grid?.length - 1);
-    while (checkEmpty(startingCell, grid) === false) { /*make sure startingCell is an empty cell*/
-        startingCell = randomIntFromInterval(1, grid?.length - 1);
-    }
-    return startingCell;
-}
-
-function placeCells(cells: number[], shipName: Ship, playerType: PlayerType, playerGrid: any, computerGrid: any): void {
-    var id;
-    for (var i = 0; i < cells.length; i++) {
-        if (playerType == PlayerType.Player) {
-            id = "p".concat(cells[i].toString());
-            var cell = document.getElementById(id);
-            if (cell != null) {
-                cell.innerHTML = ShipTypes[shipName].shorthand; /*for non-Destroyer ships, check to make sure cells are available*/
-                cell.style.backgroundColor = ShipTypes[shipName].backgroundColor;
+function getBCDirection(bcStartingCell: number): Direction {
+    let bcDirection: Direction;
+    if ((bcStartingCell % 8) == 1 || (bcStartingCell % 8) == 2) { /*left third*/
+        if (bcStartingCell < 16) {/*top left*/
+            bcDirection = randomIntFromInterval(3, 5);
+        } else if (bcStartingCell < 48) { /*middle left*/
+            bcDirection = randomIntFromInterval(1, 5);
+        } else { /*bottom left*/
+            bcDirection = randomIntFromInterval(1, 3);
+        }
+    } else if ((bcStartingCell % 8) == 3 || (bcStartingCell % 8) == 4 || (bcStartingCell % 8) == 5 || (bcStartingCell % 8) == 6) { /*middle third*/
+        if (bcStartingCell < 16) { /*top middle*/
+            bcDirection = randomIntFromInterval(3, 7);
+        } else if (bcStartingCell < 48) { /*middle*/
+            bcDirection = randomIntFromInterval(1, 8);
+        } else { /*bottom middle*/
+            bcDirection = randomIntFromInterval(1, 5);
+            if (bcDirection == 4) {
+                bcDirection = 7;
             }
-            playerGrid[cells[i]].ship = ShipTypes[shipName].shorthand;
-        } else {
-            computerGrid[cells[i]].ship = ShipTypes[shipName].shorthand;
+            if (bcDirection == 5) {
+                bcDirection = 8;
+            }
+        }
+    } else { /*right third*/
+        if (bcStartingCell <= 16) { /*top right*/
+            bcDirection = randomIntFromInterval(5, 7);
+        } else if (bcStartingCell <= 48) { /*middle right*/
+            bcDirection = randomIntFromInterval(4, 8);
+            if (bcDirection == 4) {
+                bcDirection = 1;
+            }
+        } else { /*bottom right*/
+            bcDirection = randomIntFromInterval(6, 8);
+            if (bcDirection == 6) {
+                bcDirection = 1;
+            }
         }
     }
-
-    console.log("Placed " + playerType + " " + ShipTypes[shipName].shorthand + " at cells " + cells);
-}
-
-function checkEmpty(cell: number, grid: any): boolean {
-    /* cell is the number of the cell to check.
-    returns True if the cell is empty. returns False if the cell is occupied or grid is null.*/
-    return grid[cell].ship == null;
+    return bcDirection;
 }
 
 export const forTesting = {
