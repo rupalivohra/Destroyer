@@ -3,7 +3,7 @@ Created by Rupali Vohra
 Aug. 9, 2014
 */
 import { PlayerType, ShipTypeAbbr, Stage } from './enums.js';
-import { getCells } from './placement.js';
+import { getCells, checkEmpty } from './placement.js';
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
 var playerGrid = []; //array of cell objects. Each object contains two fields: ship, attackTurn
 //ship = "D","T", "B", "C", "S", or null
@@ -52,16 +52,16 @@ window.onload = function () {
     rebootPossibilities();
     //document.getElementById("selfShips").innerHTML = getShipsLeft(0);
     getShipsLeft(1);
-    placeDestroyers("p");
-    placeTankers("p");
-    placeBC(ShipTypeAbbr.Battleship, "p");
-    placeBC(ShipTypeAbbr.Cruiser, "p");
-    placeSub("p");
-    placeDestroyers("o");
-    placeTankers("o");
-    placeBC(ShipTypeAbbr.Battleship, "o");
-    placeBC(ShipTypeAbbr.Cruiser, "o");
-    placeSub("o");
+    placeDestroyers(PlayerType.Player);
+    placeTankers(PlayerType.Player);
+    placeBC(ShipTypeAbbr.Battleship, PlayerType.Player);
+    placeBC(ShipTypeAbbr.Cruiser, PlayerType.Player);
+    placeSub(PlayerType.Player);
+    placeDestroyers(PlayerType.Computer);
+    placeTankers(PlayerType.Computer);
+    placeBC(ShipTypeAbbr.Battleship, PlayerType.Computer);
+    placeBC(ShipTypeAbbr.Cruiser, PlayerType.Computer);
+    placeSub(PlayerType.Computer);
     // Attach left-click to selectAttackLocation and right-click (contextmenu) to deselectAttack.
     for (let i = 1; i <= 64; i++) {
         let oid = "o" + i;
@@ -254,22 +254,7 @@ function rebootPossibilities() {
     }
     //console.log("cellPossibilities after reboot: " + cellPossibilities);
 }
-function checkEmpty(cell, prefix) {
-    /* cell is the number of the cell to check.
-    returns True if the cell is empty. returns False if the cell is occupied.*/
-    if (prefix == "p") {
-        if (playerGrid[cell].ship == null) {
-            return true;
-        }
-    }
-    else {
-        if (computerGrid[cell].ship == null) {
-            return true;
-        }
-    }
-    return false;
-}
-function placeDestroyers(prefix) {
+function placeDestroyers(playerType) {
     var desthead; /*first D cell*/
     var destdir; /*direction of D cells relative to desthead*/
     desthead = randomIntFromInterval(1, 64);
@@ -295,13 +280,13 @@ function placeDestroyers(prefix) {
     }
     //alert("destdir=" + destdir);
     /*have lead and direction. now just place the letters*/
-    var cells = getCells(desthead, destdir, 5, prefix, playerGrid, computerGrid);
+    var cells = getCells(desthead, destdir, 5, playerType, playerGrid, computerGrid);
     var id;
     for (var i = 0; i < cells.length; i++) {
-        //id = prefix.concat(cells[i].toString());
+        //id = playerType.concat(cells[i].toString());
         //document.getElementById(id).innerHTML = "D";
-        if (prefix == "p") {
-            id = prefix.concat(cells[i].toString());
+        if (playerType == PlayerType.Player) {
+            id = "p".concat(cells[i].toString());
             var cell = document.getElementById(id);
             cell.innerHTML = ShipTypeAbbr.Destroyer; /*for other ships, check to make sure cells are available*/
             cell.style.backgroundColor = "DCB2B2";
@@ -313,9 +298,9 @@ function placeDestroyers(prefix) {
         }
     }
 }
-function getTankhead(prefix) {
+function getTankhead(playerType) {
     var tankhead = randomIntFromInterval(1, 64);
-    while (checkEmpty(tankhead, prefix) === false) { /*make sure tankhead is an empty cell*/
+    while (checkEmpty(tankhead, playerType, playerGrid, computerGrid) === false) { /*make sure tankhead is an empty cell*/
         tankhead = randomIntFromInterval(1, 64);
     }
     return tankhead;
@@ -369,8 +354,8 @@ function getTankdir(tankhead) {
     }
     return tankdir;
 }
-function placeTankers(prefix) {
-    var tankhead = getTankhead(prefix); /*first T cell*/
+function placeTankers(playerType) {
+    var tankhead = getTankhead(playerType); /*first T cell*/
     var tankdir; /*direction of T cells relative to tankhead*/
     /*have lead and direction. now just place the letters*/
     var cells = [];
@@ -378,15 +363,15 @@ function placeTankers(prefix) {
         /* ensures we get empty cells*/
         tankdir = getTankdir(tankhead);
         //alert("tankhead=" + tankhead + ", tankdir" + tankdir);
-        cells = getCells(tankhead, tankdir, 4, prefix, playerGrid, computerGrid);
+        cells = getCells(tankhead, tankdir, 4, playerType, playerGrid, computerGrid);
     }
     var id;
     for (var i = 0; i < cells.length; i++) {
-        //id = prefix.concat(cells[i].toString());
+        //id = playerType.concat(cells[i].toString());
         //document.getElementById(id).innerHTML = "T";
-        if (prefix == "p") {
+        if (playerType == PlayerType.Player) {
             playerGrid[cells[i]].ship = ShipTypeAbbr.Tanker;
-            id = prefix.concat(cells[i].toString());
+            id = "p".concat(cells[i].toString());
             var cell = document.getElementById(id);
             cell.innerHTML = ShipTypeAbbr.Tanker;
             cell.style.backgroundColor = "FFD9CA";
@@ -397,9 +382,9 @@ function placeTankers(prefix) {
         }
     }
 }
-function getbchead(prefix) {
+function getbchead(playerType) {
     var bchead = randomIntFromInterval(1, 64);
-    while (checkEmpty(bchead, prefix) === false) { /*make sure bchead is an empty cell*/
+    while (checkEmpty(bchead, playerType, playerGrid, computerGrid) === false) { /*make sure bchead is an empty cell*/
         bchead = randomIntFromInterval(1, 64);
     }
     return bchead;
@@ -453,9 +438,9 @@ function getbcdir(bchead) {
     }
     return bcdir;
 }
-function placeBC(ship, prefix) {
+function placeBC(ship, playerType) {
     /* ship is a string that tells what the ship type should be - battleship or cruiser */
-    var bchead = getbchead(prefix); /*first B/C cell*/
+    var bchead = getbchead(playerType); /*first B/C cell*/
     var bcdir; /*direction of B/C cells relative to tankhead*/
     /*have head and direction. now just place the letters*/
     var cells = [];
@@ -463,15 +448,15 @@ function placeBC(ship, prefix) {
         /* ensures we get empty cells*/
         bcdir = getbcdir(bchead);
         //alert("bchead=" + bchead + ", bcdir=" + bcdir);
-        cells = getCells(bchead, bcdir, 3, prefix, playerGrid, computerGrid);
+        cells = getCells(bchead, bcdir, 3, playerType, playerGrid, computerGrid);
     }
     var id;
     for (var i = 0; i < cells.length; i++) {
-        //id = prefix.concat(cells[i].toString());
+        //id = playerType.concat(cells[i].toString());
         //document.getElementById(id).innerHTML = ship;
-        if (prefix == "p") {
+        if (playerType == PlayerType.Player) {
             playerGrid[cells[i]].ship = ship;
-            id = prefix.concat(cells[i].toString());
+            id = "p".concat(cells[i].toString());
             var cell = document.getElementById(id);
             cell.innerHTML = ship;
             if (ship == ShipTypeAbbr.Battleship) {
@@ -487,15 +472,15 @@ function placeBC(ship, prefix) {
         }
     }
 }
-function placeSub(prefix) {
+function placeSub(playerType) {
     var location = randomIntFromInterval(1, 64);
-    while (checkEmpty(location, prefix) === false) {
+    while (checkEmpty(location, playerType, playerGrid, computerGrid) === false) {
         location = randomIntFromInterval(1, 64);
     }
-    //document.getElementById(prefix.concat(location.toString())).innerHTML = "S";
-    if (prefix == "p") {
+    //document.getElementById(playerType.concat(location.toString())).innerHTML = "S";
+    if (playerType == PlayerType.Player) {
         playerGrid[location].ship = ShipTypeAbbr.Submarine;
-        var cell = document.getElementById(prefix.concat(location.toString()));
+        var cell = document.getElementById("p".concat(location.toString()));
         cell.innerHTML = ShipTypeAbbr.Submarine;
         cell.style.backgroundColor = "plum";
     }
