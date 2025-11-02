@@ -2,7 +2,8 @@
 Created by Rupali Vohra
 Aug. 9, 2014
 */
-import { PlayerType, ShipTypeAbbr, Stage } from './enums.js';
+import { PlayerType, Stage } from './enums.js';
+import { ShipTypeAbbr } from './ships.js';
 import { getCells, checkEmpty, placeDestroyers } from './placement.js';
 import { randomIntFromInterval } from './utils.js';
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
