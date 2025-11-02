@@ -1,5 +1,5 @@
-import { PlayerType, ShipTypeAbbr } from "../enums.js";
-import { checkEmpty, forTesting } from "../placement.js";
+import { PlayerType, ShipTypeAbbr } from "../src/enums.js";
+import { checkEmpty, forTesting } from "../src/placement.js";
 
 describe("checkEmpty", () => {
     let playerGrid: any;
