@@ -1,6 +1,6 @@
 import { PlayerType } from "../src/enums.js";
 import { Ship, ShipTypeAbbr, ShipTypes } from "../src/ships.js";
-import { forTesting, getStartingCellForShip } from "../src/placement.js";
+import { forTesting } from "../src/placement.js";
 
 describe("checkEmpty", () => {
     let grid: any;
@@ -85,14 +85,14 @@ describe("getStartingCellForShip", () => {
 
     test("should return an empty cell for player", () => {
         playerGrid[1].ship = ShipTypeAbbr.Destroyer; // occupy cell 1
-        const cell = getStartingCellForShip(PlayerType.Player, playerGrid, computerGrid);
+        const cell = forTesting.getStartingCellForShip(PlayerType.Player, playerGrid, computerGrid);
         expect(cell).not.toBe(1);
         expect(playerGrid[cell].ship).toBeNull();
     });
 
     test("should return an empty cell for computer", () => {
         computerGrid[1].ship = ShipTypeAbbr.Tanker; // occupy cell 1
-        const cell = getStartingCellForShip(PlayerType.Computer, playerGrid, computerGrid);
+        const cell = forTesting.getStartingCellForShip(PlayerType.Computer, playerGrid, computerGrid);
         expect(cell).not.toBe(1);
         expect(computerGrid[cell].ship).toBeNull();
     });
