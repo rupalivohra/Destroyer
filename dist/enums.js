@@ -14,4 +14,9 @@ export var ShipTypeAbbr;
     ShipTypeAbbr["Cruiser"] = "C";
     ShipTypeAbbr["Submarine"] = "S";
 })(ShipTypeAbbr || (ShipTypeAbbr = {}));
+export var PlayerType;
+(function (PlayerType) {
+    PlayerType[PlayerType["Player"] = 0] = "Player";
+    PlayerType[PlayerType["Computer"] = 1] = "Computer";
+})(PlayerType || (PlayerType = {}));
 //# sourceMappingURL=enums.js.map
