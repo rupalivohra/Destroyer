@@ -5,7 +5,7 @@ Aug. 9, 2014
 
 import { PlayerType, Stage } from './enums.js'
 import { ShipTypeAbbr, Ship } from './ships.js'
-import { getCells, getStartingCellForShip, placeDestroyers, placeTankers, placeBC } from './placement.js';
+import { getCells, placeDestroyers, placeTankers, placeBC, placeSub } from './placement.js';
 import { randomIntFromInterval } from './utils.js';
 
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
@@ -59,13 +59,13 @@ window.onload = function () {
     placeTankers(PlayerType.Player, playerGrid, computerGrid);
     placeBC(Ship.Battleship, PlayerType.Player, playerGrid, computerGrid);
     placeBC(Ship.Cruiser, PlayerType.Player, playerGrid, computerGrid);
-    placeSub(PlayerType.Player);
+    placeSub(PlayerType.Player, playerGrid, computerGrid);
 
     placeDestroyers(PlayerType.Computer, playerGrid, computerGrid);
     placeTankers(PlayerType.Computer, playerGrid, computerGrid);
     placeBC(Ship.Battleship, PlayerType.Computer, playerGrid, computerGrid);
     placeBC(Ship.Cruiser, PlayerType.Computer, playerGrid, computerGrid);
-    placeSub(PlayerType.Computer);
+    placeSub(PlayerType.Computer, playerGrid, computerGrid);
 
     // Attach left-click to selectAttackLocation and right-click (contextmenu) to deselectAttack.
     for (let i = 1; i <= 64; i++) {
@@ -259,21 +259,6 @@ function rebootPossibilities() {
         possibilitiesUpdate(shipDatabase.sub[i], 1);
     }
     //console.log("cellPossibilities after reboot: " + cellPossibilities);
-}
-
-function placeSub(playerType) {
-    var location = getStartingCellForShip(playerType, playerGrid, computerGrid);
-    //document.getElementById(playerType.concat(location.toString())).innerHTML = "S";
-    if (playerType == PlayerType.Player) {
-        playerGrid[location].ship = ShipTypeAbbr.Submarine;
-        var cell = document.getElementById("p".concat(location.toString()));
-        cell.innerHTML = ShipTypeAbbr.Submarine;
-        cell.style.backgroundColor = "plum";
-    } else {
-        computerGrid[location].ship = ShipTypeAbbr.Submarine;
-        //console.log("Submarine location: " + location);
-    }
-
 }
 
 var whichButton = function (e) {

@@ -105,7 +105,12 @@ export function placeBC(ship: Ship, playerType: PlayerType, playerGrid: any, com
     placeCells(cells, ship, playerType, playerGrid, computerGrid);
 }
 
-export function getStartingCellForShip(playerType: PlayerType, playerGrid: any, computerGrid: any): number {
+export function placeSub(playerType: PlayerType, playerGrid: any, computerGrid: any): void {
+    var location = getStartingCellForShip(playerType, playerGrid, computerGrid);
+    placeCells([location], Ship.Submarine, playerType, playerGrid, computerGrid);
+}
+
+function getStartingCellForShip(playerType: PlayerType, playerGrid: any, computerGrid: any): number {
     let grid = playerType == PlayerType.Player ? playerGrid : computerGrid;
     var startingCell = randomIntFromInterval(1, grid?.length - 1);
     while (checkEmpty(startingCell, grid) === false) { /*make sure startingCell is an empty cell*/
@@ -226,4 +231,5 @@ function getBCDirection(bcStartingCell: number): Direction {
 export const forTesting = {
     placeCells,
     checkEmpty,
+    getStartingCellForShip
 };
