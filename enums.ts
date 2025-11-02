@@ -13,3 +13,8 @@ export enum ShipTypeAbbr {
     Cruiser = 'C',
     Submarine = 'S',
 }
+
+export enum PlayerType {
+    Player = 0,
+    Computer = 1,
+}

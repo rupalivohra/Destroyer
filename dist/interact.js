@@ -2,7 +2,7 @@
 Created by Rupali Vohra
 Aug. 9, 2014
 */
-import { ShipTypeAbbr, Stage } from './enums.js';
+import { PlayerType, ShipTypeAbbr, Stage } from './enums.js';
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
 var playerGrid = []; //array of cell objects. Each object contains two fields: ship, attackTurn
 //ship = "D","T", "B", "C", "S", or null
@@ -665,7 +665,7 @@ function finalizeAttack() {
 function damageZone(attack, player) {
     //generates an array of cell numbers that the given attacks can damage. Can be adjusted by caller depending on attacks hitting ships.
     var grid;
-    if (player == 0) { //for player
+    if (player == PlayerType.Player) { //for player
         grid = computerGrid;
     }
     else {
@@ -732,7 +732,7 @@ function getReport(attack, potDam, shipName, player) {
     //if player == 0, player. if player == 1, computer.
     var grid;
     var ships;
-    if (player == 0) {
+    if (player == PlayerType.Player) {
         grid = computerGrid;
         ships = computerShips;
     }
@@ -747,38 +747,38 @@ function getReport(attack, potDam, shipName, player) {
             ++numHit;
             if (shipName == ShipTypeAbbr.Destroyer) {
                 --ships.destroyer;
-                if (ships.destroyer == 0 && player == 0) {
+                if (ships.destroyer == 0 && player == PlayerType.Player) {
                     document.getElementById("dest").style.backgroundColor = "lawngreen";
                 }
             }
             else if (shipName == ShipTypeAbbr.Tanker) {
                 --ships.tanker;
-                if (ships.tanker == 0 && player == 0) {
+                if (ships.tanker == 0 && player == PlayerType.Player) {
                     document.getElementById("tank").style.backgroundColor = "lawngreen";
                 }
             }
             else if (shipName == ShipTypeAbbr.Battleship) {
                 --ships.battleship;
-                if (ships.battleship == 0 && player == 0) {
+                if (ships.battleship == 0 && player == PlayerType.Player) {
                     document.getElementById("bat").style.backgroundColor = "lawngreen";
                 }
             }
             else if (shipName == ShipTypeAbbr.Cruiser) {
                 --ships.cruiser;
-                if (ships.cruiser == 0 && player == 0) {
+                if (ships.cruiser == 0 && player == PlayerType.Player) {
                     document.getElementById("cruise").style.backgroundColor = "lawngreen";
                 }
             }
             else { //sub is hit
                 --ships.submarine;
-                if (player == 0) {
+                if (player == PlayerType.Player) {
                     document.getElementById("sub").style.backgroundColor = "lawngreen";
                 }
             }
             //document.getElementById("selfShips").innerHTML = getShipsLeft(0);
             getShipsLeft(1);
             if (ships.destroyer == 0 && ships.tanker == 0 && ships.battleship == 0 && ships.cruiser == 0 && ships.submarine == 0) {
-                if (player == 0) {
+                if (player == PlayerType.Player) {
                     playerVictory = 1;
                 }
                 else {
@@ -801,7 +801,7 @@ function getReport(attack, potDam, shipName, player) {
             --i;
         }
     }
-    if (player == 0) {
+    if (player == PlayerType.Player) {
         var hitstring = "";
         var damstring = "";
         if (numHit > 0) {
@@ -840,11 +840,11 @@ function generateReportForPlayer() {
     var attack3 = playerAttack.pop();
     var attack = [attack1, attack2, attack3]; //took it out of a list and into another to clear the recycled global variable (playerAttack)
     var potDam = damageZone(attack, 0);
-    cell2.innerHTML = getReport(attack, potDam, ShipTypeAbbr.Destroyer, 0);
-    cell3.innerHTML = getReport(attack, potDam, ShipTypeAbbr.Tanker, 0);
-    cell4.innerHTML = getReport(attack, potDam, ShipTypeAbbr.Cruiser, 0);
-    cell5.innerHTML = getReport(attack, potDam, ShipTypeAbbr.Battleship, 0);
-    cell6.innerHTML = getReport(attack, potDam, ShipTypeAbbr.Submarine, 0);
+    cell2.innerHTML = getReport(attack, potDam, ShipTypeAbbr.Destroyer, PlayerType.Player);
+    cell3.innerHTML = getReport(attack, potDam, ShipTypeAbbr.Tanker, PlayerType.Player);
+    cell4.innerHTML = getReport(attack, potDam, ShipTypeAbbr.Cruiser, PlayerType.Player);
+    cell5.innerHTML = getReport(attack, potDam, ShipTypeAbbr.Battleship, PlayerType.Player);
+    cell6.innerHTML = getReport(attack, potDam, ShipTypeAbbr.Submarine, PlayerType.Player);
     if (cell2.innerHTML.length == 0 && cell3.innerHTML.length == 0 && cell4.innerHTML.length == 0 && cell5.innerHTML.length == 0 && cell6.innerHTML.length == 0) {
         cell2.innerHTML = "N O";
         cell4.innerHTML = "R E";
@@ -859,13 +859,13 @@ function checkAllHits() {
     return false;
 }
 function generateReportForComputer() {
-    var potDam = damageZone(computerAttacks[turn], 1);
+    var potDam = damageZone(computerAttacks[turn], PlayerType.Computer);
     //console.log("before: " + potDam);
-    var destroy = getReport(computerAttacks[turn], potDam, ShipTypeAbbr.Destroyer, 1);
-    var tanker = getReport(computerAttacks[turn], potDam, ShipTypeAbbr.Tanker, 1);
-    var cruiser = getReport(computerAttacks[turn], potDam, ShipTypeAbbr.Cruiser, 1);
-    var battle = getReport(computerAttacks[turn], potDam, ShipTypeAbbr.Battleship, 1);
-    var submarine = getReport(computerAttacks[turn], potDam, ShipTypeAbbr.Submarine, 1);
+    var destroy = getReport(computerAttacks[turn], potDam, ShipTypeAbbr.Destroyer, PlayerType.Computer);
+    var tanker = getReport(computerAttacks[turn], potDam, ShipTypeAbbr.Tanker, PlayerType.Computer);
+    var cruiser = getReport(computerAttacks[turn], potDam, ShipTypeAbbr.Cruiser, PlayerType.Computer);
+    var battle = getReport(computerAttacks[turn], potDam, ShipTypeAbbr.Battleship, PlayerType.Computer);
+    var submarine = getReport(computerAttacks[turn], potDam, ShipTypeAbbr.Submarine, PlayerType.Computer);
     computerReport.push({ dest: destroy, tank: tanker, cruise: cruiser, bat: battle, sub: submarine });
     //console.log("after: " + potDam);
     //console.log("turn " + turn + "- destroyer report:" + destroy + "; tanker report: " + tanker + "; cruiser report: " + cruiser + "; battleship report: " + battle + "; submarine report: " + submarine);
@@ -879,7 +879,7 @@ function generateReportForComputer() {
     processHits(ShipTypeAbbr.Submarine, submarine);
     //console.log("cell Possibilities after hits processed, before damaged: " + cellPossibilities);
     //process damages
-    potDam = damageZone(computerAttacks[turn], 1);
+    potDam = damageZone(computerAttacks[turn], PlayerType.Computer);
     processDamage(ShipTypeAbbr.Destroyer, destroy, potDam);
     processDamage(ShipTypeAbbr.Tanker, tanker, potDam);
     processDamage(ShipTypeAbbr.Cruiser, cruiser, potDam);
