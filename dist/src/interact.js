@@ -4,7 +4,7 @@ Aug. 9, 2014
 */
 import { PlayerType, Stage } from './enums.js';
 import { ShipTypeAbbr } from './ships.js';
-import { getCells, checkEmpty, placeDestroyers } from './placement.js';
+import { getCells, getStartingCellForShip, placeDestroyers } from './placement.js';
 import { randomIntFromInterval } from './utils.js';
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
 var playerGrid = []; //array of cell objects. Each object contains two fields: ship, attackTurn
@@ -253,13 +253,6 @@ function rebootPossibilities() {
     }
     //console.log("cellPossibilities after reboot: " + cellPossibilities);
 }
-function getTankhead(playerType) {
-    var tankhead = randomIntFromInterval(1, 64);
-    while (checkEmpty(tankhead, playerType, playerGrid, computerGrid) === false) { /*make sure tankhead is an empty cell*/
-        tankhead = randomIntFromInterval(1, 64);
-    }
-    return tankhead;
-}
 function getTankdir(tankhead) {
     var tankdir;
     if ((tankhead % 8) == 1 || (tankhead % 8) == 2 || (tankhead % 8) == 3) { /*left third*/
@@ -310,7 +303,7 @@ function getTankdir(tankhead) {
     return tankdir;
 }
 function placeTankers(playerType) {
-    var tankhead = getTankhead(playerType); /*first T cell*/
+    var tankhead = getStartingCellForShip(playerType, playerGrid, computerGrid); /*first T cell*/
     var tankdir; /*direction of T cells relative to tankhead*/
     /*have lead and direction. now just place the letters*/
     var cells = [];
@@ -336,13 +329,6 @@ function placeTankers(playerType) {
             //console.log("Tanker location is: " + cells[i]);
         }
     }
-}
-function getbchead(playerType) {
-    var bchead = randomIntFromInterval(1, 64);
-    while (checkEmpty(bchead, playerType, playerGrid, computerGrid) === false) { /*make sure bchead is an empty cell*/
-        bchead = randomIntFromInterval(1, 64);
-    }
-    return bchead;
 }
 function getbcdir(bchead) {
     var bcdir;
@@ -395,7 +381,7 @@ function getbcdir(bchead) {
 }
 function placeBC(ship, playerType) {
     /* ship is a string that tells what the ship type should be - battleship or cruiser */
-    var bchead = getbchead(playerType); /*first B/C cell*/
+    var bchead = getStartingCellForShip(playerType, playerGrid, computerGrid); /*first B/C cell*/
     var bcdir; /*direction of B/C cells relative to tankhead*/
     /*have head and direction. now just place the letters*/
     var cells = [];
@@ -428,10 +414,7 @@ function placeBC(ship, playerType) {
     }
 }
 function placeSub(playerType) {
-    var location = randomIntFromInterval(1, 64);
-    while (checkEmpty(location, playerType, playerGrid, computerGrid) === false) {
-        location = randomIntFromInterval(1, 64);
-    }
+    var location = getStartingCellForShip(playerType, playerGrid, computerGrid);
     //document.getElementById(playerType.concat(location.toString())).innerHTML = "S";
     if (playerType == PlayerType.Player) {
         playerGrid[location].ship = ShipTypeAbbr.Submarine;

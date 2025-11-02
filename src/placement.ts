@@ -37,7 +37,8 @@ export function getCells(startCell: number, shipDirection: Direction, shipSize: 
             shipPlacementCells.push(location);
         }
         if (playerType != null) {
-            if (checkEmpty(location, playerType, playerGrid, computerGrid) === false) { /*check to make sure the cells are empty*/
+            const grid = playerType == PlayerType.Player ? playerGrid : computerGrid;
+            if (checkEmpty(location, grid) === false) { /*check to make sure the cells are empty*/
                 //alert("the cell was not empty");
                 shipPlacementCells = [];
                 break;
@@ -75,6 +76,15 @@ export function placeDestroyers(playerType: PlayerType, playerGrid: any, compute
     placeCells(cells, Ship.Destroyer, playerType, playerGrid, computerGrid);
 }
 
+export function getStartingCellForShip(playerType: PlayerType, playerGrid: any, computerGrid: any): number {
+    let grid = playerType == PlayerType.Player ? playerGrid : computerGrid;
+    var startingCell = randomIntFromInterval(1, grid.length - 1);
+    while (checkEmpty(startingCell, grid) === false) { /*make sure startingCell is an empty cell*/
+        startingCell = randomIntFromInterval(1, grid.length - 1);
+    }
+    return startingCell;
+}
+
 function placeCells(cells: number[], shipName: Ship, playerType: PlayerType, playerGrid: any, computerGrid: any): void {
     var id;
     for (var i = 0; i < cells.length; i++) {
@@ -94,21 +104,13 @@ function placeCells(cells: number[], shipName: Ship, playerType: PlayerType, pla
     console.log("Placed " + playerType + " " + ShipTypes[shipName].shorthand + " at cells " + cells);
 }
 
-export function checkEmpty(cell: number, playerType: PlayerType | null, playerGrid: any, computerGrid: any): boolean {
+function checkEmpty(cell: number, grid: any): boolean {
     /* cell is the number of the cell to check.
     returns True if the cell is empty. returns False if the cell is occupied.*/
-    if (playerType == PlayerType.Player) {
-        if (playerGrid[cell].ship == null) {
-            return true;
-        }
-    } else {
-        if (computerGrid[cell].ship == null) {
-            return true;
-        }
-    }
-    return false;
+    return grid[cell].ship == null;
 }
 
 export const forTesting = {
     placeCells,
+    checkEmpty,
 };

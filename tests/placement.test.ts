@@ -1,23 +1,21 @@
 import { PlayerType } from "../src/enums.js";
 import { Ship, ShipTypeAbbr, ShipTypes } from "../src/ships.js";
-import { checkEmpty, forTesting } from "../src/placement.js";
+import { forTesting, getStartingCellForShip } from "../src/placement.js";
 
 describe("checkEmpty", () => {
-    let playerGrid: any;
-    let computerGrid: any;
+    let grid: any;
 
     beforeEach(() => {
-        playerGrid = Array(65).fill(null).map(() => ({ ship: null }));
-        computerGrid = Array(65).fill(null).map(() => ({ ship: null }));
+        grid = Array(65).fill(null).map(() => ({ ship: null }));
     });
 
     test("should return true for empty cell", () => {
-        expect(checkEmpty(1, PlayerType.Player, playerGrid, computerGrid)).toBe(true);
+        expect(forTesting.checkEmpty(1, grid)).toBe(true);
     });
 
     test("should return false for occupied cell", () => {
-        playerGrid[1].ship = ShipTypeAbbr.Destroyer;
-        expect(checkEmpty(1, PlayerType.Player, playerGrid, computerGrid)).toBe(false);
+        grid[1].ship = ShipTypeAbbr.Destroyer;
+        expect(forTesting.checkEmpty(1, grid)).toBe(false);
     });
 });
 
@@ -54,7 +52,7 @@ describe("placeCells", () => {
         expect(element!.style.backgroundColor).toBe(ShipTypes[shipType].backgroundColor);
     });
 
-    test("should place ship on computer grid without updating DOM", () => {
+    test("should place ship on computer's grid without updating DOM", () => {
         const cells = [1, 2, 3, 4];
         const shipType = ShipTypeAbbr.Tanker;
         const playerType = PlayerType.Computer;
@@ -73,5 +71,29 @@ describe("placeCells", () => {
             expect(element!.innerHTML).toBe("");
             expect(element!.style.backgroundColor).toBe("");
         }
+    });
+});
+
+describe("getStartingCellForShip", () => {
+    let playerGrid: any;
+    let computerGrid: any;
+
+    beforeEach(() => {
+        playerGrid = Array(3).fill(null).map(() => ({ ship: null }));
+        computerGrid = Array(3).fill(null).map(() => ({ ship: null }));
+    });
+
+    test("should return an empty cell for player", () => {
+        playerGrid[1].ship = ShipTypeAbbr.Destroyer; // occupy cell 1
+        const cell = getStartingCellForShip(PlayerType.Player, playerGrid, computerGrid);
+        expect(cell).not.toBe(1);
+        expect(playerGrid[cell].ship).toBeNull();
+    });
+
+    test("should return an empty cell for computer", () => {
+        computerGrid[1].ship = ShipTypeAbbr.Tanker; // occupy cell 1
+        const cell = getStartingCellForShip(PlayerType.Computer, playerGrid, computerGrid);
+        expect(cell).not.toBe(1);
+        expect(computerGrid[cell].ship).toBeNull();
     });
 });
