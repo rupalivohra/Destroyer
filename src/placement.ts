@@ -1,4 +1,5 @@
-import { Direction, PlayerType, ShipTypeAbbr } from "./enums.js";
+import { Direction, PlayerType } from "./enums.js";
+import { Ship, ShipTypes } from "./ships.js";
 import { randomIntFromInterval } from "./utils.js";
 
 export function getCells(startCell: number, shipDirection: Direction, shipSize: number, playerType: PlayerType | null, playerGrid: any, computerGrid: any): number[] {
@@ -70,27 +71,27 @@ export function placeDestroyers(playerType: PlayerType, playerGrid: any, compute
     }
 
     /*have lead and direction. now just place the letters*/
-    var cells = getCells(destHead, destDirection, 5, playerType, playerGrid, computerGrid);
-    placeCells(cells, ShipTypeAbbr.Destroyer, playerType, playerGrid, computerGrid);
+    var cells = getCells(destHead, destDirection, ShipTypes[Ship.Destroyer].size, playerType, playerGrid, computerGrid);
+    placeCells(cells, Ship.Destroyer, playerType, playerGrid, computerGrid);
 }
 
-function placeCells(cells: number[], shipType: ShipTypeAbbr, playerType: PlayerType, playerGrid: any, computerGrid: any): void {
+function placeCells(cells: number[], shipName: Ship, playerType: PlayerType, playerGrid: any, computerGrid: any): void {
     var id;
     for (var i = 0; i < cells.length; i++) {
         if (playerType == PlayerType.Player) {
             id = "p".concat(cells[i].toString());
             var cell = document.getElementById(id);
             if (cell != null) {
-                cell.innerHTML = shipType; /*for non-Destroyer ships, check to make sure cells are available*/
-                cell.style.backgroundColor = "#DCB2B2";
+                cell.innerHTML = ShipTypes[shipName].shorthand; /*for non-Destroyer ships, check to make sure cells are available*/
+                cell.style.backgroundColor = ShipTypes[shipName].backgroundColor;
             }
-            playerGrid[cells[i]].ship = shipType;
+            playerGrid[cells[i]].ship = ShipTypes[shipName].shorthand;
         } else {
-            computerGrid[cells[i]].ship = shipType;
+            computerGrid[cells[i]].ship = ShipTypes[shipName].shorthand;
         }
     }
 
-    console.log("Placed " + playerType + " " + shipType + " at cells " + cells);
+    console.log("Placed " + playerType + " " + ShipTypes[shipName].shorthand + " at cells " + cells);
 }
 
 export function checkEmpty(cell: number, playerType: PlayerType | null, playerGrid: any, computerGrid: any): boolean {

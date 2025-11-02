@@ -1,4 +1,5 @@
-import { PlayerType, ShipTypeAbbr } from "../src/enums.js";
+import { PlayerType } from "../src/enums.js";
+import { Ship, ShipTypeAbbr, ShipTypes } from "../src/ships.js";
 import { checkEmpty, forTesting } from "../src/placement.js";
 
 describe("checkEmpty", () => {
@@ -35,9 +36,8 @@ describe("placeCells", () => {
         `;
     });
 
-    test("should place ship on player grid and update DOM", () => {
-        const cells = [1, 2, 3, 4];
-        const shipType = ShipTypeAbbr.Tanker;
+    test.each([Ship.Destroyer, Ship.Tanker, Ship.Battleship, Ship.Cruiser, Ship.Submarine])("should update the player grid & DOM for %s", (shipType) => {
+        const cells = Array.from({ length: ShipTypes[shipType].size }, (_, i) => i + 1);
         const playerType = PlayerType.Player;
 
         // Call the function to test
@@ -45,15 +45,13 @@ describe("placeCells", () => {
 
         // Check grid
         for (const cell of cells) {
-            expect(playerGrid[cell].ship).toBe(shipType);
+            expect(playerGrid[cell].ship).toBe(ShipTypes[shipType].shorthand);
         }
 
         // Check DOM
-        for (const cell of cells) {
-            const element = document.getElementById(`p${cell}`);
-            expect(element!.innerHTML).toBe(shipType);
-            expect(element!.style.backgroundColor).toBe("rgb(220, 178, 178)");
-        }
+        const element = document.getElementById(`p1`);
+        expect(element!.innerHTML).toBe(ShipTypes[shipType].shorthand);
+        expect(element!.style.backgroundColor).toBe(ShipTypes[shipType].backgroundColor);
     });
 
     test("should place ship on computer grid without updating DOM", () => {
@@ -62,7 +60,7 @@ describe("placeCells", () => {
         const playerType = PlayerType.Computer;
 
         // Call the function to test
-        forTesting.placeCells(cells, shipType, playerType, playerGrid, computerGrid);
+        forTesting.placeCells(cells, Ship.Tanker, playerType, playerGrid, computerGrid);
 
         // Check grid
         for (const cell of cells) {

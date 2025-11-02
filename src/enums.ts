@@ -6,14 +6,6 @@ export enum Stage {
     OpponentReport = 'opponent_report',
 }
 
-export enum ShipTypeAbbr {
-    Destroyer = 'D',
-    Tanker = 'T',
-    Battleship = 'B',
-    Cruiser = 'C',
-    Submarine = 'S',
-}
-
 export enum PlayerType {
     Player = 0,
     Computer = 1,
