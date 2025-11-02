@@ -4,7 +4,7 @@ Aug. 9, 2014
 */
 
 import { PlayerType, ShipTypeAbbr, Stage } from './enums.js'
-import { getCells, checkEmpty } from './placement.js';
+import { getCells, checkEmpty, placeDestroyers } from './placement.js';
 import { randomIntFromInterval } from './utils.js';
 
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
@@ -54,13 +54,13 @@ window.onload = function () {
     rebootPossibilities();
     //document.getElementById("selfShips").innerHTML = getShipsLeft(0);
     getShipsLeft(1);
-    placeDestroyers(PlayerType.Player);
+    placeDestroyers(PlayerType.Player, playerGrid, computerGrid);
     placeTankers(PlayerType.Player);
     placeBC(ShipTypeAbbr.Battleship, PlayerType.Player);
     placeBC(ShipTypeAbbr.Cruiser, PlayerType.Player);
     placeSub(PlayerType.Player);
 
-    placeDestroyers(PlayerType.Computer);
+    placeDestroyers(PlayerType.Computer, playerGrid, computerGrid);
     placeTankers(PlayerType.Computer);
     placeBC(ShipTypeAbbr.Battleship, PlayerType.Computer);
     placeBC(ShipTypeAbbr.Cruiser, PlayerType.Computer);
@@ -258,47 +258,6 @@ function rebootPossibilities() {
         possibilitiesUpdate(shipDatabase.sub[i], 1);
     }
     //console.log("cellPossibilities after reboot: " + cellPossibilities);
-}
-
-function placeDestroyers(playerType) {
-    var desthead; /*first D cell*/
-    var destdir; /*direction of D cells relative to desthead*/
-    desthead = randomIntFromInterval(1, 64);
-    //alert("desthead=" + desthead);
-    if ((desthead % 8) == 1 || (desthead % 8) == 2 || (desthead % 8) == 3 || (desthead % 8) == 4) { /*left half*/
-        if (desthead < 32) {/*top left quadrant*/
-            destdir = randomIntFromInterval(3, 5);
-        } else { /*bottom left quadrant*/
-            destdir = randomIntFromInterval(1, 3);
-        }
-    } else { /*right half*/
-        if (desthead <= 32) { /*top right quadrant*/
-            destdir = randomIntFromInterval(5, 7);
-        } else { /*bottom right quadrant*/
-            destdir = randomIntFromInterval(6, 8);
-            if (destdir == 6) {
-                destdir = 1;
-            }
-        }
-    }
-    //alert("destdir=" + destdir);
-    /*have lead and direction. now just place the letters*/
-    var cells = getCells(desthead, destdir, 5, playerType, playerGrid, computerGrid);
-    var id;
-    for (var i = 0; i < cells.length; i++) {
-        //id = playerType.concat(cells[i].toString());
-        //document.getElementById(id).innerHTML = "D";
-        if (playerType == PlayerType.Player) {
-            id = "p".concat(cells[i].toString());
-            var cell = document.getElementById(id);
-            cell.innerHTML = ShipTypeAbbr.Destroyer; /*for other ships, check to make sure cells are available*/
-            cell.style.backgroundColor = "DCB2B2";
-            playerGrid[cells[i]].ship = ShipTypeAbbr.Destroyer;
-        } else {
-            computerGrid[cells[i]].ship = ShipTypeAbbr.Destroyer;
-            //console.log("Destroyer ship location is at: " + cells[i] + " ");
-        }
-    }
 }
 
 function getTankhead(playerType) {

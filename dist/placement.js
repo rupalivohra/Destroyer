@@ -1,4 +1,5 @@
-import { Direction, PlayerType } from "./enums.js";
+import { Direction, PlayerType, ShipTypeAbbr } from "./enums.js";
+import { randomIntFromInterval } from "./utils.js";
 export function getCells(startCell, shipDirection, shipSize, playerType, playerGrid, computerGrid) {
     /* startCell is the head of the ship
     shipDirection is the direction relative to the head the ship should be placed
@@ -50,6 +51,51 @@ export function getCells(startCell, shipDirection, shipSize, playerType, playerG
     }
     //alert(ret)
     return shipPlacementCells;
+}
+export function placeDestroyers(playerType, playerGrid, computerGrid) {
+    let destHead; /*first D cell*/
+    let destDirection; /*direction of D cells relative to desthead*/
+    destHead = randomIntFromInterval(1, 64);
+    if ((destHead % 8) == 1 || (destHead % 8) == 2 || (destHead % 8) == 3 || (destHead % 8) == 4) { /*left half*/
+        if (destHead < 32) { /*top left quadrant*/
+            destDirection = randomIntFromInterval(3, 5);
+        }
+        else { /*bottom left quadrant*/
+            destDirection = randomIntFromInterval(1, 3);
+        }
+    }
+    else { /*right half*/
+        if (destHead <= 32) { /*top right quadrant*/
+            destDirection = randomIntFromInterval(5, 7);
+        }
+        else { /*bottom right quadrant*/
+            destDirection = randomIntFromInterval(6, 8);
+            if (destDirection == Direction.BottomLeft) {
+                destDirection = Direction.Up;
+            }
+        }
+    }
+    /*have lead and direction. now just place the letters*/
+    var cells = getCells(destHead, destDirection, 5, playerType, playerGrid, computerGrid);
+    placeCells(cells, ShipTypeAbbr.Destroyer, playerType, playerGrid, computerGrid);
+}
+function placeCells(cells, shipType, playerType, playerGrid, computerGrid) {
+    var id;
+    for (var i = 0; i < cells.length; i++) {
+        if (playerType == PlayerType.Player) {
+            id = "p".concat(cells[i].toString());
+            var cell = document.getElementById(id);
+            if (cell != null) {
+                cell.innerHTML = shipType; /*for non-Destroyer ships, check to make sure cells are available*/
+                cell.style.backgroundColor = "DCB2B2";
+            }
+            playerGrid[cells[i]].ship = shipType;
+        }
+        else {
+            computerGrid[cells[i]].ship = shipType;
+        }
+    }
+    console.log("Placed " + playerType + " " + shipType + " at cells " + cells);
 }
 export function checkEmpty(cell, playerType, playerGrid, computerGrid) {
     /* cell is the number of the cell to check.
