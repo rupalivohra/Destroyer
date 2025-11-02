@@ -4,6 +4,7 @@ Aug. 9, 2014
 */
 import { PlayerType, ShipTypeAbbr, Stage } from './enums.js';
 import { getCells, checkEmpty } from './placement.js';
+import { randomIntFromInterval } from './utils.js';
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
 var playerGrid = []; //array of cell objects. Each object contains two fields: ship, attackTurn
 //ship = "D","T", "B", "C", "S", or null
@@ -21,9 +22,6 @@ var cellPossibilities = []; // an array of 65 where each element contains an int
 var playerVictory = 0; //1 if player wins
 var computerVictory = 0; //1 if computer wins
 var futureComputerAttacks = []; //used if final locations of ships are known, but there aren't enough attacks for them
-function randomIntFromInterval(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
 function contains(a, obj) {
     //taken from stackoverflow. a is an array, obj is an object potentially in a.
     for (var i = 0; i < a.length; i++) {
