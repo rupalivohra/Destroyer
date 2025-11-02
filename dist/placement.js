@@ -87,7 +87,7 @@ function placeCells(cells, shipType, playerType, playerGrid, computerGrid) {
             var cell = document.getElementById(id);
             if (cell != null) {
                 cell.innerHTML = shipType; /*for non-Destroyer ships, check to make sure cells are available*/
-                cell.style.backgroundColor = "DCB2B2";
+                cell.style.backgroundColor = "#DCB2B2";
             }
             playerGrid[cells[i]].ship = shipType;
         }
@@ -112,4 +112,7 @@ export function checkEmpty(cell, playerType, playerGrid, computerGrid) {
     }
     return false;
 }
+export const forTesting = {
+    placeCells,
+};
 //# sourceMappingURL=placement.js.map

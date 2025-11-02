@@ -82,7 +82,7 @@ function placeCells(cells: number[], shipType: ShipTypeAbbr, playerType: PlayerT
             var cell = document.getElementById(id);
             if (cell != null) {
                 cell.innerHTML = shipType; /*for non-Destroyer ships, check to make sure cells are available*/
-                cell.style.backgroundColor = "DCB2B2";
+                cell.style.backgroundColor = "#DCB2B2";
             }
             playerGrid[cells[i]].ship = shipType;
         } else {
@@ -107,3 +107,7 @@ export function checkEmpty(cell: number, playerType: PlayerType | null, playerGr
     }
     return false;
 }
+
+export const forTesting = {
+    placeCells,
+};
