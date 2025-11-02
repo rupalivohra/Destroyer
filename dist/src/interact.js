@@ -4,7 +4,7 @@ Aug. 9, 2014
 */
 import { PlayerType, Stage } from './enums.js';
 import { ShipTypeAbbr } from './ships.js';
-import { getCells, getStartingCellForShip, placeDestroyers } from './placement.js';
+import { getCells, getStartingCellForShip, placeDestroyers, placeTankers } from './placement.js';
 import { randomIntFromInterval } from './utils.js';
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
 var playerGrid = []; //array of cell objects. Each object contains two fields: ship, attackTurn
@@ -52,12 +52,12 @@ window.onload = function () {
     //document.getElementById("selfShips").innerHTML = getShipsLeft(0);
     getShipsLeft(1);
     placeDestroyers(PlayerType.Player, playerGrid, computerGrid);
-    placeTankers(PlayerType.Player);
+    placeTankers(PlayerType.Player, playerGrid, computerGrid);
     placeBC(ShipTypeAbbr.Battleship, PlayerType.Player);
     placeBC(ShipTypeAbbr.Cruiser, PlayerType.Player);
     placeSub(PlayerType.Player);
     placeDestroyers(PlayerType.Computer, playerGrid, computerGrid);
-    placeTankers(PlayerType.Computer);
+    placeTankers(PlayerType.Computer, playerGrid, computerGrid);
     placeBC(ShipTypeAbbr.Battleship, PlayerType.Computer);
     placeBC(ShipTypeAbbr.Cruiser, PlayerType.Computer);
     placeSub(PlayerType.Computer);
@@ -252,83 +252,6 @@ function rebootPossibilities() {
         possibilitiesUpdate(shipDatabase.sub[i], 1);
     }
     //console.log("cellPossibilities after reboot: " + cellPossibilities);
-}
-function getTankdir(tankhead) {
-    var tankdir;
-    if ((tankhead % 8) == 1 || (tankhead % 8) == 2 || (tankhead % 8) == 3) { /*left third*/
-        if (tankhead < 24) { /*top left*/
-            tankdir = randomIntFromInterval(3, 5);
-        }
-        else if (tankhead < 40) { /*middle left*/
-            tankdir = randomIntFromInterval(1, 5);
-        }
-        else { /*bottom left*/
-            tankdir = randomIntFromInterval(1, 3);
-        }
-    }
-    else if ((tankhead % 8) == 4 || (tankhead % 8) == 5) { /*middle third*/
-        if (tankhead < 24) { /*top middle*/
-            tankdir = randomIntFromInterval(3, 7);
-        }
-        else if (tankhead < 40) { /*middle*/
-            tankdir = randomIntFromInterval(1, 8);
-        }
-        else { /*bottom middle*/
-            tankdir = randomIntFromInterval(1, 5);
-            if (tankdir == 4) {
-                tankdir = 7;
-            }
-            if (tankdir == 5) {
-                tankdir = 8;
-            }
-        }
-    }
-    else { /*right third*/
-        if (tankhead <= 24) { /*top right*/
-            tankdir = randomIntFromInterval(5, 7);
-        }
-        else if (tankhead <= 40) { /*middle right*/
-            tankdir = randomIntFromInterval(4, 8);
-            if (tankdir == 4) {
-                tankdir = 1;
-            }
-        }
-        else { /*bottom right*/
-            tankdir = randomIntFromInterval(6, 8);
-            if (tankdir == 6) {
-                tankdir = 1;
-            }
-        }
-    }
-    return tankdir;
-}
-function placeTankers(playerType) {
-    var tankhead = getStartingCellForShip(playerType, playerGrid, computerGrid); /*first T cell*/
-    var tankdir; /*direction of T cells relative to tankhead*/
-    /*have lead and direction. now just place the letters*/
-    var cells = [];
-    while (cells.length == 0) {
-        /* ensures we get empty cells*/
-        tankdir = getTankdir(tankhead);
-        //alert("tankhead=" + tankhead + ", tankdir" + tankdir);
-        cells = getCells(tankhead, tankdir, 4, playerType, playerGrid, computerGrid);
-    }
-    var id;
-    for (var i = 0; i < cells.length; i++) {
-        //id = playerType.concat(cells[i].toString());
-        //document.getElementById(id).innerHTML = "T";
-        if (playerType == PlayerType.Player) {
-            playerGrid[cells[i]].ship = ShipTypeAbbr.Tanker;
-            id = "p".concat(cells[i].toString());
-            var cell = document.getElementById(id);
-            cell.innerHTML = ShipTypeAbbr.Tanker;
-            cell.style.backgroundColor = "FFD9CA";
-        }
-        else {
-            computerGrid[cells[i]].ship = ShipTypeAbbr.Tanker;
-            //console.log("Tanker location is: " + cells[i]);
-        }
-    }
 }
 function getbcdir(bchead) {
     var bcdir;

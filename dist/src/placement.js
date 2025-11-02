@@ -81,11 +81,72 @@ export function placeDestroyers(playerType, playerGrid, computerGrid) {
     var cells = getCells(destHead, destDirection, ShipTypes[Ship.Destroyer].size, playerType, playerGrid, computerGrid);
     placeCells(cells, Ship.Destroyer, playerType, playerGrid, computerGrid);
 }
+export function placeTankers(playerType, playerGrid, computerGrid) {
+    const tankerStartCell = getStartingCellForShip(playerType, playerGrid, computerGrid); /*first T cell*/
+    let tankerDirection; /*direction of T cells relative to tankerStartCell*/
+    /*have lead and direction. now just place the letters*/
+    let cells = [];
+    while (cells.length == 0) {
+        /* ensures we get empty cells*/
+        tankerDirection = getTankerDirection(tankerStartCell);
+        cells = getCells(tankerStartCell, tankerDirection, ShipTypes[Ship.Tanker].size, playerType, playerGrid, computerGrid);
+    }
+    placeCells(cells, Ship.Tanker, playerType, playerGrid, computerGrid);
+}
+function getTankerDirection(startingTankerCell) {
+    let tankerDirection;
+    if ((startingTankerCell % 8) == 1 || (startingTankerCell % 8) == 2 || (startingTankerCell % 8) == 3) { /*left third*/
+        if (startingTankerCell < 24) { /*top left*/
+            tankerDirection = randomIntFromInterval(3, 5);
+        }
+        else if (startingTankerCell < 40) { /*middle left*/
+            tankerDirection = randomIntFromInterval(1, 5);
+        }
+        else { /*bottom left*/
+            tankerDirection = randomIntFromInterval(1, 3);
+        }
+    }
+    else if ((startingTankerCell % 8) == 4 || (startingTankerCell % 8) == 5) { /*middle third*/
+        if (startingTankerCell < 24) { /*top middle*/
+            tankerDirection = randomIntFromInterval(3, 7);
+        }
+        else if (startingTankerCell < 40) { /*middle*/
+            tankerDirection = randomIntFromInterval(1, 8);
+        }
+        else { /*bottom middle*/
+            tankerDirection = randomIntFromInterval(1, 5);
+            if (tankerDirection == 4) {
+                tankerDirection = 7;
+            }
+            if (tankerDirection == 5) {
+                tankerDirection = 8;
+            }
+        }
+    }
+    else { /*right third*/
+        if (startingTankerCell <= 24) { /*top right*/
+            tankerDirection = randomIntFromInterval(5, 7);
+        }
+        else if (startingTankerCell <= 40) { /*middle right*/
+            tankerDirection = randomIntFromInterval(4, 8);
+            if (tankerDirection == 4) {
+                tankerDirection = 1;
+            }
+        }
+        else { /*bottom right*/
+            tankerDirection = randomIntFromInterval(6, 8);
+            if (tankerDirection == 6) {
+                tankerDirection = 1;
+            }
+        }
+    }
+    return tankerDirection;
+}
 export function getStartingCellForShip(playerType, playerGrid, computerGrid) {
     let grid = playerType == PlayerType.Player ? playerGrid : computerGrid;
-    var startingCell = randomIntFromInterval(1, grid.length - 1);
+    var startingCell = randomIntFromInterval(1, grid?.length - 1);
     while (checkEmpty(startingCell, grid) === false) { /*make sure startingCell is an empty cell*/
-        startingCell = randomIntFromInterval(1, grid.length - 1);
+        startingCell = randomIntFromInterval(1, grid?.length - 1);
     }
     return startingCell;
 }
@@ -109,7 +170,7 @@ function placeCells(cells, shipName, playerType, playerGrid, computerGrid) {
 }
 function checkEmpty(cell, grid) {
     /* cell is the number of the cell to check.
-    returns True if the cell is empty. returns False if the cell is occupied.*/
+    returns True if the cell is empty. returns False if the cell is occupied or grid is null.*/
     return grid[cell].ship == null;
 }
 export const forTesting = {
