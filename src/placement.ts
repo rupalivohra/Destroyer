@@ -49,65 +49,32 @@ export function getCells(startCell: number, shipDirection: Direction, shipSize: 
     return shipPlacementCells;
 }
 
-export function placeDestroyers(playerType: PlayerType, playerGrid: any, computerGrid: any): void {
-    let destHead: number; /*first D cell*/
-    let destDirection: Direction; /*direction of D cells relative to desthead*/
-    destHead = randomIntFromInterval(1, 64);
-
-    if ((destHead % 8) == 1 || (destHead % 8) == 2 || (destHead % 8) == 3 || (destHead % 8) == 4) { /*left half*/
-        if (destHead < 32) {/*top left quadrant*/
-            destDirection = randomIntFromInterval(3, 5);
-        } else { /*bottom left quadrant*/
-            destDirection = randomIntFromInterval(1, 3);
-        }
-    } else { /*right half*/
-        if (destHead <= 32) { /*top right quadrant*/
-            destDirection = randomIntFromInterval(5, 7);
-        } else { /*bottom right quadrant*/
-            destDirection = randomIntFromInterval(6, 8);
-            if (destDirection == Direction.BottomLeft) {
-                destDirection = Direction.Up;
+export function placeShips(playerType: PlayerType, playerGrid: any, computerGrid: any): void {
+    for (let ship in Ship) { // this automatically goes from largest to smallest ship to maximize placement success
+        let startCell: number = getStartingCellForShip(playerType, playerGrid, computerGrid);
+        let direction: Direction;
+        let cells: number[] = [startCell];
+        while (cells.length != ShipTypes[ship as Ship].size) {
+            switch (ship) {
+                case Ship.Destroyer:
+                    direction = getDestroyerDirection(startCell);
+                    break;
+                case Ship.Tanker:
+                    direction = getTankerDirection(startCell);
+                    break;
+                case Ship.Battleship:
+                case Ship.Cruiser:
+                    direction = getBCDirection(startCell);
+                    break;
+                default:
+                    // technically the Sub falls here, but it doesn't need a direction
+                    direction = Direction.Up;
             }
+            cells = getCells(startCell, direction, ShipTypes[ship as Ship].size, playerType, playerGrid, computerGrid);
         }
+
+        placeCells(cells, ship as Ship, playerType, playerGrid, computerGrid);
     }
-
-    /*have lead and direction. now just place the letters*/
-    var cells = getCells(destHead, destDirection, ShipTypes[Ship.Destroyer].size, playerType, playerGrid, computerGrid);
-    placeCells(cells, Ship.Destroyer, playerType, playerGrid, computerGrid);
-}
-
-export function placeTankers(playerType: PlayerType, playerGrid: any, computerGrid: any): void {
-    const tankerStartCell = getStartingCellForShip(playerType, playerGrid, computerGrid); /*first T cell*/
-    let tankerDirection: Direction; /*direction of T cells relative to tankerStartCell*/
-    /*have lead and direction. now just place the letters*/
-    let cells: number[] = [];
-    while (cells.length == 0) {
-        /* ensures we get empty cells*/
-        tankerDirection = getTankerDirection(tankerStartCell);
-        cells = getCells(tankerStartCell, tankerDirection, ShipTypes[Ship.Tanker].size, playerType, playerGrid, computerGrid);
-    }
-
-    placeCells(cells, Ship.Tanker, playerType, playerGrid, computerGrid);
-}
-
-export function placeBC(ship: Ship, playerType: PlayerType, playerGrid: any, computerGrid: any): void {
-    /* ship is a string that tells what the ship type should be - battleship or cruiser */
-    const bcHead = getStartingCellForShip(playerType, playerGrid, computerGrid); /*first B/C cell*/
-    let bcDirection; /*direction of B/C cells relative to tankhead*/
-    /*have head and direction. now just place the letters*/
-    let cells: number[] = [];
-    while (cells.length == 0) {
-        /* ensures we get empty cells*/
-        bcDirection = getBCDirection(bcHead);
-        cells = getCells(bcHead, bcDirection, ShipTypes[ship].size, playerType, playerGrid, computerGrid);
-    }
-
-    placeCells(cells, ship, playerType, playerGrid, computerGrid);
-}
-
-export function placeSub(playerType: PlayerType, playerGrid: any, computerGrid: any): void {
-    var location = getStartingCellForShip(playerType, playerGrid, computerGrid);
-    placeCells([location], Ship.Submarine, playerType, playerGrid, computerGrid);
 }
 
 function getStartingCellForShip(playerType: PlayerType, playerGrid: any, computerGrid: any): number {
@@ -142,6 +109,28 @@ function checkEmpty(cell: number, grid: any): boolean {
     /* cell is the number of the cell to check.
     returns True if the cell is empty. returns False if the cell is occupied or grid is null.*/
     return grid[cell].ship == null;
+}
+
+function getDestroyerDirection(startingDestCell: number): Direction {
+    let destDirection: Direction;
+    if ((startingDestCell % 8) == 1 || (startingDestCell % 8) == 2 || (startingDestCell % 8) == 3 || (startingDestCell % 8) == 4) { /*left half*/
+        if (startingDestCell < 32) {/*top left quadrant*/
+            destDirection = randomIntFromInterval(3, 5);
+        } else { /*bottom left quadrant*/
+            destDirection = randomIntFromInterval(1, 3);
+        }
+    } else { /*right half*/
+        if (startingDestCell <= 32) { /*top right quadrant*/
+            destDirection = randomIntFromInterval(5, 7);
+        } else { /*bottom right quadrant*/
+            destDirection = randomIntFromInterval(6, 8);
+            if (destDirection == Direction.BottomLeft) {
+                destDirection = Direction.Up;
+            }
+        }
+    }
+
+    return destDirection;
 }
 
 function getTankerDirection(startingTankerCell: number): Direction {

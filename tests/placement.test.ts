@@ -1,6 +1,6 @@
-import { PlayerType } from "../src/enums.js";
+import { Direction, PlayerType } from "../src/enums.js";
 import { Ship, ShipTypeAbbr, ShipTypes } from "../src/ships.js";
-import { forTesting } from "../src/placement.js";
+import { forTesting, getCells } from "../src/placement.js";
 
 describe("checkEmpty", () => {
     let grid: any;
@@ -95,5 +95,23 @@ describe("getStartingCellForShip", () => {
         const cell = forTesting.getStartingCellForShip(PlayerType.Computer, playerGrid, computerGrid);
         expect(cell).not.toBe(1);
         expect(computerGrid[cell].ship).toBeNull();
+    });
+});
+
+describe("getCells", () => {
+    let playerGrid: any;
+    let computerGrid: any;
+
+    beforeEach(() => {
+        playerGrid = Array(65).fill(null).map(() => ({ ship: null }));
+        computerGrid = Array(65).fill(null).map(() => ({ ship: null }));
+    });
+
+    test("should return a single cell for size 1 ship", () => {
+        const startCell = 5;
+        const direction = Direction.Up;
+        const size = 1;
+        const cells = getCells(startCell, direction, size, PlayerType.Player, playerGrid, computerGrid);
+        expect(cells).toEqual([5]);
     });
 });
