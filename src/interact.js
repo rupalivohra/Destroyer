@@ -4,8 +4,8 @@ Aug. 9, 2014
 */
 
 import { PlayerType, Stage } from './enums.js'
-import { ShipTypeAbbr, Ship } from './ships.js'
-import { getCells, placeDestroyers, placeTankers, placeBC, placeSub } from './placement.js';
+import { ShipTypeAbbr } from './ships.js'
+import { getCells, placeShips } from './placement.js';
 import { randomIntFromInterval } from './utils.js';
 
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
@@ -55,17 +55,8 @@ window.onload = function () {
     rebootPossibilities();
     //document.getElementById("selfShips").innerHTML = getShipsLeft(0);
     getShipsLeft(1);
-    placeDestroyers(PlayerType.Player, playerGrid, computerGrid);
-    placeTankers(PlayerType.Player, playerGrid, computerGrid);
-    placeBC(Ship.Battleship, PlayerType.Player, playerGrid, computerGrid);
-    placeBC(Ship.Cruiser, PlayerType.Player, playerGrid, computerGrid);
-    placeSub(PlayerType.Player, playerGrid, computerGrid);
-
-    placeDestroyers(PlayerType.Computer, playerGrid, computerGrid);
-    placeTankers(PlayerType.Computer, playerGrid, computerGrid);
-    placeBC(Ship.Battleship, PlayerType.Computer, playerGrid, computerGrid);
-    placeBC(Ship.Cruiser, PlayerType.Computer, playerGrid, computerGrid);
-    placeSub(PlayerType.Computer, playerGrid, computerGrid);
+    placeShips(PlayerType.Player, playerGrid, computerGrid);
+    placeShips(PlayerType.Computer, playerGrid, computerGrid);
 
     // Attach left-click to selectAttackLocation and right-click (contextmenu) to deselectAttack.
     for (let i = 1; i <= 64; i++) {
