@@ -5,8 +5,9 @@ Aug. 9, 2014
 
 import { PlayerType, Stage } from './enums.js'
 import { ShipTypeAbbr } from './ships.js'
-import { getCells, placeShips } from './placement.js';
-import { randomIntFromInterval } from './utils.js';
+import { placeShips } from './placement.js';
+import { randomIntFromInterval, cellTranslator } from './utils.js';
+import { populateDatabase } from './brain.js';
 
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
 var playerGrid = []; //array of cell objects. Each object contains two fields: ship, attackTurn
@@ -51,7 +52,7 @@ window.onload = function () {
         cellPossibilities[i] = 0;
         computerVision[i] = "";
     }
-    populateDatabase();
+    populateDatabase(shipDatabase);
     rebootPossibilities();
     //document.getElementById("selfShips").innerHTML = getShipsLeft(0);
     getShipsLeft(1);
@@ -109,121 +110,6 @@ function getInstructions() {
     //stage 4 = opponent makes attacks
     //stage 5 = opponent gets report
     //back to stage 2
-}
-
-function populateDatabase() {
-    /*key = ship type; value = array of arrays of cell numbers in which the specific ship can lie; used by computer to plan attacks*/
-    var cells = [];
-    for (var i = 1; i < 65; i++) {
-        //handle all Destroyer possibilities: There are 96 possiblities
-        if (i <= 32) {
-            if (i % 8 <= 4 && i % 8 > 0) {
-                cells = getCells(i, 3, 5, null, playerGrid, computerGrid);
-                cells.sort(function (a, b) { return a - b });
-                //possibilitiesUpdate(cells, 1);
-                shipDatabase.dest.push(cells);
-                cells = getCells(i, 4, 5, null, playerGrid, computerGrid);
-                cells.sort(function (a, b) { return a - b });
-                //possibilitiesUpdate(cells, 1);
-                shipDatabase.dest.push(cells);
-                cells = getCells(i, 5, 5, null, playerGrid, computerGrid);
-                cells.sort(function (a, b) { return a - b });
-                //possibilitiesUpdate(cells, 1);
-                shipDatabase.dest.push(cells);
-            }
-            if (i % 8 > 4 || i % 8 == 0) {
-                cells = getCells(i, 5, 5, null, playerGrid, computerGrid);
-                cells.sort(function (a, b) { return a - b });
-                //possibilitiesUpdate(cells, 1);
-                shipDatabase.dest.push(cells);
-            }
-        } else {
-            if (i % 8 <= 4 && i % 8 > 0) {
-                cells = getCells(i, 2, 5, null, playerGrid, computerGrid);
-                cells.sort(function (a, b) { return a - b });
-                //possibilitiesUpdate(cells, 1);
-                shipDatabase.dest.push(cells);
-                cells = getCells(i, 3, 5, null, playerGrid, computerGrid);
-                cells.sort(function (a, b) { return a - b });
-                //possibilitiesUpdate(cells, 1);
-                shipDatabase.dest.push(cells);
-            }
-        }
-
-        //handle all Tanker possibilities: There are 132 possibilities
-        if (i <= 40) {
-            if (i % 8 <= 5 && i % 8 > 0) {
-                cells = getCells(i, 3, 4, null, playerGrid, computerGrid);
-                cells.sort(function (a, b) { return a - b });
-                //possibilitiesUpdate(cells, 1);
-                shipDatabase.tank.push(cells);
-                cells = getCells(i, 4, 4, null, playerGrid, computerGrid);
-                cells.sort(function (a, b) { return a - b });
-                //possibilitiesUpdate(cells, 1);
-                shipDatabase.tank.push(cells);
-                cells = getCells(i, 5, 4, null, playerGrid, computerGrid);
-                cells.sort(function (a, b) { return a - b });
-                //possibilitiesUpdate(cells, 1);
-                shipDatabase.tank.push(cells);
-            }
-            if (i % 8 >= 4 || i % 8 == 0) {
-                cells = getCells(i, 6, 4, null, playerGrid, computerGrid);
-                cells.sort(function (a, b) { return a - b });
-                shipDatabase.tank.push(cells);
-                //possibilitiesUpdate(cells, 1);
-            }
-            if (i % 8 >= 6 || i % 8 == 0) {
-                cells = getCells(i, 5, 4, null, playerGrid, computerGrid);
-                cells.sort(function (a, b) { return a - b });
-                shipDatabase.tank.push(cells)
-                //possibilitiesUpdate(cells, 1);
-            }
-        } else {
-            if (i % 8 <= 5 && i % 8 > 0) {
-                cells = getCells(i, 3, 4, null, playerGrid, computerGrid);
-                cells.sort(function (a, b) { return a - b });
-                shipDatabase.tank.push(cells);
-                //possibilitiesUpdate(cells, 1);
-            }
-        }
-        //handle all Cruiser and Battleship possibilities: There are 168 possibilities.
-        if (i % 8 >= 1 && i % 8 <= 6) {
-            cells = getCells(i, 3, 3, null, playerGrid, computerGrid);
-            cells.sort(function (a, b) { return a - b });
-            shipDatabase.cruise.push(cells);
-            shipDatabase.bat.push(cells);
-            //possibilitiesUpdate(cells, 1);
-            //possibilitiesUpdate(cells, 1);
-            if (i <= 48) {
-                cells = getCells(i, 4, 3, null, playerGrid, computerGrid);
-                cells.sort(function (a, b) { return a - b });
-                shipDatabase.cruise.push(cells);
-                shipDatabase.bat.push(cells);
-                //possibilitiesUpdate(cells, 1);
-                //possibilitiesUpdate(cells, 1);
-            }
-        }
-        if (i <= 48) {
-            cells = getCells(i, 5, 3, null, playerGrid, computerGrid);
-            cells.sort(function (a, b) { return a - b });
-            shipDatabase.cruise.push(cells);
-            shipDatabase.bat.push(cells);
-            //possibilitiesUpdate(cells, 1);
-            //possibilitiesUpdate(cells, 1);
-            if (i % 8 != 1 && i % 8 != 2) {
-                cells = getCells(i, 6, 3, null, playerGrid, computerGrid);
-                cells.sort(function (a, b) { return a - b });
-                shipDatabase.cruise.push(cells);
-                shipDatabase.bat.push(cells);
-                //possibilitiesUpdate(cells, 1);
-                //possibilitiesUpdate(cells, 1);
-            }
-        }
-        //handle all Submarine possibilities: There are 64 possibilities.
-        cells = [i];
-        shipDatabase.sub.push(cells);
-        //possibilitiesUpdate(cells, 1);   
-    }
 }
 
 function rebootPossibilities() {
@@ -1265,56 +1151,6 @@ function getShipsLeft(specify) {
         //ret = "Destroyers: " + computerShips.destroyer + ", Tankers: " + computerShips.tanker + ", Cruisers: " + computerShips.cruiser + ", Battleships: " + computerShips.battleship + ", Submarine: " + computerShips.submarine;
     }
 
-    return ret;
-}
-
-function cellTranslator(cellNumber) {
-    var ret = "";
-
-    for (var i = 0; i < cellNumber.length; i++) {
-        if (cellNumber[i] % 8 == 0) {
-            ret += "H";
-        } else if (cellNumber[i] % 8 == 1) {
-            ret += "A";
-        } else if (cellNumber[i] % 8 == 2) {
-            ret += "B";
-        } else if (cellNumber[i] % 8 == 3) {
-            ret += "C";
-        } else if (cellNumber[i] % 8 == 4) {
-            ret += "D";
-        } else if (cellNumber[i] % 8 == 5) {
-            ret += "E";
-        } else if (cellNumber[i] % 8 == 6) {
-            ret += "F";
-        } else {
-            ret += "G";
-        }
-
-        if (cellNumber[i] <= 8) {
-            ret += "1";
-        } else if (cellNumber[i] <= 16) {
-            ret += "2";
-        } else if (cellNumber[i] <= 24) {
-            ret += "3";
-        } else if (cellNumber[i] <= 32) {
-            ret += "4";
-        } else if (cellNumber[i] <= 40) {
-            ret += "5";
-        } else if (cellNumber[i] <= 48) {
-            ret += "6";
-        } else if (cellNumber[i] <= 56) {
-            ret += "7";
-        } else {
-            ret += "8";
-        }
-
-        if (i < cellNumber.length - 1 && cellNumber.length >= 3) {
-            ret += ", "
-        }
-        if (i == cellNumber.length - 2) {
-            ret += " and ";
-        }
-    }
     return ret;
 }
 

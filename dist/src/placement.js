@@ -104,7 +104,7 @@ function placeCells(cells, shipName, playerType, playerGrid, computerGrid) {
             computerGrid[cells[i]].ship = ShipTypes[shipName].shorthand;
         }
     }
-    console.debug("Placed " + playerType + " " + ShipTypes[shipName].shorthand + " at cells " + cells);
+    // console.debug("Placed " + playerType + " " + ShipTypes[shipName].shorthand + " at cells " + cells);
 }
 function checkEmpty(cell, grid) {
     /* cell is the number of the cell to check.
