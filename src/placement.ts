@@ -2,7 +2,7 @@ import { Direction, PlayerType } from "./enums.js";
 import { Ship, ShipTypes } from "./ships.js";
 import { randomIntFromInterval } from "./utils.js";
 
-export function getCells(startCell: number, shipDirection: Direction, shipSize: number, playerType: PlayerType | null, playerGrid: any, computerGrid: any): number[] {
+export function getCells(startCell: number, shipDirection: Direction, shipSize: number, playerType?: PlayerType, playerGrid?: any, computerGrid?: any): number[] {
     /* startCell is the head of the ship
     shipDirection is the direction relative to the head the ship should be placed
     shipSize is the number of units the desired ship should have
@@ -102,7 +102,7 @@ function placeCells(cells: number[], shipName: Ship, playerType: PlayerType, pla
         }
     }
 
-    console.debug("Placed " + playerType + " " + ShipTypes[shipName].shorthand + " at cells " + cells);
+    // console.debug("Placed " + playerType + " " + ShipTypes[shipName].shorthand + " at cells " + cells);
 }
 
 function checkEmpty(cell: number, grid: any): boolean {
