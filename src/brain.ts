@@ -1,4 +1,4 @@
-import { Direction } from "./enums.js";
+import { Direction, PlayerType } from "./enums.js";
 import { getCells } from "./placement.js";
 import { ShipTypes } from "./ships.js";
 
@@ -160,4 +160,42 @@ export function possibilitiesUpdate(cells: number[], direction: "add" | "remove"
             }
         }
     }
+}
+
+export function getShipsLeft(playerType: PlayerType, playerShips: any, computerShips: any, shipDatabase: any, cellPossibilities: number[], playerGrid: any): string {
+    /*specify = 0 for player's ships, specify = 1 for computer's ships*/
+    var ret = "";
+    if (playerType == PlayerType.Player) {
+        ret = "Destroyers: " + playerShips.destroyer + ", Tankers: " + playerShips.tanker + ", Cruisers: " + playerShips.cruiser + ", Battleships: " + playerShips.battleship + ", Submarine: " + playerShips.submarine;
+        if (playerShips.destroyer == 0) {
+            shipDatabase.dest = [];
+            rebootPossibilities(cellPossibilities, shipDatabase, playerGrid);
+        }
+        if (playerShips.tanker == 0) {
+            shipDatabase.tank = [];
+            rebootPossibilities(cellPossibilities, shipDatabase, playerGrid);
+        }
+        if (playerShips.cruiser == 0) {
+            shipDatabase.cruise = [];
+            rebootPossibilities(cellPossibilities, shipDatabase, playerGrid);
+        }
+        if (playerShips.battleship == 0) {
+            shipDatabase.bat = [];
+            rebootPossibilities(cellPossibilities, shipDatabase, playerGrid);
+        }
+        if (playerShips.submarine == 0) {
+            shipDatabase.sub = [];
+            rebootPossibilities(cellPossibilities, shipDatabase, playerGrid);
+        }
+
+    } else {
+        document.getElementById("oppShipsDest")!.innerHTML = "<b> Destroyer [" + computerShips.destroyer + "/5] <b>";
+        document.getElementById("oppShipsTank")!.innerHTML = "<b> Tanker [" + computerShips.tanker + "/4] <b>";
+        document.getElementById("oppShipsCruise")!.innerHTML = "<b> Cruiser [" + computerShips.cruiser + "/3] <b>";
+        document.getElementById("oppShipsBat")!.innerHTML = "<b> Battleship [" + computerShips.battleship + "/3] <b>";
+        document.getElementById("oppShipsSub")!.innerHTML = "<b> Submarine [" + computerShips.submarine + "/1] <b>";
+        //ret = "Destroyers: " + computerShips.destroyer + ", Tankers: " + computerShips.tanker + ", Cruisers: " + computerShips.cruiser + ", Battleships: " + computerShips.battleship + ", Submarine: " + computerShips.submarine;
+    }
+
+    return ret;
 }

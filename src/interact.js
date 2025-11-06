@@ -7,7 +7,7 @@ import { PlayerType, Stage } from './enums.js'
 import { ShipTypeAbbr } from './ships.js'
 import { placeShips } from './placement.js';
 import { randomIntFromInterval, cellTranslator } from './utils.js';
-import { populateDatabase, possibilitiesUpdate, rebootPossibilities } from './brain.js';
+import { populateDatabase, possibilitiesUpdate, rebootPossibilities, getShipsLeft } from './brain.js';
 
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
 var playerGrid = []; //array of cell objects. Each object contains two fields: ship, attackTurn
@@ -54,8 +54,7 @@ window.onload = function () {
     }
     populateDatabase(shipDatabase);
     rebootPossibilities(cellPossibilities, shipDatabase, playerGrid);
-    //document.getElementById("selfShips").innerHTML = getShipsLeft(0);
-    getShipsLeft(1);
+    getShipsLeft(PlayerType.Computer, playerShips, computerShips, shipDatabase, cellPossibilities, playerGrid);
     placeShips(PlayerType.Player, playerGrid, computerGrid);
     placeShips(PlayerType.Computer, playerGrid, computerGrid);
 
@@ -322,8 +321,7 @@ function getReport(attack, potDam, shipName, player) {
                     document.getElementById("sub").style.backgroundColor = "lawngreen";
                 }
             }
-            //document.getElementById("selfShips").innerHTML = getShipsLeft(0);
-            getShipsLeft(1);
+            getShipsLeft(PlayerType.Computer, playerShips, computerShips, shipDatabase, cellPossibilities, playerGrid);
             if (ships.destroyer == 0 && ships.tanker == 0 && ships.battleship == 0 && ships.cruiser == 0 && ships.submarine == 0) {
                 if (player == PlayerType.Player) {
                     playerVictory = 1;
@@ -1067,44 +1065,6 @@ function secondDegreePossibilitiesUpdate(cellNum) {
             }
         }
     }
-}
-
-function getShipsLeft(specify) {
-    /*specify = 0 for player's ships, specify = 1 for computer's ships*/
-    var ret = "";
-    if (specify == 0) {
-        ret = "Destroyers: " + playerShips.destroyer + ", Tankers: " + playerShips.tanker + ", Cruisers: " + playerShips.cruiser + ", Battleships: " + playerShips.battleship + ", Submarine: " + playerShips.submarine;
-        if (playerShips.destroyer == 0) {
-            shipDatabase.dest = [];
-            rebootPossibilities(cellPossibilities, shipDatabase, playerGrid);
-        }
-        if (playerShips.tanker == 0) {
-            shipDatabase.tank = [];
-            rebootPossibilities(cellPossibilities, shipDatabase, playerGrid);
-        }
-        if (playerShips.cruiser == 0) {
-            shipDatabase.cruise = [];
-            rebootPossibilities(cellPossibilities, shipDatabase, playerGrid);
-        }
-        if (playerShips.battleship == 0) {
-            shipDatabase.bat = [];
-            rebootPossibilities(cellPossibilities, shipDatabase, playerGrid);
-        }
-        if (playerShips.submarine == 0) {
-            shipDatabase.sub = [];
-            rebootPossibilities(cellPossibilities, shipDatabase, playerGrid);
-        }
-
-    } else {
-        document.getElementById("oppShipsDest").innerHTML = "<b> Destroyer [" + computerShips.destroyer + "] <b>";
-        document.getElementById("oppShipsTank").innerHTML = "<b> Tanker [" + computerShips.tanker + "] <b>";
-        document.getElementById("oppShipsCruise").innerHTML = "<b> Cruiser [" + computerShips.cruiser + "] <b>";
-        document.getElementById("oppShipsBat").innerHTML = "<b> Battleship [" + computerShips.battleship + "] <b>";
-        document.getElementById("oppShipsSub").innerHTML = "<b> Submarine [" + computerShips.submarine + "] <b>";
-        //ret = "Destroyers: " + computerShips.destroyer + ", Tankers: " + computerShips.tanker + ", Cruisers: " + computerShips.cruiser + ", Battleships: " + computerShips.battleship + ", Submarine: " + computerShips.submarine;
-    }
-
-    return ret;
 }
 
 function endgame() {
