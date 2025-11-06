@@ -7,6 +7,7 @@ import { PlayerType, Stage } from './enums.js'
 import { ShipTypeAbbr } from './ships.js'
 import { placeShips } from './placement.js';
 import { randomIntFromInterval, cellTranslator } from './utils.js';
+import { populateDatabase, possibilitiesUpdate, rebootPossibilities } from './brain.js';
 
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
 var playerGrid = []; //array of cell objects. Each object contains two fields: ship, attackTurn
@@ -51,8 +52,8 @@ window.onload = function () {
         cellPossibilities[i] = 0;
         computerVision[i] = "";
     }
-    populateDatabase();
-    rebootPossibilities();
+    populateDatabase(shipDatabase);
+    rebootPossibilities(cellPossibilities, shipDatabase, playerGrid);
     //document.getElementById("selfShips").innerHTML = getShipsLeft(0);
     getShipsLeft(1);
     placeShips(PlayerType.Player, playerGrid, computerGrid);
@@ -109,32 +110,6 @@ function getInstructions() {
     //stage 4 = opponent makes attacks
     //stage 5 = opponent gets report
     //back to stage 2
-}
-
-function rebootPossibilities() {
-    /*If cellPossibilities contains any information, that information is wiped out (except for previously made attacks). Then, the function runs through shipDatabase and updates cellPossibilities. */
-    //console.log("cellPossibilities before reboot: " + cellPossibilities);
-    for (var i = 0; i < cellPossibilities.length; i++) {
-        if (cellPossibilities[i] >= 0) {
-            cellPossibilities[i] = 0;
-        }
-    }
-    for (var i = 0; i < shipDatabase.dest.length; i++) {
-        possibilitiesUpdate(shipDatabase.dest[i], 1);
-    }
-    for (var i = 0; i < shipDatabase.tank.length; i++) {
-        possibilitiesUpdate(shipDatabase.tank[i], 1);
-    }
-    for (var i = 0; i < shipDatabase.cruise.length; i++) {
-        possibilitiesUpdate(shipDatabase.cruise[i], 1);
-    }
-    for (var i = 0; i < shipDatabase.bat.length; i++) {
-        possibilitiesUpdate(shipDatabase.bat[i], 1);
-    }
-    for (var i = 0; i < shipDatabase.sub.length; i++) {
-        possibilitiesUpdate(shipDatabase.sub[i], 1);
-    }
-    //console.log("cellPossibilities after reboot: " + cellPossibilities);
 }
 
 var whichButton = function (e) {
@@ -489,7 +464,7 @@ function processHits(shipName, report) { //updates future attack choices by elim
             if (!(contains(ship[i], computerAttacks[turn][0]) || contains(ship[i], computerAttacks[turn][1]) || contains(ship[i], computerAttacks[turn][2]))) {
                 //console.log("attacks: " + computerAttacks[turn][0] + ", " + computerAttacks[turn][1] + ", " + computerAttacks[turn][2])
                 //console.log(shipName + " possibility removed from " + ship[i].toString() + " by attack at " + computerAttacks[turn].toString());
-                possibilitiesUpdate(ship[i], 0);
+                possibilitiesUpdate(ship[i], "remove", playerGrid, cellPossibilities);
                 ship.splice(i, 1);
                 --i;
             }
@@ -499,7 +474,7 @@ function processHits(shipName, report) { //updates future attack choices by elim
         for (i = 0; i < ship.length; i++) {
             if (!((contains(ship[i], computerAttacks[turn][0]) && contains(ship[i], computerAttacks[turn][1])) || (contains(ship[i], computerAttacks[turn][1]) && contains(ship[i], computerAttacks[turn][2])) || (contains(ship[i], computerAttacks[turn][0]) && contains(ship[i], computerAttacks[turn][2])))) {
                 //console.log(shipName + " possibility removed from " + ship[i].toString() + " by attack at " + computerAttacks[turn].toString());
-                possibilitiesUpdate(ship[i], 0);
+                possibilitiesUpdate(ship[i], "remove", playerGrid, cellPossibilities);
                 ship.splice(i, 1);
                 --i;
             }
@@ -510,7 +485,7 @@ function processHits(shipName, report) { //updates future attack choices by elim
         for (i = 0; i < ship.length; i++) {
             if (!(contains(ship[i], computerAttacks[turn][0]) && contains(ship[i], computerAttacks[turn][1]) && contains(ship[i], computerAttacks[turn][2]))) {
                 //console.log(shipName + " possibility removed from " + ship[i].toString() + " by attack at " + computerAttacks[turn].toString());
-                possibilitiesUpdate(ship[i], 0);
+                possibilitiesUpdate(ship[i], "remove", playerGrid, cellPossibilities);
                 ship.splice(i, 1);
                 --i;
             }
@@ -556,7 +531,7 @@ function processDamage(shipName, report, potDam) {
         if (counter > (report[1] + report[0])) { //if the number of damages in that ship location is greater than the number of damages from the report
             //console.log("counter = " + counter + "; report[1] = " + report[1]);
             //console.log(shipName + " possibility removed from " + ship[j].toString() + " by attack at " + computerAttacks[turn].toString());
-            possibilitiesUpdate(ship[j], 0); //remove that ship location.
+            possibilitiesUpdate(ship[j], "remove", playerGrid, cellPossibilities); //remove that ship location.
             ship.splice(j, 1);
             --j;
         }
@@ -619,7 +594,7 @@ function estimateDestroyer() {
             var arr = computerAttacks[attacksThatHit[i]];
             if (!(contains(shipDatabase.dest[j], arr[0]) || contains(shipDatabase.dest[j], arr[1]) || contains(shipDatabase.dest[j], arr[2]))) {
                 //console.log("Destroyer removed from " + shipDatabase.dest[j] + " based on attack at " + arr);
-                possibilitiesUpdate(shipDatabase.dest[j], 0);
+                possibilitiesUpdate(shipDatabase.dest[j], "remove", playerGrid, cellPossibilities);
                 shipDatabase.dest.splice(j, 1);
                 --j;
                 break;
@@ -1061,27 +1036,6 @@ function generateComputerAttack() {
     cell.innerHTML = turn.toString();
 }
 
-function possibilitiesUpdate(cells, direction) {
-    //direction = 1 means add cells; direction = 0 means remove cells
-    if (direction == 1) {
-        for (var j = 0; j < cells.length; j++) {
-            if (playerGrid[cells[j]].attackTurn == 0) {
-                ++cellPossibilities[cells[j]];
-            }
-        }
-    } else {
-        for (var j = 0; j < cells.length; j++) {
-            if (cellPossibilities[cells[j]] > 0) {
-                --cellPossibilities[cells[j]];
-                if (cellPossibilities[cells[j]] == 0) {
-                    //secondDegreePossibilitiesUpdate(cells[j]);
-                }
-            }
-        }
-    }
-    //console.log("Cell possibilities: " + cellPossibilities);
-}
-
 function secondDegreePossibilitiesUpdate(cellNum) {
     var arr = [shipDatabase.dest, shipDatabase.tank, shipDatabase.cruise, shipDatabase.bat, shipDatabase.sub];
     var ship = "";
@@ -1108,7 +1062,7 @@ function secondDegreePossibilitiesUpdate(cellNum) {
                 }
                 arr[j].splice(i, 1);
                 --i;
-                possibilitiesUpdate(cells, 0);
+                possibilitiesUpdate(cells, "remove", playerGrid, cellPossibilities);
 
             }
         }
@@ -1122,23 +1076,23 @@ function getShipsLeft(specify) {
         ret = "Destroyers: " + playerShips.destroyer + ", Tankers: " + playerShips.tanker + ", Cruisers: " + playerShips.cruiser + ", Battleships: " + playerShips.battleship + ", Submarine: " + playerShips.submarine;
         if (playerShips.destroyer == 0) {
             shipDatabase.dest = [];
-            rebootPossibilities();
+            rebootPossibilities(cellPossibilities, shipDatabase, playerGrid);
         }
         if (playerShips.tanker == 0) {
             shipDatabase.tank = [];
-            rebootPossibilities();
+            rebootPossibilities(cellPossibilities, shipDatabase, playerGrid);
         }
         if (playerShips.cruiser == 0) {
             shipDatabase.cruise = [];
-            rebootPossibilities();
+            rebootPossibilities(cellPossibilities, shipDatabase, playerGrid);
         }
         if (playerShips.battleship == 0) {
             shipDatabase.bat = [];
-            rebootPossibilities();
+            rebootPossibilities(cellPossibilities, shipDatabase, playerGrid);
         }
         if (playerShips.submarine == 0) {
             shipDatabase.sub = [];
-            rebootPossibilities();
+            rebootPossibilities(cellPossibilities, shipDatabase, playerGrid);
         }
 
     } else {

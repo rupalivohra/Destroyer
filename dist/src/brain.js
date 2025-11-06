@@ -117,4 +117,46 @@ export function populateDatabase(shipDatabase) {
         //possibilitiesUpdate(cells, 1);   
     }
 }
+export function rebootPossibilities(cellPossibilities, shipDatabase, playerGrid) {
+    /* an element of cellPossibilities is -1 if that cell has already been attacked */
+    /*If cellPossibilities contains any information, that information is wiped out (except for previously made attacks). Then, the function runs through shipDatabase and updates cellPossibilities. */
+    //console.log("cellPossibilities before reboot: " + cellPossibilities);
+    for (var i = 0; i < cellPossibilities.length; i++) {
+        if (cellPossibilities[i] >= 0) {
+            cellPossibilities[i] = 0;
+        }
+    }
+    for (var i = 0; i < shipDatabase.dest.length; i++) {
+        possibilitiesUpdate(shipDatabase.dest[i], "add", playerGrid, cellPossibilities);
+    }
+    for (var i = 0; i < shipDatabase.tank.length; i++) {
+        possibilitiesUpdate(shipDatabase.tank[i], "add", playerGrid, cellPossibilities);
+    }
+    for (var i = 0; i < shipDatabase.cruise.length; i++) {
+        possibilitiesUpdate(shipDatabase.cruise[i], "add", playerGrid, cellPossibilities);
+    }
+    for (var i = 0; i < shipDatabase.bat.length; i++) {
+        possibilitiesUpdate(shipDatabase.bat[i], "add", playerGrid, cellPossibilities);
+    }
+    for (var i = 0; i < shipDatabase.sub.length; i++) {
+        possibilitiesUpdate(shipDatabase.sub[i], "add", playerGrid, cellPossibilities);
+    }
+    //console.log("cellPossibilities after reboot: " + cellPossibilities);
+}
+export function possibilitiesUpdate(cells, direction, playerGrid, cellPossibilities) {
+    if (direction == "add") {
+        for (var j = 0; j < cells.length; j++) {
+            if (playerGrid[cells[j]].attackTurn == 0) {
+                ++cellPossibilities[cells[j]];
+            }
+        }
+    }
+    else {
+        for (var j = 0; j < cells.length; j++) {
+            if (cellPossibilities[cells[j]] > 0) {
+                --cellPossibilities[cells[j]];
+            }
+        }
+    }
+}
 //# sourceMappingURL=brain.js.map
