@@ -39,13 +39,11 @@ export function getCells(startCell: number, shipDirection: Direction, shipSize: 
         if (playerType != null) {
             const grid = playerType == PlayerType.Player ? playerGrid : computerGrid;
             if (checkEmpty(location, grid) === false) { /*check to make sure the cells are empty*/
-                //alert("the cell was not empty");
                 shipPlacementCells = [];
                 break;
             }
         }
     }
-    //alert(ret)
     return shipPlacementCells;
 }
 
@@ -101,8 +99,6 @@ function placeCells(cells: number[], shipName: Ship, playerType: PlayerType, pla
             computerGrid[cells[i]].ship = ShipTypes[shipName].shorthand;
         }
     }
-
-    // console.debug("Placed " + playerType + " " + ShipTypes[shipName].shorthand + " at cells " + cells);
 }
 
 function checkEmpty(cell: number, grid: any): boolean {
