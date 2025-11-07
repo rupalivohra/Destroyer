@@ -1,6 +1,7 @@
-import { Direction } from "./enums.js";
+import { Direction, PlayerType } from "./enums.js";
 import { getCells } from "./placement.js";
 import { ShipTypes } from "./ships.js";
+import { contains } from "./utils.js";
 export function populateDatabase(shipDatabase) {
     // var shipDatabase = { dest: [], tank: [], cruise: [], bat: [], sub: [] }; //key = ship type; value = array of arrays of cell numbers in which the specific ship can lie; used by computer to plan attacks
     /*key = ship type; value = array of arrays of cell numbers in which the specific ship can lie; used by computer to plan attacks*/
@@ -142,5 +143,68 @@ export function getShipsLeft(computerShips) {
     document.getElementById("oppShipsCruise").innerHTML = "<b> Cruiser [" + computerShips.cruiser + "/3] <b>";
     document.getElementById("oppShipsBat").innerHTML = "<b> Battleship [" + computerShips.battleship + "/3] <b>";
     document.getElementById("oppShipsSub").innerHTML = "<b> Submarine [" + computerShips.submarine + "/1] <b>";
+}
+export function damageZone(attack, player, playerGrid, computerGrid) {
+    //generates an array of cell numbers that the given attacks can damage. Can be adjusted by caller depending on attacks hitting ships.
+    var grid;
+    if (player == PlayerType.Player) {
+        grid = computerGrid;
+    }
+    else {
+        grid = playerGrid;
+    }
+    const ret = [];
+    let pots = [];
+    for (var i = 0; i < attack.length; i++) { //for each attack
+        if (grid[attack[i]].ship == null) { //if the attack is not a hit location for any ship
+            var pot1 = attack[i] - 9; //a potential damage location is in its surrounding one-block radius
+            var pot2 = attack[i] - 8;
+            var pot3 = attack[i] - 7;
+            var pot4 = attack[i] - 1;
+            var pot5 = attack[i] + 1;
+            var pot6 = attack[i] + 7;
+            var pot7 = attack[i] + 8;
+            var pot8 = attack[i] + 9;
+            if (attack[i] == 1) { //the damage area does not wrap around the grid
+                pots = [pot5, pot7, pot8];
+            }
+            else if (attack[i] == 8) { //so the potentially damaged areas must be limited depending on where the attack is
+                pots = [pot4, pot6, pot7];
+            }
+            else if (attack[i] == 57) {
+                pots = [pot2, pot3, pot5];
+            }
+            else if (attack[i] == 64) {
+                pots = [pot1, pot2, pot4];
+            }
+            else if (attack[i] < 8) {
+                pots = [pot4, pot5, pot6, pot7, pot8];
+            }
+            else if (attack[i] > 57) {
+                pots = [pot1, pot2, pot3, pot4, pot5];
+            }
+            else if (attack[i] % 8 == 1) {
+                pots = [pot2, pot3, pot5, pot7, pot8];
+            }
+            else if (attack[i] % 8 == 0) {
+                pots = [pot1, pot2, pot4, pot6, pot7];
+            }
+            else {
+                pots = [pot1, pot2, pot3, pot4, pot5, pot6, pot7, pot8];
+            }
+            for (var j = 0; j < pots.length; j++) {
+                var max = ret.length;
+                if (max == 0) {
+                    ret.push(pots[j]);
+                }
+                else {
+                    if (!contains(ret, pots[j])) { // if ret does not already has the damage location 
+                        ret.push(pots[j]); //add the damage location
+                    }
+                }
+            }
+        }
+    }
+    return ret;
 }
 //# sourceMappingURL=brain.js.map

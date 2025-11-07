@@ -1,4 +1,5 @@
-import { populateDatabase, possibilitiesUpdate, rebootPossibilities } from '../src/brain.js';
+import { damageZone, populateDatabase, possibilitiesUpdate, rebootPossibilities } from '../src/brain.js';
+import { PlayerType } from '../src/enums.js';
 
 describe("populateDatabase", () => {
     test("should detect all Destroyer placements", () => {
@@ -126,5 +127,86 @@ describe("possibilitiesUpdate", () => {
         const cellsToRemove = [1];
         possibilitiesUpdate(cellsToRemove, "remove", playerGrid, cellPossibilities);
         expect(cellPossibilities[1]).toBe(0);
+    });
+});
+
+describe("damageZone", () => {
+    let playerGrid: any;
+    let computerGrid: any;
+
+    describe("no hits", () => {
+        beforeEach(() => {
+            playerGrid = Array(65).fill(null).map(() => ({ ship: null }));
+            computerGrid = Array(65).fill(null).map(() => ({ ship: null }));
+        });
+
+        test("should return correct damage zones for player attacks", () => {
+            const attacks = [10, 20, 30];
+            const damageZones = damageZone(attacks, PlayerType.Player, playerGrid, computerGrid);
+            expect(damageZones).toContain(1);
+            expect(damageZones).toContain(2);
+            expect(damageZones).toContain(3);
+            expect(damageZones).toContain(11);
+            expect(damageZones).toContain(12);
+            expect(damageZones).toContain(13);
+            // Add more expectations as needed
+        });
+
+        test("should return correct damage zone for corner attack at start of row", () => {
+            const attacks = [1, 1, 1];
+            const damageZones = damageZone(attacks, PlayerType.Player, playerGrid, computerGrid);
+            expect(damageZones).toHaveLength(3);
+            expect(damageZones).toContain(2);
+            expect(damageZones).toContain(9);
+            expect(damageZones).toContain(10);
+        });
+
+        test("should return correct damage zone for attack at end of row", () => {
+            const attacks = [16, 16, 16];
+            const damageZones = damageZone(attacks, PlayerType.Player, playerGrid, computerGrid);
+            expect(damageZones).toHaveLength(5);
+            expect(damageZones).toContain(7);
+            expect(damageZones).toContain(8);
+            expect(damageZones).toContain(15);
+            expect(damageZones).toContain(23);
+            expect(damageZones).toContain(24);
+        });
+
+        test("should return correct damage zone for attack at bottom of grid", () => {
+            const attacks = [63, 63, 63];
+            const damageZones = damageZone(attacks, PlayerType.Player, playerGrid, computerGrid);
+            expect(damageZones).toHaveLength(5);
+            expect(damageZones).toContain(54);
+            expect(damageZones).toContain(55);
+            expect(damageZones).toContain(56);
+            expect(damageZones).toContain(62);
+            expect(damageZones).toContain(64);
+        });
+    });
+
+    describe("with hits", () => {
+        beforeEach(() => {
+            playerGrid = Array(65).fill(null).map(() => ({ ship: null }));
+            computerGrid = Array(65).fill(null).map(() => ({ ship: null }));
+            // Place ships to create hit scenarios
+            computerGrid[1].ship = "D"; // Destroyer at cell 1
+        });
+
+        test("should exclude hit cells from damage zones for player attacks", () => {
+            const attacks = [1, 1, 1];
+            const damageZones = damageZone(attacks, PlayerType.Player, playerGrid, computerGrid);
+            expect(damageZones).toHaveLength(0);
+        });
+
+        test("should still provide possible damage zone from non-hit cells in an attack", () => {
+            const attacks = [1, 2, 2];
+            const damageZones = damageZone(attacks, PlayerType.Player, playerGrid, computerGrid);
+            expect(damageZones).toHaveLength(5);
+            expect(damageZones).toContain(1);
+            expect(damageZones).toContain(3);
+            expect(damageZones).toContain(9);
+            expect(damageZones).toContain(10);
+            expect(damageZones).toContain(11);
+        });
     });
 });
