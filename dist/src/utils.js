@@ -61,4 +61,13 @@ export function cellTranslator(cellNumber) {
     }
     return ret;
 }
+export function contains(a, obj) {
+    //taken from stackoverflow. a is an array, obj is an object potentially in a.
+    for (var i = 0; i < a.length; i++) {
+        if (a[i] === obj) {
+            return true;
+        }
+    }
+    return false;
+}
 //# sourceMappingURL=utils.js.map

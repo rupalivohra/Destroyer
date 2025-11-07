@@ -6,8 +6,8 @@ Aug. 9, 2014
 import { PlayerType, Stage } from './enums.js'
 import { ShipTypeAbbr } from './ships.js'
 import { placeShips } from './placement.js';
-import { randomIntFromInterval, cellTranslator } from './utils.js';
-import { populateDatabase, possibilitiesUpdate, rebootPossibilities, getShipsLeft } from './brain.js';
+import { randomIntFromInterval, cellTranslator, contains } from './utils.js';
+import { populateDatabase, possibilitiesUpdate, rebootPossibilities, getShipsLeft, damageZone } from './brain.js';
 
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
 var playerGrid = []; //array of cell objects. Each object contains two fields: ship, attackTurn
@@ -26,16 +26,6 @@ var cellPossibilities = []; // an array of 65 where each element contains an int
 var playerVictory = 0; //1 if player wins
 var computerVictory = 0; //1 if computer wins
 var futureComputerAttacks = []; //used if final locations of ships are known, but there aren't enough attacks for them
-
-function contains(a, obj) {
-    //taken from stackoverflow. a is an array, obj is an object potentially in a.
-    for (var i = 0; i < a.length; i++) {
-        if (a[i] === obj) {
-            return true;
-        }
-    }
-    return false;
-}
 
 window.onload = function () {
     getInstructions();
@@ -195,61 +185,6 @@ function finalizeAttack() {
     }
 }
 
-function damageZone(attack, player) {
-    //generates an array of cell numbers that the given attacks can damage. Can be adjusted by caller depending on attacks hitting ships.
-    var grid;
-    if (player == PlayerType.Player) { //for player
-        grid = computerGrid;
-    } else {
-        grid = playerGrid; //for computer
-    }
-    var ret = [];
-    var pots = [];
-
-    for (var i = 0; i < 3; i++) { //for each attack
-        if (grid[attack[i]].ship == null) { //if the attack is not a hit location for any ship
-            var pot1 = attack[i] - 9; //a potential damage location is in its surrounding one-block radius
-            var pot2 = attack[i] - 8;
-            var pot3 = attack[i] - 7;
-            var pot4 = attack[i] - 1;
-            var pot5 = attack[i] + 1;
-            var pot6 = attack[i] + 7;
-            var pot7 = attack[i] + 8;
-            var pot8 = attack[i] + 9;
-            if (attack[i] == 1) { //the damage area does not wrap around the grid
-                pots = [pot5, pot7, pot8];
-            } else if (attack[i] == 8) { //so the potentially damaged areas must be limited depending on where the attack is
-                pots = [pot4, pot6, pot7];
-            } else if (attack[i] == 57) {
-                pots = [pot2, pot3, pot5];
-            } else if (attack[i] == 64) {
-                pots = [pot1, pot2, pot4];
-            } else if (attack[i] < 8) {
-                pots = [pot4, pot5, pot6, pot7, pot8];
-            } else if (attack[i] > 57) {
-                pots = [pot1, pot2, pot3, pot4, pot5];
-            } else if (attack[i] % 8 == 1) {
-                pots = [pot2, pot3, pot5, pot7, pot8];
-            } else if (attack[i] % 8 == 0) {
-                pots = [pot1, pot2, pot4, pot6, pot7];
-            } else {
-                pots = [pot1, pot2, pot3, pot4, pot5, pot6, pot7, pot8];
-            }
-            for (var j = 0; j < pots.length; j++) {
-                var max = ret.length;
-                if (max == 0) {
-                    ret.push(pots[j]);
-                } else {
-                    if (!contains(ret, pots[j])) { // if ret does not already has the damage location 
-                        ret.push(pots[j]); //add the damage location
-                    }
-                }
-            }
-        }
-    }
-    return ret;
-}
-
 function getReport(attack, potDam, shipName, player) {
     //if player == 0, player. if player == 1, computer.
     var grid;
@@ -359,7 +294,7 @@ function generateReportForPlayer() {
     var attack2 = playerAttack.pop();
     var attack3 = playerAttack.pop();
     var attack = [attack1, attack2, attack3]; //took it out of a list and into another to clear the recycled global variable (playerAttack)
-    var potDam = damageZone(attack, 0);
+    var potDam = damageZone(attack, PlayerType.Player, playerGrid, computerGrid);
 
     cell2.innerHTML = getReport(attack, potDam, ShipTypeAbbr.Destroyer, PlayerType.Player);
     cell3.innerHTML = getReport(attack, potDam, ShipTypeAbbr.Tanker, PlayerType.Player);
@@ -376,7 +311,7 @@ function generateReportForPlayer() {
 }
 
 function generateReportForComputer() {
-    var potDam = damageZone(computerAttacks[turn], PlayerType.Computer);
+    var potDam = damageZone(computerAttacks[turn], PlayerType.Computer, playerGrid, computerGrid);
 
     var destroy = getReport(computerAttacks[turn], potDam, ShipTypeAbbr.Destroyer, PlayerType.Computer);
     var tanker = getReport(computerAttacks[turn], potDam, ShipTypeAbbr.Tanker, PlayerType.Computer);
@@ -393,7 +328,7 @@ function generateReportForComputer() {
     processHits(ShipTypeAbbr.Battleship, battle);
     processHits(ShipTypeAbbr.Submarine, submarine);
     //process damages
-    potDam = damageZone(computerAttacks[turn], PlayerType.Computer);
+    potDam = damageZone(computerAttacks[turn], PlayerType.Computer, playerGrid, computerGrid);
     processDamage(ShipTypeAbbr.Destroyer, destroy, potDam);
     processDamage(ShipTypeAbbr.Tanker, tanker, potDam);
     processDamage(ShipTypeAbbr.Cruiser, cruiser, potDam);
