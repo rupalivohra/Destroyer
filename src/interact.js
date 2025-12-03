@@ -7,7 +7,7 @@ import { PlayerType, Stage } from './enums.js'
 import { ShipTypeAbbr } from './ships.js'
 import { placeShips } from './placement.js';
 import { randomIntFromInterval, cellTranslator, contains } from './utils.js';
-import { populateDatabase, possibilitiesUpdate, rebootPossibilities, getShipsLeft, damageZone, processHits, processDamage } from './brain.js';
+import { populateDatabase, possibilitiesUpdate, rebootPossibilities, getShipsLeft, damageZone, generateReportForComputer } from './brain.js';
 import { getTurnReports } from './report.js';
 
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
@@ -165,7 +165,7 @@ function finalizeAttack() {
         generateComputerAttack();
         stage = Stage.OpponentReport;
         getInstructions();
-        generateReportForComputer();
+        generateReportForComputer(computerAttacks, playerGrid, computerGrid, turn, playerShips, shipDatabase, cellPossibilities, computerReport, playerVictory, computerVictory);
         turn++;
         stage = Stage.PlayerAttack;
         getInstructions();
@@ -225,31 +225,6 @@ function generateReportForPlayer() {
         cell5.innerHTML = "P   O";
         cell6.innerHTML = "R T";
     }
-}
-
-function generateReportForComputer() {
-    var potDam = damageZone(computerAttacks[turn], PlayerType.Computer, playerGrid, computerGrid);
-
-    let turnReports = getTurnReports(computerAttacks[turn], potDam, PlayerType.Computer, playerShips, undefined, playerGrid, undefined);
-    playerVictory = turnReports.playerVictory;
-    computerVictory = turnReports.computerVictory;
-
-    computerReport.push({ dest: turnReports.report.D, tank: turnReports.report.T, cruise: turnReports.report.C, bat: turnReports.report.B, sub: turnReports.report.S });
-
-    //update cellPossibilities & database
-    //process hits
-    processHits(ShipTypeAbbr.Destroyer, turnReports.report.D, shipDatabase, turn, computerAttacks, playerGrid, cellPossibilities);
-    processHits(ShipTypeAbbr.Tanker, turnReports.report.T, shipDatabase, turn, computerAttacks, playerGrid, cellPossibilities);
-    processHits(ShipTypeAbbr.Cruiser, turnReports.report.C, shipDatabase, turn, computerAttacks, playerGrid, cellPossibilities);
-    processHits(ShipTypeAbbr.Battleship, turnReports.report.B, shipDatabase, turn, computerAttacks, playerGrid, cellPossibilities);
-    processHits(ShipTypeAbbr.Submarine, turnReports.report.S, shipDatabase, turn, computerAttacks, playerGrid, cellPossibilities);
-    //process damages
-    potDam = damageZone(computerAttacks[turn], PlayerType.Computer, playerGrid, computerGrid);
-    processDamage(ShipTypeAbbr.Destroyer, turnReports.report.D, potDam, shipDatabase, playerGrid, cellPossibilities);
-    processDamage(ShipTypeAbbr.Tanker, turnReports.report.T, potDam, shipDatabase, playerGrid, cellPossibilities);
-    processDamage(ShipTypeAbbr.Cruiser, turnReports.report.C, potDam, shipDatabase, playerGrid, cellPossibilities);
-    processDamage(ShipTypeAbbr.Battleship, turnReports.report.B, potDam, shipDatabase, playerGrid, cellPossibilities);
-    processDamage(ShipTypeAbbr.Submarine, turnReports.report.S, potDam, shipDatabase, playerGrid, cellPossibilities);
 }
 
 function getMaxPossibility(avoidCell, avoidCell2) {

@@ -1,4 +1,4 @@
-import { damageZone, populateDatabase, possibilitiesUpdate, processHits, rebootPossibilities, ShipDatabase } from '../src/brain.js';
+import { damageZone, populateDatabase, possibilitiesUpdate, forTesting, rebootPossibilities, ShipDatabase } from '../src/brain.js';
 import { PlayerType } from '../src/enums.js';
 import { TurnReportPerShip } from '../src/report.js';
 import { ShipTypeAbbr } from '../src/ships.js';
@@ -238,7 +238,7 @@ describe("processHits", () => {
     test("should update possibilities based on 1 hit", () => {
         computerAttacks[1] = [1, 7, 8];
         const report: TurnReportPerShip = { hits: 1, damages: 0, playerVictory: false, computerVictory: false };
-        processHits(ShipTypeAbbr.Destroyer, report, shipDatabase, turn, computerAttacks, playerGrid, cellPossibilities);
+        forTesting.processHits(ShipTypeAbbr.Destroyer, report, shipDatabase, turn, computerAttacks, playerGrid, cellPossibilities);
         expect(cellPossibilities[1]).toBe(6);
         expect(cellPossibilities[2]).toBe(4);
         expect(cellPossibilities[3]).toBe(4);
@@ -249,7 +249,7 @@ describe("processHits", () => {
     test("should update possibilities based on 3 hits", () => {
         const report: TurnReportPerShip = { hits: 3, damages: 0, playerVictory: false, computerVictory: false };
         computerAttacks[1] = [1, 2, 3]
-        processHits(ShipTypeAbbr.Destroyer, report, shipDatabase, turn, computerAttacks, playerGrid, cellPossibilities);
+        forTesting.processHits(ShipTypeAbbr.Destroyer, report, shipDatabase, turn, computerAttacks, playerGrid, cellPossibilities);
         expect(cellPossibilities[1]).toBe(5); // sub eliminated from possibilities (BUG?)
         expect(cellPossibilities[2]).toBe(4);
         expect(cellPossibilities[3]).toBe(4);
