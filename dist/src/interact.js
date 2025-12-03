@@ -7,6 +7,7 @@ import { ShipTypeAbbr } from './ships.js';
 import { placeShips } from './placement.js';
 import { randomIntFromInterval, cellTranslator, contains } from './utils.js';
 import { populateDatabase, possibilitiesUpdate, rebootPossibilities, getShipsLeft, damageZone } from './brain.js';
+import { getTurnReports } from './report.js';
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
 var playerGrid = []; //array of cell objects. Each object contains two fields: ship, attackTurn
 //ship = "D","T", "B", "C", "S", or null
@@ -21,8 +22,8 @@ var playerAttack = []; //should have 3 cell numbers at the end of player's turn;
 var shipDatabase = { dest: [], tank: [], cruise: [], bat: [], sub: [] }; //key = ship type; value = array of arrays of cell numbers in which the specific ship can lie; used by computer to plan attacks
 var computerAttacks = [[0, 0, 0]]; //each element of the array is an array of three elements. each element is a cell number where the computer attacked in the turn corresponding to computerAttack's index.
 var cellPossibilities = []; // an array of 65 where each element contains an int that says how many ships could be located there
-var playerVictory = 0; //1 if player wins
-var computerVictory = 0; //1 if computer wins
+var playerVictory = false;
+var computerVictory = false;
 var futureComputerAttacks = []; //used if final locations of ships are known, but there aren't enough attacks for them
 window.onload = function () {
     getInstructions();
@@ -162,12 +163,12 @@ function finalizeAttack() {
         turn++;
         stage = Stage.PlayerAttack;
         getInstructions();
-        if (playerVictory == 0 && computerVictory == 0) {
+        if (!playerVictory && !computerVictory) {
             document.getElementById("attack").disabled = false;
         }
-        else if (playerVictory == 1) {
+        else if (playerVictory) {
             document.getElementById("attack").disabled = true;
-            if (computerVictory == 1) {
+            if (computerVictory) {
                 alert("It's a tie!");
             }
             else {
@@ -180,97 +181,6 @@ function finalizeAttack() {
             endgame();
         }
     }
-}
-function getReport(attack, potDam, shipName, player) {
-    //if player == 0, player. if player == 1, computer.
-    var grid;
-    var ships;
-    if (player == PlayerType.Player) {
-        grid = computerGrid;
-        ships = computerShips;
-    }
-    else {
-        grid = playerGrid;
-        ships = playerShips;
-    }
-    var numHit = 0;
-    var numDamage = 0;
-    for (var r = 0; r < attack.length; r++) { //for each attack
-        if (grid[attack[r]].ship == shipName) { //if attack is a hit for the ship in question
-            ++numHit;
-            if (shipName == ShipTypeAbbr.Destroyer) {
-                --ships.destroyer;
-                if (ships.destroyer == 0 && player == PlayerType.Player) {
-                    document.getElementById("dest").style.backgroundColor = "lawngreen";
-                }
-            }
-            else if (shipName == ShipTypeAbbr.Tanker) {
-                --ships.tanker;
-                if (ships.tanker == 0 && player == PlayerType.Player) {
-                    document.getElementById("tank").style.backgroundColor = "lawngreen";
-                }
-            }
-            else if (shipName == ShipTypeAbbr.Battleship) {
-                --ships.battleship;
-                if (ships.battleship == 0 && player == PlayerType.Player) {
-                    document.getElementById("bat").style.backgroundColor = "lawngreen";
-                }
-            }
-            else if (shipName == ShipTypeAbbr.Cruiser) {
-                --ships.cruiser;
-                if (ships.cruiser == 0 && player == PlayerType.Player) {
-                    document.getElementById("cruise").style.backgroundColor = "lawngreen";
-                }
-            }
-            else { //sub is hit
-                --ships.submarine;
-                if (player == PlayerType.Player) {
-                    document.getElementById("sub").style.backgroundColor = "lawngreen";
-                }
-            }
-            getShipsLeft(computerShips);
-            if (ships.destroyer == 0 && ships.tanker == 0 && ships.battleship == 0 && ships.cruiser == 0 && ships.submarine == 0) {
-                if (player == PlayerType.Player) {
-                    playerVictory = 1;
-                }
-                else {
-                    computerVictory = 1;
-                }
-                break;
-            }
-            for (var i = 0; i < potDam.length; i++) { //go through the potential damaged areas
-                if (potDam[i] == attack[r]) { //if the hit location was a potential damage from another attack
-                    potDam.splice(i, 1); //remove this location from the damage location
-                    --i;
-                }
-            }
-        }
-    }
-    for (var i = 0; i < potDam.length; i++) { //process damaged ships
-        if (grid[potDam[i]].ship == shipName && grid[potDam[i]].attackTurn == 0) {
-            ++numDamage;
-            potDam.splice(i, 1); //removes damage site from the damage list so that the same ship isn't counted twice
-            --i;
-        }
-    }
-    if (player == PlayerType.Player) {
-        var hitstring = "";
-        var damstring = "";
-        if (numHit > 0) {
-            hitstring = "<font color = 'CC0066'>" + numHit + "h</font>";
-        }
-        if (numDamage > 0 && numHit > 0) {
-            damstring = ", <font color = '6633FF'>" + numDamage + "d</font>";
-        }
-        if (numDamage > 0 && numHit == 0) {
-            damstring = "<font color = '6633FF'>" + numDamage + "d</font>";
-        }
-        var ret = hitstring.concat(damstring);
-    }
-    else {
-        var ret = [numHit, numDamage];
-    }
-    return ret;
 }
 function generateReportForPlayer() {
     var table = document.getElementById("report");
@@ -289,11 +199,14 @@ function generateReportForPlayer() {
     var attack3 = playerAttack.pop();
     var attack = [attack1, attack2, attack3]; //took it out of a list and into another to clear the recycled global variable (playerAttack)
     var potDam = damageZone(attack, PlayerType.Player, playerGrid, computerGrid);
-    cell2.innerHTML = getReport(attack, potDam, ShipTypeAbbr.Destroyer, PlayerType.Player);
-    cell3.innerHTML = getReport(attack, potDam, ShipTypeAbbr.Tanker, PlayerType.Player);
-    cell4.innerHTML = getReport(attack, potDam, ShipTypeAbbr.Cruiser, PlayerType.Player);
-    cell5.innerHTML = getReport(attack, potDam, ShipTypeAbbr.Battleship, PlayerType.Player);
-    cell6.innerHTML = getReport(attack, potDam, ShipTypeAbbr.Submarine, PlayerType.Player);
+    let turnReports = getTurnReports(attack, potDam, PlayerType.Player, undefined, computerShips, undefined, computerGrid);
+    playerVictory = turnReports.playerVictory;
+    computerVictory = turnReports.computerVictory;
+    cell2.innerHTML = turnReports.prettyReport.D;
+    cell3.innerHTML = turnReports.prettyReport.T;
+    cell4.innerHTML = turnReports.prettyReport.C;
+    cell5.innerHTML = turnReports.prettyReport.B;
+    cell6.innerHTML = turnReports.prettyReport.S;
     if (cell2.innerHTML.length == 0 && cell3.innerHTML.length == 0 && cell4.innerHTML.length == 0 && cell5.innerHTML.length == 0 && cell6.innerHTML.length == 0) {
         cell2.innerHTML = "N O";
         cell4.innerHTML = "R E";
@@ -303,26 +216,24 @@ function generateReportForPlayer() {
 }
 function generateReportForComputer() {
     var potDam = damageZone(computerAttacks[turn], PlayerType.Computer, playerGrid, computerGrid);
-    var destroy = getReport(computerAttacks[turn], potDam, ShipTypeAbbr.Destroyer, PlayerType.Computer);
-    var tanker = getReport(computerAttacks[turn], potDam, ShipTypeAbbr.Tanker, PlayerType.Computer);
-    var cruiser = getReport(computerAttacks[turn], potDam, ShipTypeAbbr.Cruiser, PlayerType.Computer);
-    var battle = getReport(computerAttacks[turn], potDam, ShipTypeAbbr.Battleship, PlayerType.Computer);
-    var submarine = getReport(computerAttacks[turn], potDam, ShipTypeAbbr.Submarine, PlayerType.Computer);
-    computerReport.push({ dest: destroy, tank: tanker, cruise: cruiser, bat: battle, sub: submarine });
+    let turnReports = getTurnReports(computerAttacks[turn], potDam, PlayerType.Computer, playerShips, undefined, playerGrid, undefined);
+    playerVictory = turnReports.playerVictory;
+    computerVictory = turnReports.computerVictory;
+    computerReport.push({ dest: turnReports.report.D, tank: turnReports.report.T, cruise: turnReports.report.C, bat: turnReports.report.B, sub: turnReports.report.S });
     //update cellPossibilities & database
     //process hits
-    processHits(ShipTypeAbbr.Destroyer, destroy);
-    processHits(ShipTypeAbbr.Tanker, tanker);
-    processHits(ShipTypeAbbr.Cruiser, cruiser);
-    processHits(ShipTypeAbbr.Battleship, battle);
-    processHits(ShipTypeAbbr.Submarine, submarine);
+    processHits(ShipTypeAbbr.Destroyer, turnReports.report.D);
+    processHits(ShipTypeAbbr.Tanker, turnReports.report.T);
+    processHits(ShipTypeAbbr.Cruiser, turnReports.report.C);
+    processHits(ShipTypeAbbr.Battleship, turnReports.report.B);
+    processHits(ShipTypeAbbr.Submarine, turnReports.report.S);
     //process damages
     potDam = damageZone(computerAttacks[turn], PlayerType.Computer, playerGrid, computerGrid);
-    processDamage(ShipTypeAbbr.Destroyer, destroy, potDam);
-    processDamage(ShipTypeAbbr.Tanker, tanker, potDam);
-    processDamage(ShipTypeAbbr.Cruiser, cruiser, potDam);
-    processDamage(ShipTypeAbbr.Battleship, battle, potDam);
-    processDamage(ShipTypeAbbr.Submarine, submarine, potDam);
+    processDamage(ShipTypeAbbr.Destroyer, turnReports.report.D, potDam);
+    processDamage(ShipTypeAbbr.Tanker, turnReports.report.T, potDam);
+    processDamage(ShipTypeAbbr.Cruiser, turnReports.report.C, potDam);
+    processDamage(ShipTypeAbbr.Battleship, turnReports.report.B, potDam);
+    processDamage(ShipTypeAbbr.Submarine, turnReports.report.S, potDam);
 }
 function processHits(shipName, report) {
     var ship = null;
