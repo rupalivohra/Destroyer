@@ -1,5 +1,7 @@
-import { damageZone, populateDatabase, possibilitiesUpdate, rebootPossibilities } from '../src/brain.js';
+import { damageZone, populateDatabase, possibilitiesUpdate, processHits, rebootPossibilities, ShipDatabase } from '../src/brain.js';
 import { PlayerType } from '../src/enums.js';
+import { TurnReportPerShip } from '../src/report.js';
+import { ShipTypeAbbr } from '../src/ships.js';
 
 describe("populateDatabase", () => {
     test("should detect all Destroyer placements", () => {
@@ -208,5 +210,50 @@ describe("damageZone", () => {
             expect(damageZones).toContain(10);
             expect(damageZones).toContain(11);
         });
+    });
+});
+
+describe("processHits", () => {
+    let shipDatabase: ShipDatabase;
+    let turn: number;
+    let computerAttacks: any;
+    let playerGrid: any;
+    let cellPossibilities: any;
+
+    beforeEach(() => {
+        shipDatabase = {
+            dest: [[1, 2, 3, 4, 5], [1, 9, 17, 25, 33]],
+            tank: [[1, 2, 3, 4]],
+            cruise: [[1, 2, 3]],
+            bat: [[1, 2, 3]],
+            sub: [[1]]
+        };
+        turn = 1;
+        computerAttacks = {};
+        playerGrid = Array(65).fill(null).map(() => ({ ship: null, attackTurn: 0 }));
+        cellPossibilities = Array(65).fill(0);
+        rebootPossibilities(cellPossibilities, shipDatabase, playerGrid);
+    });
+
+    test("should update possibilities based on 1 hit", () => {
+        computerAttacks[1] = [1, 7, 8];
+        const report: TurnReportPerShip = { hits: 1, damages: 0, playerVictory: false, computerVictory: false };
+        processHits(ShipTypeAbbr.Destroyer, report, shipDatabase, turn, computerAttacks, playerGrid, cellPossibilities);
+        expect(cellPossibilities[1]).toBe(6);
+        expect(cellPossibilities[2]).toBe(4);
+        expect(cellPossibilities[3]).toBe(4);
+        expect(cellPossibilities[4]).toBe(2);
+        expect(cellPossibilities[5]).toBe(1);
+    });
+
+    test("should update possibilities based on 3 hits", () => {
+        const report: TurnReportPerShip = { hits: 3, damages: 0, playerVictory: false, computerVictory: false };
+        computerAttacks[1] = [1, 2, 3]
+        processHits(ShipTypeAbbr.Destroyer, report, shipDatabase, turn, computerAttacks, playerGrid, cellPossibilities);
+        expect(cellPossibilities[1]).toBe(5); // sub eliminated from possibilities (BUG?)
+        expect(cellPossibilities[2]).toBe(4);
+        expect(cellPossibilities[3]).toBe(4);
+        expect(cellPossibilities[4]).toBe(2);
+        expect(cellPossibilities[5]).toBe(1);
     });
 });
