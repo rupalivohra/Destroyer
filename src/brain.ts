@@ -1,6 +1,6 @@
 import { Direction, PlayerType } from "./enums.js";
 import { getCells } from "./placement.js";
-import { TurnReportPerShip } from "./report.js";
+import { getTurnReports, TurnReportPerShip } from "./report.js";
 import { ShipTypeAbbr, ShipTypes } from "./ships.js";
 import { contains } from "./utils.js";
 
@@ -212,7 +212,7 @@ export function damageZone(attack: number[], player: PlayerType, playerGrid: any
 }
 
 /*updates future attack choices by eliminating impossibilities based on hit locations*/
-export function processHits(shipName: ShipTypeAbbr, report: TurnReportPerShip, shipDatabase: ShipDatabase, turn: number, computerAttacks: any, playerGrid: any, cellPossibilities: number[]) { //
+function processHits(shipName: ShipTypeAbbr, report: TurnReportPerShip, shipDatabase: ShipDatabase, turn: number, computerAttacks: any, playerGrid: any, cellPossibilities: number[]) { //
     var ship = null;
     if (shipName == ShipTypeAbbr.Destroyer) {
         ship = shipDatabase.dest;
@@ -256,7 +256,7 @@ export function processHits(shipName: ShipTypeAbbr, report: TurnReportPerShip, s
     }
 }
 
-export function processDamage(shipName: ShipTypeAbbr, report: TurnReportPerShip, potDam: number[], shipDatabase: ShipDatabase, playerGrid: any, cellPossibilities: number[]) {
+function processDamage(shipName: ShipTypeAbbr, report: TurnReportPerShip, potDam: number[], shipDatabase: ShipDatabase, playerGrid: any, cellPossibilities: number[]) {
     var ship = null;
     if (shipName == ShipTypeAbbr.Destroyer) {
         ship = shipDatabase.dest;
@@ -285,3 +285,33 @@ export function processDamage(shipName: ShipTypeAbbr, report: TurnReportPerShip,
         }
     }
 }
+
+export function generateReportForComputer(computerAttacks: any, playerGrid: any, computerGrid: any, turn: number, playerShips: any, shipDatabase: ShipDatabase, cellPossibilities: number[], computerReport: any[], playerVictory: boolean, computerVictory: boolean): void {
+    var potDam = damageZone(computerAttacks[turn], PlayerType.Computer, playerGrid, computerGrid);
+
+    let turnReports = getTurnReports(computerAttacks[turn], potDam, PlayerType.Computer, playerShips, undefined, playerGrid, undefined);
+    playerVictory = turnReports.playerVictory;
+    computerVictory = turnReports.computerVictory;
+
+    computerReport.push({ dest: turnReports.report!.D, tank: turnReports.report!.T, cruise: turnReports.report!.C, bat: turnReports.report!.B, sub: turnReports.report!.S });
+
+    //update cellPossibilities & database
+    //process hits
+    processHits(ShipTypeAbbr.Destroyer, turnReports.report!.D, shipDatabase, turn, computerAttacks, playerGrid, cellPossibilities);
+    processHits(ShipTypeAbbr.Tanker, turnReports.report!.T, shipDatabase, turn, computerAttacks, playerGrid, cellPossibilities);
+    processHits(ShipTypeAbbr.Cruiser, turnReports.report!.C, shipDatabase, turn, computerAttacks, playerGrid, cellPossibilities);
+    processHits(ShipTypeAbbr.Battleship, turnReports.report!.B, shipDatabase, turn, computerAttacks, playerGrid, cellPossibilities);
+    processHits(ShipTypeAbbr.Submarine, turnReports.report!.S, shipDatabase, turn, computerAttacks, playerGrid, cellPossibilities);
+    //process damages
+    potDam = damageZone(computerAttacks[turn], PlayerType.Computer, playerGrid, computerGrid);
+    processDamage(ShipTypeAbbr.Destroyer, turnReports.report!.D, potDam, shipDatabase, playerGrid, cellPossibilities);
+    processDamage(ShipTypeAbbr.Tanker, turnReports.report!.T, potDam, shipDatabase, playerGrid, cellPossibilities);
+    processDamage(ShipTypeAbbr.Cruiser, turnReports.report!.C, potDam, shipDatabase, playerGrid, cellPossibilities);
+    processDamage(ShipTypeAbbr.Battleship, turnReports.report!.B, potDam, shipDatabase, playerGrid, cellPossibilities);
+    processDamage(ShipTypeAbbr.Submarine, turnReports.report!.S, potDam, shipDatabase, playerGrid, cellPossibilities);
+}
+
+export const forTesting = {
+    processDamage,
+    processHits
+};
