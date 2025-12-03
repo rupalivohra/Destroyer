@@ -1,11 +1,19 @@
 import { Direction, PlayerType } from "./enums.js";
 import { getCells } from "./placement.js";
-import { ShipTypes } from "./ships.js";
+import { TurnReportPerShip } from "./report.js";
+import { ShipTypeAbbr, ShipTypes } from "./ships.js";
 import { contains } from "./utils.js";
 
-export function populateDatabase(shipDatabase: any): void {
-    // var shipDatabase = { dest: [], tank: [], cruise: [], bat: [], sub: [] }; //key = ship type; value = array of arrays of cell numbers in which the specific ship can lie; used by computer to plan attacks
+//key = ship type; value = array of arrays of cell numbers in which the specific ship can lie; used by computer to plan attacks
+export type ShipDatabase = {
+    dest: number[][];
+    tank: number[][];
+    cruise: number[][];
+    bat: number[][];
+    sub: number[][];
+};
 
+export function populateDatabase(shipDatabase: ShipDatabase): void {
     /*key = ship type; value = array of arrays of cell numbers in which the specific ship can lie; used by computer to plan attacks*/
     var cells = [];
     for (var i = 1; i < 65; i++) {
@@ -201,4 +209,79 @@ export function damageZone(attack: number[], player: PlayerType, playerGrid: any
         }
     }
     return ret;
+}
+
+/*updates future attack choices by eliminating impossibilities based on hit locations*/
+export function processHits(shipName: ShipTypeAbbr, report: TurnReportPerShip, shipDatabase: ShipDatabase, turn: number, computerAttacks: any, playerGrid: any, cellPossibilities: number[]) { //
+    var ship = null;
+    if (shipName == ShipTypeAbbr.Destroyer) {
+        ship = shipDatabase.dest;
+    } else if (shipName == ShipTypeAbbr.Tanker) {
+        ship = shipDatabase.tank;
+    } else if (shipName == ShipTypeAbbr.Cruiser) {
+        ship = shipDatabase.cruise;
+    } else if (shipName == ShipTypeAbbr.Battleship) {
+        ship = shipDatabase.bat;
+    } else {
+        ship = shipDatabase.sub;
+    }
+    if (report.hits == 1) {
+        for (var i = 0; i < ship.length; i++) {
+            if (!(contains(ship[i], computerAttacks[turn][0]) || contains(ship[i], computerAttacks[turn][1]) || contains(ship[i], computerAttacks[turn][2]))) {
+                possibilitiesUpdate(ship[i], "remove", playerGrid, cellPossibilities);
+                ship.splice(i, 1);
+                --i;
+            }
+        }
+    }
+    if (report.hits == 2) {
+        for (i = 0; i < ship.length; i++) {
+            if (!((contains(ship[i], computerAttacks[turn][0]) && contains(ship[i], computerAttacks[turn][1])) || (contains(ship[i], computerAttacks[turn][1]) && contains(ship[i], computerAttacks[turn][2])) || (contains(ship[i], computerAttacks[turn][0]) && contains(ship[i], computerAttacks[turn][2])))) {
+                possibilitiesUpdate(ship[i], "remove", playerGrid, cellPossibilities);
+                ship.splice(i, 1);
+                --i;
+            }
+        }
+    }
+    if (report.hits == 3) {
+        // TODO move this logic out into its own function
+        report.damages = 0; // if all three attacks are hits, there cannot be any damages
+        for (i = 0; i < ship.length; i++) {
+            if (!(contains(ship[i], computerAttacks[turn][0]) && contains(ship[i], computerAttacks[turn][1]) && contains(ship[i], computerAttacks[turn][2]))) {
+                possibilitiesUpdate(ship[i], "remove", playerGrid, cellPossibilities);
+                ship.splice(i, 1);
+                --i;
+            }
+        }
+    }
+}
+
+export function processDamage(shipName: ShipTypeAbbr, report: TurnReportPerShip, potDam: number[], shipDatabase: ShipDatabase, playerGrid: any, cellPossibilities: number[]) {
+    var ship = null;
+    if (shipName == ShipTypeAbbr.Destroyer) {
+        ship = shipDatabase.dest;
+    } else if (shipName == ShipTypeAbbr.Tanker) {
+        ship = shipDatabase.tank;
+    } else if (shipName == ShipTypeAbbr.Cruiser) {
+        ship = shipDatabase.cruise;
+    } else if (shipName == ShipTypeAbbr.Battleship) {
+        ship = shipDatabase.bat;
+    } else {
+        ship = shipDatabase.sub;
+    }
+
+    var counter; //keeps track of how many damages an attack should have
+    for (var j = 0; j < ship.length; j++) { //for every ship possibility
+        counter = 0;
+        for (var i = 0; i < potDam.length; i++) { //for each potential damage location
+            if (contains(ship[j], potDam[i]) && playerGrid[potDam[i]].attackTurn == 0) { //if the ship possibility contains a potential damage location
+                counter++; //increase the counter
+            }
+        }
+        if (counter > (report.damages + report.hits)) { //if the number of damages in that ship location is greater than the number of damages from the report
+            possibilitiesUpdate(ship[j], "remove", playerGrid, cellPossibilities); //remove that ship location.
+            ship.splice(j, 1);
+            --j;
+        }
+    }
 }
