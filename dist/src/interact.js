@@ -8,6 +8,7 @@ import { placeShips } from './placement.js';
 import { randomIntFromInterval, cellTranslator, contains } from './utils.js';
 import { populateDatabase, possibilitiesUpdate, rebootPossibilities, getShipsLeft, damageZone, generateReportForComputer } from './brain.js';
 import { getTurnReports } from './report.js';
+import { getInstructions } from './setup.js';
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
 var playerGrid = []; //array of cell objects. Each object contains two fields: ship, attackTurn
 //ship = "D","T", "B", "C", "S", or null
@@ -26,7 +27,7 @@ var playerVictory = false;
 var computerVictory = false;
 var futureComputerAttacks = []; //used if final locations of ships are known, but there aren't enough attacks for them
 window.onload = function () {
-    getInstructions();
+    getInstructions(Stage.PlayerAttack, turn);
     for (var i = 0; i < 65; i++) {
         playerGrid.push({
             ship: null,
@@ -71,25 +72,6 @@ window.onload = function () {
         attackBtn.addEventListener("click", finalizeAttack);
     }
 };
-function getInstructions() {
-    //stage 1 = place ships
-    //stage 2 = make attack
-    if (stage == Stage.PlayerAttack) {
-        if (turn == 1) {
-            document.getElementById("instructions").innerHTML = "Make three attacks on your opponent by clicking on three squares on your opponents grid where you would like to attack.";
-        }
-        else {
-            document.getElementById("instructions").innerHTML = "Evaluate your report and make three more attacks on your opponent. Keep in mind that ships can be placed diagonally. <br />Damaging a ship means that at least one of your attacks was within one unit of the enemy's ship.<br />If you hit a ship with an attack, the report will not indicate whether you also damaged a ship with that attack.";
-        }
-    }
-    //stage 3 = receive report
-    if (stage == Stage.RecieveReport) {
-        document.getElementById("instructions").innerHTML = "Your report indicates how many ships you hit and how many you damaged. You can not hit and damage any ship with one attack.";
-    }
-    //stage 4 = opponent makes attacks
-    //stage 5 = opponent gets report
-    //back to stage 2
-}
 var whichButton = function (e) {
     // Handle different event models
     var e = e || window.event;
@@ -151,18 +133,11 @@ function finalizeAttack() {
             cell.style.color = "black";
             cell.innerHTML = turn.toString();
         }
-        stage = Stage.RecieveReport;
         getInstructions();
         generateReportForPlayer();
-        stage = Stage.OpponentAttack;
-        getInstructions();
         generateComputerAttack();
-        stage = Stage.OpponentReport;
-        getInstructions();
         generateReportForComputer(computerAttacks, playerGrid, computerGrid, turn, playerShips, shipDatabase, cellPossibilities, computerReport, playerVictory, computerVictory);
         turn++;
-        stage = Stage.PlayerAttack;
-        getInstructions();
         if (!playerVictory && !computerVictory) {
             document.getElementById("attack").disabled = false;
         }
