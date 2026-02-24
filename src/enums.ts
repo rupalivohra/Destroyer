@@ -21,3 +21,9 @@ export enum Direction {
     Left = 7,
     TopLeft = 8,
 }
+
+export enum MouseClick {
+    Left,
+    Right,
+    Unknown
+}

@@ -1,3 +1,5 @@
+import { MouseClick } from "./enums.js";
+
 export function randomIntFromInterval(min: number, max: number): number { // min and max included
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
@@ -60,4 +62,16 @@ export function contains(a: any[], obj: any): boolean {
         }
     }
     return false;
+}
+
+export function whichButton(e: MouseEvent): MouseClick {
+    switch (e.button) {
+        case 0:
+            return MouseClick.Left;
+        case 2:
+            return MouseClick.Right;
+        default:
+            console.warn("not a relevant mouse click");
+            return MouseClick.Unknown;
+    }
 }
