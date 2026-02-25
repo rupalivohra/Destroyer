@@ -22,4 +22,10 @@ export var Direction;
     Direction[Direction["Left"] = 7] = "Left";
     Direction[Direction["TopLeft"] = 8] = "TopLeft";
 })(Direction || (Direction = {}));
+export var MouseClick;
+(function (MouseClick) {
+    MouseClick[MouseClick["Left"] = 0] = "Left";
+    MouseClick[MouseClick["Right"] = 1] = "Right";
+    MouseClick[MouseClick["Unknown"] = 2] = "Unknown";
+})(MouseClick || (MouseClick = {}));
 //# sourceMappingURL=enums.js.map

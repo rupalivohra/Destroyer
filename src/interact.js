@@ -3,10 +3,10 @@ Created by Rupali Vohra
 Aug. 9, 2014
 */
 
-import { PlayerType, Stage } from './enums.js'
+import { PlayerType, Stage, MouseClick } from './enums.js'
 import { ShipTypeAbbr } from './ships.js'
 import { placeShips } from './placement.js';
-import { randomIntFromInterval, cellTranslator, contains } from './utils.js';
+import { randomIntFromInterval, cellTranslator, contains, whichButton } from './utils.js';
 import { populateDatabase, possibilitiesUpdate, rebootPossibilities, getShipsLeft, damageZone, generateReportForComputer } from './brain.js';
 import { getTurnReports } from './report.js';
 import { getInstructions } from './setup.js';
@@ -54,14 +54,14 @@ window.onload = function () {
         let oid = "o" + i;
         let el = document.getElementById(oid);
         if (el) {
-            // left click -> select attack (passes id and event)
+            // left click (select attack)
             el.addEventListener("click", function (ev) {
-                selectAttackLocation(oid, ev);
+                clickOnPotentialAttackLocation(oid, ev);
             });
-            // right click -> deselect attack (prevent default context menu)
+            // right click (deselects attack)
             el.addEventListener("contextmenu", function (ev) {
                 ev.preventDefault();
-                deselectAttack(oid);
+                clickOnPotentialAttackLocation(oid, ev);
             });
         }
     }
@@ -75,35 +75,22 @@ window.onload = function () {
     }
 };
 
-var whichButton = function (e) {
-    // Handle different event models
-    var e = e || window.event;
-    var btnCode;
-
-    if ('object' === typeof e) {
-        btnCode = e.button;
-        return btnCode;
-    }
-}
-
-function selectAttackLocation(id, event) {
+function clickOnPotentialAttackLocation(id, event) {
     var split = id.split("o");
     var cellNum = parseInt(split[1]);
-    if (contains(playerAttack, cellNum)) {
+    var clickType = whichButton(event);
+
+    if (contains(playerAttack, cellNum) || clickType == MouseClick.Right) {
         deselectAttack(id);
         return;
     }
 
-    if (playerAttack.length < 3) {
-        //console.log("You clicked cell #" + cellNum);
-        var leftClick = whichButton(event);
-        if (leftClick == 0) {
-            var cell = document.getElementById(id);
-            if (!(cell.style.color == "black" || contains(playerAttack, cellNum))) {
-                cell.style.color = "red";
-                cell.innerHTML = turn.toString();
-                playerAttack.push(cellNum);
-            }
+    if (playerAttack.length < 3 && clickType == MouseClick.Left) {
+        var cell = document.getElementById(id);
+        if (!(cell.style.color == "black" || contains(playerAttack, cellNum))) {
+            cell.style.color = "red";
+            cell.innerHTML = turn.toString();
+            playerAttack.push(cellNum);
         }
     }
 
