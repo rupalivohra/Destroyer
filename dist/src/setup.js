@@ -13,4 +13,27 @@ export function getInstructions(stage, turn) {
         `;
     }
 }
+export function createReportRow(turn, prettyTurnReport) {
+    const table = document.getElementById("report");
+    const row = table.insertRow(turn);
+    const turnNumberCell = row.insertCell(0);
+    turnNumberCell.innerHTML = "<b>" + turn + "</b>";
+    turnNumberCell.style.border = "0px";
+    const turnDestroyerReport = row.insertCell(1);
+    turnDestroyerReport.innerHTML = prettyTurnReport.D;
+    const turnTankerReport = row.insertCell(2);
+    turnTankerReport.innerHTML = prettyTurnReport.T;
+    const turnCruiserReport = row.insertCell(3);
+    turnCruiserReport.innerHTML = prettyTurnReport.C;
+    const turnBattleshipReport = row.insertCell(4);
+    turnBattleshipReport.innerHTML = prettyTurnReport.B;
+    const turnSubmarineReport = row.insertCell(5);
+    turnSubmarineReport.innerHTML = prettyTurnReport.S;
+    if (prettyTurnReport.D == "" && prettyTurnReport.T == "" && prettyTurnReport.C == "" && prettyTurnReport.B == "" && prettyTurnReport.S == "") {
+        turnDestroyerReport.innerHTML = "N O";
+        turnCruiserReport.innerHTML = "R E";
+        turnBattleshipReport.innerHTML = "P   O";
+        turnSubmarineReport.innerHTML = "R T";
+    }
+}
 //# sourceMappingURL=setup.js.map
