@@ -3,13 +3,14 @@ Created by Rupali Vohra
 Aug. 9, 2014
 */
 
-import { PlayerType, Stage, MouseClick } from './enums.js'
+import { PlayerType, Stage } from './enums.js'
 import { ShipTypeAbbr } from './ships.js'
 import { placeShips } from './placement.js';
-import { randomIntFromInterval, cellTranslator, contains, whichButton } from './utils.js';
+import { randomIntFromInterval, cellTranslator, contains } from './utils.js';
 import { populateDatabase, possibilitiesUpdate, rebootPossibilities, getShipsLeft, damageZone, generateReportForComputer } from './brain.js';
 import { getTurnReports } from './report.js';
 import { getInstructions } from './setup.js';
+import { clickOnPotentialAttackLocation } from './gameplay.js';
 
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
 var playerGrid = []; //array of cell objects. Each object contains two fields: ship, attackTurn
@@ -56,12 +57,12 @@ window.onload = function () {
         if (el) {
             // left click (select attack)
             el.addEventListener("click", function (ev) {
-                clickOnPotentialAttackLocation(oid, ev);
+                clickOnPotentialAttackLocation(oid, ev, playerAttack, turn);
             });
             // right click (deselects attack)
             el.addEventListener("contextmenu", function (ev) {
                 ev.preventDefault();
-                clickOnPotentialAttackLocation(oid, ev);
+                clickOnPotentialAttackLocation(oid, ev, playerAttack, turn);
             });
         }
     }
@@ -74,41 +75,6 @@ window.onload = function () {
         attackBtn.addEventListener("click", finalizeAttack);
     }
 };
-
-function clickOnPotentialAttackLocation(id, event) {
-    var split = id.split("o");
-    var cellNum = parseInt(split[1]);
-    var clickType = whichButton(event);
-
-    if (contains(playerAttack, cellNum) || clickType == MouseClick.Right) {
-        deselectAttack(id);
-        return;
-    }
-
-    if (playerAttack.length < 3 && clickType == MouseClick.Left) {
-        var cell = document.getElementById(id);
-        if (!(cell.style.color == "black" || contains(playerAttack, cellNum))) {
-            cell.style.color = "red";
-            cell.innerHTML = turn.toString();
-            playerAttack.push(cellNum);
-        }
-    }
-
-}
-
-function deselectAttack(id) {
-    var split = id.split("o");
-    var cellNum = parseInt(split[1]);
-    if (contains(playerAttack, cellNum)) {
-        var index = playerAttack.indexOf(cellNum);
-        playerAttack.splice(index, 1);
-        var cell = document.getElementById(id);
-        if (cell.style.color == "red") {
-            cell.innerHTML = "";
-            cell.style.color == "black";
-        }
-    }
-}
 
 function finalizeAttack() {
     if (playerAttack.length > 3) {
