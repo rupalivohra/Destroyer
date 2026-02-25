@@ -6,9 +6,9 @@ import { PlayerType, Stage } from './enums.js';
 import { ShipTypeAbbr } from './ships.js';
 import { placeShips } from './placement.js';
 import { randomIntFromInterval, cellTranslator, contains } from './utils.js';
-import { populateDatabase, possibilitiesUpdate, rebootPossibilities, getShipsLeft, damageZone, generateReportForComputer } from './brain.js';
+import { damageZone, getShipsLeft, generateReportForComputer, populateDatabase, possibilitiesUpdate, rebootPossibilities } from './brain.js';
 import { getTurnReports } from './report.js';
-import { getInstructions } from './setup.js';
+import { createReportRow, getInstructions } from './setup.js';
 import { clickOnPotentialAttackLocation } from './gameplay.js';
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
 var playerGrid = []; //array of cell objects. Each object contains two fields: ship, attackTurn
@@ -117,17 +117,6 @@ function finalizeAttack() {
     }
 }
 function generateReportForPlayer() {
-    var table = document.getElementById("report");
-    var rowCount = table.rows.length;
-    var row = table.insertRow(rowCount);
-    var cell1 = row.insertCell(0);
-    var cell2 = row.insertCell(1);
-    var cell3 = row.insertCell(2);
-    var cell4 = row.insertCell(3);
-    var cell5 = row.insertCell(4);
-    var cell6 = row.insertCell(5);
-    cell1.innerHTML = "<b>" + turn + "</b>";
-    cell1.style.border = 0;
     var attack1 = playerAttack.pop();
     var attack2 = playerAttack.pop();
     var attack3 = playerAttack.pop();
@@ -136,17 +125,7 @@ function generateReportForPlayer() {
     let turnReports = getTurnReports(attack, potDam, PlayerType.Player, undefined, computerShips, undefined, computerGrid);
     playerVictory = turnReports.playerVictory;
     computerVictory = turnReports.computerVictory;
-    cell2.innerHTML = turnReports.prettyReport.D;
-    cell3.innerHTML = turnReports.prettyReport.T;
-    cell4.innerHTML = turnReports.prettyReport.C;
-    cell5.innerHTML = turnReports.prettyReport.B;
-    cell6.innerHTML = turnReports.prettyReport.S;
-    if (cell2.innerHTML.length == 0 && cell3.innerHTML.length == 0 && cell4.innerHTML.length == 0 && cell5.innerHTML.length == 0 && cell6.innerHTML.length == 0) {
-        cell2.innerHTML = "N O";
-        cell4.innerHTML = "R E";
-        cell5.innerHTML = "P   O";
-        cell6.innerHTML = "R T";
-    }
+    createReportRow(turn, turnReports.prettyReport);
 }
 function getMaxPossibility(avoidCell, avoidCell2) {
     var max = 0;
