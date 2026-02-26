@@ -31,7 +31,6 @@ function deselectAttack(id: string, currentAttack: number[]): void {
         var cell = document.getElementById(id);
         if (cell !== null && cell.style.color == "red") {
             cell.innerHTML = "";
-            cell.style.color = "black";
         }
     }
 }
