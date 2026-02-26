@@ -96,9 +96,10 @@ function finalizeAttack() {
         generateReportForPlayer();
         generateComputerAttack();
         generateReportForComputer(computerAttacks, playerGrid, computerGrid, turn, playerShips, shipDatabase, cellPossibilities, computerReport, playerVictory, computerVictory);
-        turn++;
         if (!playerVictory && !computerVictory) {
             document.getElementById("attack").disabled = false;
+            turn++;
+            clearTurnData();
         }
         else if (playerVictory) {
             document.getElementById("attack").disabled = true;
@@ -115,6 +116,9 @@ function finalizeAttack() {
             endgame();
         }
     }
+}
+function clearTurnData() {
+    playerAttack.length = 0;
 }
 function generateReportForPlayer() {
     var attack1 = playerAttack.pop();
