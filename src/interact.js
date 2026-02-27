@@ -7,9 +7,9 @@ import { PlayerType, Stage } from './enums.js'
 import { ShipTypeAbbr } from './ships.js'
 import { placeShips } from './placement.js';
 import { randomIntFromInterval, cellTranslator, contains } from './utils.js';
-import { damageZone, getShipsLeft, generateReportForComputer, populateDatabase, possibilitiesUpdate, rebootPossibilities } from './brain.js';
-import { getTurnReports } from './report.js';
-import { createReportRow, getInstructions } from './setup.js';
+import { getShipsLeft, generateReportForComputer, populateDatabase, possibilitiesUpdate, rebootPossibilities } from './brain.js';
+import { generateReportForPlayer } from './report.js';
+import { getInstructions } from './setup.js';
 import { clickOnPotentialAttackLocation } from './gameplay.js';
 
 let stage = Stage.PlayerAttack; //used to keep track of game progress for instructional purposes.
@@ -93,7 +93,7 @@ function finalizeAttack() {
             cell.innerHTML = turn.toString();
         }
         getInstructions();
-        generateReportForPlayer();
+        generateReportForPlayer(playerAttack, turn, playerGrid, computerGrid, computerShips, playerVictory, computerVictory);
         generateComputerAttack();
         generateReportForComputer(computerAttacks, playerGrid, computerGrid, turn, playerShips, shipDatabase, cellPossibilities, computerReport, playerVictory, computerVictory);
         if (!playerVictory && !computerVictory) {
@@ -117,20 +117,6 @@ function finalizeAttack() {
 
 function clearTurnData() {
     playerAttack.length = 0;
-}
-
-function generateReportForPlayer() {
-    var attack1 = playerAttack.pop();
-    var attack2 = playerAttack.pop();
-    var attack3 = playerAttack.pop();
-    var attack = [attack1, attack2, attack3]; //took it out of a list and into another to clear the recycled global variable (playerAttack)
-    var potDam = damageZone(attack, PlayerType.Player, playerGrid, computerGrid);
-
-    let turnReports = getTurnReports(attack, potDam, PlayerType.Player, undefined, computerShips, undefined, computerGrid);
-    playerVictory = turnReports.playerVictory;
-    computerVictory = turnReports.computerVictory;
-
-    createReportRow(turn, turnReports.prettyReport);
 }
 
 function getMaxPossibility(avoidCell, avoidCell2) {

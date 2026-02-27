@@ -1,5 +1,6 @@
-import { getShipsLeft } from "./brain.js";
+import { damageZone, getShipsLeft } from "./brain.js";
 import { PlayerType } from "./enums.js";
+import { createReportRow } from "./setup.js";
 import { ShipTypeAbbr } from "./ships.js";
 
 export type TurnReportPerShip = {
@@ -179,6 +180,15 @@ function getPrettyReport(attack: number[], potDam: number[], shipName: ShipTypeA
     }
 
     return { report: prettyString, playerVictory: turnReport.playerVictory, computerVictory: turnReport.computerVictory };
+}
+
+export function generateReportForPlayer(attack: number[], turn: number, playerGrid: any, computerGrid: any, computerShips: any, playerVictory: boolean, computerVictory: boolean) {
+    var potDam = damageZone(attack, PlayerType.Player, playerGrid, computerGrid);
+    let turnReports = getTurnReports(attack, potDam, PlayerType.Player, undefined, computerShips, undefined, computerGrid);
+    playerVictory = turnReports.playerVictory;
+    computerVictory = turnReports.computerVictory;
+
+    createReportRow(turn, turnReports.prettyReport!);
 }
 
 export const forTesting = {
