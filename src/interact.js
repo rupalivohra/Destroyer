@@ -8,7 +8,7 @@ import { ShipTypeAbbr } from './ships.js'
 import { placeShips } from './placement.js';
 import { randomIntFromInterval, cellTranslator, contains } from './utils.js';
 import { getShipsLeft, generateReportForComputer, populateDatabase, possibilitiesUpdate, rebootPossibilities } from './brain.js';
-import { generateReportForPlayer } from './report.js';
+import { Victory, generateReportForPlayer } from './report.js';
 import { getInstructions } from './setup.js';
 import { clickOnPotentialAttackLocation } from './gameplay.js';
 
@@ -26,11 +26,11 @@ var playerAttack = []; //should have 3 cell numbers at the end of player's turn;
 var shipDatabase = { dest: [], tank: [], cruise: [], bat: [], sub: [] }; //key = ship type; value = array of arrays of cell numbers in which the specific ship can lie; used by computer to plan attacks
 var computerAttacks = [[0, 0, 0]]; //each element of the array is an array of three elements. each element is a cell number where the computer attacked in the turn corresponding to computerAttack's index.
 var cellPossibilities = []; // an array of 65 where each element contains an int that says how many ships could be located there
-var playerVictory = false;
-var computerVictory = false;
+let victory;
 var futureComputerAttacks = []; //used if final locations of ships are known, but there aren't enough attacks for them
 
 window.onload = function () {
+    victory = new Victory();
     getInstructions(Stage.PlayerAttack, turn);
     for (var i = 0; i < 65; i++) {
         playerGrid.push({
@@ -93,29 +93,14 @@ function finalizeAttack() {
             cell.innerHTML = turn.toString();
         }
         getInstructions();
-        generateReportForPlayer(playerAttack, turn, playerGrid, computerGrid, computerShips, playerVictory, computerVictory);
+        generateReportForPlayer(playerAttack, turn, playerGrid, computerGrid, computerShips, victory);
         generateComputerAttack();
-        generateReportForComputer(computerAttacks, playerGrid, computerGrid, turn, playerShips, shipDatabase, cellPossibilities, computerReport, playerVictory, computerVictory);
-        if (!playerVictory && !computerVictory) {
-            document.getElementById("attack").disabled = false;
-            turn++;
-            clearTurnData();
-        } else if (playerVictory) {
-            document.getElementById("attack").disabled = true;
-            if (computerVictory) {
-                alert("It's a tie!");
-            } else {
-                alert("You win!");
-            }
-            endgame();
-        } else {
-            alert("You lose :(");
-            endgame();
-        }
+        generateReportForComputer(computerAttacks, playerGrid, computerGrid, turn, playerShips, shipDatabase, cellPossibilities, computerReport, victory);
+        victory.evaluateVictory();
     }
 }
 
-function clearTurnData() {
+export function clearTurnData() {
     playerAttack.length = 0;
 }
 
@@ -567,10 +552,32 @@ function generateComputerAttack() {
     cell.innerHTML = turn.toString();
 }
 
-function endgame() {
+export function moveToNextTurn() {
+    document.getElementById("attack").disabled = false;
+    turn++;
+    clearTurnData();
+}
+
+export function endgame() {
     document.getElementById("attack").innerHTML = "Play again?";
     document.getElementById("attack").disabled = false;
     document.getElementById("attack").onclick = function () {
         location.reload(false);
     }
+}
+
+export const forTesting = {
+    finalizeAttack,
+    setPlayerGrid: (grid) => { playerGrid = grid; },
+    setComputerGrid: (grid) => { computerGrid = grid; },
+    setPlayerAttack: (attack) => { playerAttack = attack; },
+    setPlayerShips: (ships) => { playerShips = ships; },
+    setComputerShips: (ships) => { computerShips = ships; },
+    setTurn: (t) => { turn = t; },
+    setComputerVision: (vision) => { computerVision = vision; },
+    setComputerReport: (report) => { computerReport = report; },
+    setComputerAttacks: (attacks) => { computerAttacks = attacks; },
+    setCellPossibilities: (possibilities) => { cellPossibilities = possibilities; },
+    setShipDatabase: (database) => { shipDatabase = database; },
+    setVictory: (v) => { victory = v; },
 }
