@@ -34,34 +34,24 @@ export class Victory {
 }
 export function getTurnReports(attack, potDam, playerType, playerShips, computerShips, playerGrid, computerGrid, victory) {
     if (playerType == PlayerType.Computer) {
-        const destroyerReport = getReport(attack, potDam, ShipTypeAbbr.Destroyer, playerType, playerShips, computerShips, playerGrid, computerGrid, victory);
-        const tankerReport = getReport(attack, potDam, ShipTypeAbbr.Tanker, playerType, playerShips, computerShips, playerGrid, computerGrid, victory);
-        const cruiserReport = getReport(attack, potDam, ShipTypeAbbr.Cruiser, playerType, playerShips, computerShips, playerGrid, computerGrid, victory);
-        const battleshipReport = getReport(attack, potDam, ShipTypeAbbr.Battleship, playerType, playerShips, computerShips, playerGrid, computerGrid, victory);
-        const submarineReport = getReport(attack, potDam, ShipTypeAbbr.Submarine, playerType, playerShips, computerShips, playerGrid, computerGrid, victory);
         return {
             report: {
-                [ShipTypeAbbr.Destroyer]: destroyerReport,
-                [ShipTypeAbbr.Tanker]: tankerReport,
-                [ShipTypeAbbr.Cruiser]: cruiserReport,
-                [ShipTypeAbbr.Battleship]: battleshipReport,
-                [ShipTypeAbbr.Submarine]: submarineReport
+                [ShipTypeAbbr.Destroyer]: getReport(attack, potDam, ShipTypeAbbr.Destroyer, playerType, playerShips, computerShips, playerGrid, computerGrid, victory),
+                [ShipTypeAbbr.Tanker]: getReport(attack, potDam, ShipTypeAbbr.Tanker, playerType, playerShips, computerShips, playerGrid, computerGrid, victory),
+                [ShipTypeAbbr.Cruiser]: getReport(attack, potDam, ShipTypeAbbr.Cruiser, playerType, playerShips, computerShips, playerGrid, computerGrid, victory),
+                [ShipTypeAbbr.Battleship]: getReport(attack, potDam, ShipTypeAbbr.Battleship, playerType, playerShips, computerShips, playerGrid, computerGrid, victory),
+                [ShipTypeAbbr.Submarine]: getReport(attack, potDam, ShipTypeAbbr.Submarine, playerType, playerShips, computerShips, playerGrid, computerGrid, victory)
             }
         };
     }
     else {
-        const destroyerReport = getPrettyReport(attack, potDam, ShipTypeAbbr.Destroyer, computerShips, computerGrid, victory);
-        const tankerReport = getPrettyReport(attack, potDam, ShipTypeAbbr.Tanker, computerShips, computerGrid, victory);
-        const cruiserReport = getPrettyReport(attack, potDam, ShipTypeAbbr.Cruiser, computerShips, computerGrid, victory);
-        const battleshipReport = getPrettyReport(attack, potDam, ShipTypeAbbr.Battleship, computerShips, computerGrid, victory);
-        const submarineReport = getPrettyReport(attack, potDam, ShipTypeAbbr.Submarine, computerShips, computerGrid, victory);
         return {
             prettyReport: {
-                [ShipTypeAbbr.Destroyer]: destroyerReport.report,
-                [ShipTypeAbbr.Tanker]: tankerReport.report,
-                [ShipTypeAbbr.Cruiser]: cruiserReport.report,
-                [ShipTypeAbbr.Battleship]: battleshipReport.report,
-                [ShipTypeAbbr.Submarine]: submarineReport.report
+                [ShipTypeAbbr.Destroyer]: getPrettyReport(attack, potDam, ShipTypeAbbr.Destroyer, computerShips, computerGrid, victory),
+                [ShipTypeAbbr.Tanker]: getPrettyReport(attack, potDam, ShipTypeAbbr.Tanker, computerShips, computerGrid, victory),
+                [ShipTypeAbbr.Cruiser]: getPrettyReport(attack, potDam, ShipTypeAbbr.Cruiser, computerShips, computerGrid, victory),
+                [ShipTypeAbbr.Battleship]: getPrettyReport(attack, potDam, ShipTypeAbbr.Battleship, computerShips, computerGrid, victory),
+                [ShipTypeAbbr.Submarine]: getPrettyReport(attack, potDam, ShipTypeAbbr.Submarine, computerShips, computerGrid, victory)
             }
         };
     }
@@ -162,7 +152,7 @@ function getPrettyReport(attack, potDam, shipName, computerShips, computerGrid, 
     if (turnReport.damages > 0) {
         prettyString += "<font color = '6633FF'>" + turnReport.damages + "d</font>";
     }
-    return { report: prettyString };
+    return prettyString;
 }
 export function generateReportForPlayer(attack, turn, playerGrid, computerGrid, computerShips, victory) {
     var potDam = damageZone(attack, PlayerType.Player, playerGrid, computerGrid);
