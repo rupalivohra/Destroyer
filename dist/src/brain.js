@@ -287,11 +287,9 @@ function processDamage(shipName, report, potDam, shipDatabase, playerGrid, cellP
         }
     }
 }
-export function generateReportForComputer(computerAttacks, playerGrid, computerGrid, turn, playerShips, shipDatabase, cellPossibilities, computerReport, playerVictory, computerVictory) {
+export function generateReportForComputer(computerAttacks, playerGrid, computerGrid, turn, playerShips, shipDatabase, cellPossibilities, computerReport, victory) {
     var potDam = damageZone(computerAttacks[turn], PlayerType.Computer, playerGrid, computerGrid);
-    let turnReports = getTurnReports(computerAttacks[turn], potDam, PlayerType.Computer, playerShips, undefined, playerGrid, undefined);
-    playerVictory = turnReports.playerVictory;
-    computerVictory = turnReports.computerVictory;
+    let turnReports = getTurnReports(computerAttacks[turn], potDam, PlayerType.Computer, playerShips, undefined, playerGrid, undefined, victory);
     computerReport.push({ dest: turnReports.report.D, tank: turnReports.report.T, cruise: turnReports.report.C, bat: turnReports.report.B, sub: turnReports.report.S });
     //update cellPossibilities & database
     //process hits

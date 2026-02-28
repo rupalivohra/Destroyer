@@ -1,6 +1,6 @@
 import { Direction, PlayerType } from "./enums.js";
 import { getCells } from "./placement.js";
-import { getTurnReports, TurnReportPerShip } from "./report.js";
+import { getTurnReports, TurnReportPerShip, Victory } from "./report.js";
 import { ShipTypeAbbr, ShipTypes } from "./ships.js";
 import { contains } from "./utils.js";
 
@@ -286,13 +286,10 @@ function processDamage(shipName: ShipTypeAbbr, report: TurnReportPerShip, potDam
     }
 }
 
-export function generateReportForComputer(computerAttacks: any, playerGrid: any, computerGrid: any, turn: number, playerShips: any, shipDatabase: ShipDatabase, cellPossibilities: number[], computerReport: any[], playerVictory: boolean, computerVictory: boolean): void {
+export function generateReportForComputer(computerAttacks: any, playerGrid: any, computerGrid: any, turn: number, playerShips: any, shipDatabase: ShipDatabase, cellPossibilities: number[], computerReport: any[], victory: Victory): void {
     var potDam = damageZone(computerAttacks[turn], PlayerType.Computer, playerGrid, computerGrid);
 
-    let turnReports = getTurnReports(computerAttacks[turn], potDam, PlayerType.Computer, playerShips, undefined, playerGrid, undefined);
-    playerVictory = turnReports.playerVictory;
-    computerVictory = turnReports.computerVictory;
-
+    let turnReports = getTurnReports(computerAttacks[turn], potDam, PlayerType.Computer, playerShips, undefined, playerGrid, undefined, victory);
     computerReport.push({ dest: turnReports.report!.D, tank: turnReports.report!.T, cruise: turnReports.report!.C, bat: turnReports.report!.B, sub: turnReports.report!.S });
 
     //update cellPossibilities & database
