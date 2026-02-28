@@ -1,22 +1,19 @@
 import { damageZone } from '../src/brain.js';
 import { PlayerType } from '../src/enums.js';
-import { forTesting } from '../src/report.js';
+import { forTesting, Victory } from '../src/report.js';
 import { ShipTypeAbbr } from '../src/ships.js';
+import { jest } from '@jest/globals'
+import { getTestHtml } from './utils.js';
 
 describe("getReport", () => {
     let playerGrid: any;
     let computerGrid: any;
     let playerShips: any;
     let computerShips: any;
+    let victory: Victory;
 
     beforeEach(() => {
-        document.body.innerHTML = `
-            <div id="oppShipsDest"></div>
-            <div id="oppShipsTank"></div>
-            <div id="oppShipsCruise"></div>
-            <div id="oppShipsBat"></div>
-            <div id="oppShipsSub"></div>
-        `;
+        document.body.innerHTML = getTestHtml();
         playerGrid = Array(65).fill(null).map(() => ({ ship: null, attackTurn: 0 }));
         computerGrid = Array(65).fill(null).map(() => ({ ship: null, attackTurn: 0 }));
         for (let i = 1; i <= 5; i++) {
@@ -41,50 +38,90 @@ describe("getReport", () => {
             D: { cells: [1, 9, 17, 25, 33], hits: [] },
             T: { cells: [3, 4, 5], hits: [] }
         };
+        victory = new Victory();
     });
 
     test("should report hits correctly", () => {
         const attacks = [1, 3];
         const potDam = damageZone(attacks, PlayerType.Computer, playerGrid, computerGrid);
-        const report = forTesting.getReport(attacks, potDam, ShipTypeAbbr.Destroyer, PlayerType.Computer, playerShips, computerShips, playerGrid, computerGrid);
+        const report = forTesting.getReport(attacks, potDam, ShipTypeAbbr.Destroyer, PlayerType.Computer, playerShips, computerShips, playerGrid, computerGrid, victory);
 
         expect(report.hits).toBe(2);
         expect(report.damages).toBe(0);
-        expect(report.playerVictory).toBe(false);
-        expect(report.computerVictory).toBe(false);
+        expect(victory.playerVictory).toBe(false);
+        expect(victory.computerVictory).toBe(false);
     });
 
     test("should report damages correctly for 1 attack bordering ship(s)", () => {
         const attacks = [13];
         const potDam = damageZone(attacks, PlayerType.Computer, playerGrid, computerGrid);
 
-        const destroyerReport = forTesting.getReport(attacks, potDam, ShipTypeAbbr.Destroyer, PlayerType.Computer, playerShips, computerShips, playerGrid, computerGrid);
+        const destroyerReport = forTesting.getReport(attacks, potDam, ShipTypeAbbr.Destroyer, PlayerType.Computer, playerShips, computerShips, playerGrid, computerGrid, victory);
         expect(destroyerReport.hits).toBe(0);
         expect(destroyerReport.damages).toBe(2);
-        expect(destroyerReport.playerVictory).toBe(false);
-        expect(destroyerReport.computerVictory).toBe(false);
+        expect(victory.playerVictory).toBe(false);
+        expect(victory.computerVictory).toBe(false);
 
-        const tankerReport = forTesting.getReport(attacks, potDam, ShipTypeAbbr.Tanker, PlayerType.Computer, playerShips, computerShips, playerGrid, computerGrid);
+        const tankerReport = forTesting.getReport(attacks, potDam, ShipTypeAbbr.Tanker, PlayerType.Computer, playerShips, computerShips, playerGrid, computerGrid, victory);
         expect(tankerReport.hits).toBe(0);
         expect(tankerReport.damages).toBe(1);
-        expect(tankerReport.playerVictory).toBe(false);
-        expect(tankerReport.computerVictory).toBe(false);
+        expect(victory.playerVictory).toBe(false);
+        expect(victory.computerVictory).toBe(false);
     });
 
     test("should not double count damages for multiple attacks bordering same ship", () => {
         const attacks = [13, 21];
         const potDam = damageZone(attacks, PlayerType.Computer, playerGrid, computerGrid);
 
-        const destroyerReport = forTesting.getReport(attacks, potDam, ShipTypeAbbr.Destroyer, PlayerType.Computer, playerShips, computerShips, playerGrid, computerGrid);
+        const destroyerReport = forTesting.getReport(attacks, potDam, ShipTypeAbbr.Destroyer, PlayerType.Computer, playerShips, computerShips, playerGrid, computerGrid, victory);
         expect(destroyerReport.hits).toBe(0);
         expect(destroyerReport.damages).toBe(2);
-        expect(destroyerReport.playerVictory).toBe(false);
-        expect(destroyerReport.computerVictory).toBe(false);
+        expect(victory.playerVictory).toBe(false);
+        expect(victory.computerVictory).toBe(false);
 
-        const tankerReport = forTesting.getReport(attacks, potDam, ShipTypeAbbr.Tanker, PlayerType.Computer, playerShips, computerShips, playerGrid, computerGrid);
+        const tankerReport = forTesting.getReport(attacks, potDam, ShipTypeAbbr.Tanker, PlayerType.Computer, playerShips, computerShips, playerGrid, computerGrid, victory);
         expect(tankerReport.hits).toBe(0);
         expect(tankerReport.damages).toBe(1);
-        expect(tankerReport.playerVictory).toBe(false);
-        expect(tankerReport.computerVictory).toBe(false);
+        expect(victory.playerVictory).toBe(false);
+        expect(victory.computerVictory).toBe(false);
+    });
+});
+
+describe("evaluateVictory", () => {
+    let victory: Victory;
+    beforeEach(() => {
+        document.body.innerHTML = `
+            <button id="attack"></button>
+        `;
+        victory = new Victory();
+    });
+
+    test("No victors in the beginning", () => {
+        expect(victory.playerVictory).toBe(false);
+        expect(victory.computerVictory).toBe(false);
+    });
+
+    test("Tie is handled", () => {
+        victory.setPlayerVictory(true);
+        victory.setComputerVictory(true);
+        window.alert = jest.fn();
+        victory.evaluateVictory();
+        expect(window.alert).toHaveBeenCalledWith("It's a tie!");
+    });
+
+    test("Player victory is handled", () => {
+        victory.setPlayerVictory(true);
+        victory.setComputerVictory(false);
+        window.alert = jest.fn();
+        victory.evaluateVictory();
+        expect(window.alert).toHaveBeenCalledWith("You win!");
+    });
+
+    test("Computer victory is handled", () => {
+        victory.setPlayerVictory(false);
+        victory.setComputerVictory(true);
+        window.alert = jest.fn();
+        victory.evaluateVictory();
+        expect(window.alert).toHaveBeenCalledWith("You lose :(");
     });
 });

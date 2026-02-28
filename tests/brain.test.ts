@@ -237,7 +237,7 @@ describe("processHits", () => {
 
     test("should update possibilities based on 1 hit", () => {
         computerAttacks[1] = [1, 7, 8];
-        const report: TurnReportPerShip = { hits: 1, damages: 0, playerVictory: false, computerVictory: false };
+        const report: TurnReportPerShip = { hits: 1, damages: 0 };
         forTesting.processHits(ShipTypeAbbr.Destroyer, report, shipDatabase, turn, computerAttacks, playerGrid, cellPossibilities);
         expect(cellPossibilities[1]).toBe(6);
         expect(cellPossibilities[2]).toBe(4);
@@ -247,7 +247,7 @@ describe("processHits", () => {
     });
 
     test("should update possibilities based on 3 hits", () => {
-        const report: TurnReportPerShip = { hits: 3, damages: 0, playerVictory: false, computerVictory: false };
+        const report: TurnReportPerShip = { hits: 3, damages: 0 };
         computerAttacks[1] = [1, 2, 3]
         forTesting.processHits(ShipTypeAbbr.Destroyer, report, shipDatabase, turn, computerAttacks, playerGrid, cellPossibilities);
         expect(cellPossibilities[1]).toBe(5); // sub eliminated from possibilities (BUG?)
