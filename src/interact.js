@@ -100,10 +100,6 @@ function finalizeAttack() {
     }
 }
 
-export function clearTurnData() {
-    playerAttack.length = 0;
-}
-
 function getMaxPossibility(avoidCell, avoidCell2) {
     var max = 0;
     var ret = 0; //returns index of greatest value
@@ -555,7 +551,7 @@ function generateComputerAttack() {
 export function moveToNextTurn() {
     document.getElementById("attack").disabled = false;
     turn++;
-    clearTurnData();
+    playerAttack.length = 0;
 }
 
 export function endgame() {
